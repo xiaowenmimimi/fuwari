@@ -129,7 +129,12 @@ const bannerOffset =
 			}
 
 			// Load the hue from local storage
-			const hue = localStorage.getItem('hue') || configHue;
+			const hueCandidates = [100, 200, 250, 345];
+			const randomHue = hueCandidates[Math.floor(Math.random() * hueCandidates.length)];
+			if (!localStorage.getItem('hue')) {
+				document.documentElement.dataset.randomHue = randomHue;
+			}
+			const hue = localStorage.getItem('hue') || randomHue;
 			document.documentElement.style.setProperty('--hue', hue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
@@ -283,7 +288,8 @@ function loadTheme() {
 }
 
 function loadHue() {
-	setHue(getHue())
+	const hue = getHue()
+	document.documentElement.style.setProperty('--hue', String(hue));
 }
 
 function initCustomScrollbar() {

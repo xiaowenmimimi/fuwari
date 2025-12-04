@@ -2,17 +2,38 @@
 import I18nKey from "@i18n/i18nKey";
 import { i18n } from "@i18n/translation";
 import Icon from "@iconify/svelte";
-import { getDefaultHue, getHue, setHue } from "@utils/setting-utils";
+import { clearHue, getDefaultHue, getHue, setHue } from "@utils/setting-utils";
 
 let hue = getHue();
 const defaultHue = getDefaultHue();
+// 检查色调是否在本地存储中持久化，以避免在初始化时覆盖随机的色调
+const isPersisted = !!localStorage.getItem("hue");
+let isInitialized = false;
 
 function resetHue() {
+	clearHue();
 	hue = getDefaultHue();
+	// 重置初始化标志以防止监视程序保存重置值
+	isInitialized = false;
 }
 
 $: if (hue || hue === 0) {
-	setHue(hue);
+	if (isInitialized) {
+		setHue(hue);
+	} else if (isPersisted) {
+		// 如果持久化，我们可以设置它（尽管是冗余的，是安全的）
+		setHue(hue);
+		isInitialized = true;
+	} else {
+		// 如果未持久化（随机色调），我们不保存它到本地存储
+		// 但是我们需要将初始化标志设置为 true，以便后续更改被保存
+		// 然而，我们必须小心不要立即设置它，否则初始值将被保存
+		// 我们可以假设如果值从初始值改变，它是一个用户操作
+		if (hue !== defaultHue) {
+			setHue(hue);
+			isInitialized = true;
+		}
+	}
 }
 </script>
 

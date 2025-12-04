@@ -8,6 +8,10 @@ import { expressiveCodeConfig } from "@/config";
 import type { LIGHT_DARK_MODE } from "@/types/config";
 
 export function getDefaultHue(): number {
+	const randomHue = document.documentElement.dataset.randomHue;
+	if (randomHue) {
+		return Number.parseInt(randomHue, 10);
+	}
 	const fallback = "250";
 	const configCarrier = document.getElementById("config-carrier");
 	return Number.parseInt(configCarrier?.dataset.hue || fallback, 10);
@@ -25,6 +29,15 @@ export function setHue(hue: number): void {
 		return;
 	}
 	r.style.setProperty("--hue", String(hue));
+}
+
+export function clearHue(): void {
+	localStorage.removeItem("hue");
+	const r = document.querySelector(":root") as HTMLElement;
+	if (!r) {
+		return;
+	}
+	r.style.setProperty("--hue", String(getDefaultHue()));
 }
 
 export function applyThemeToDocument(theme: LIGHT_DARK_MODE) {
