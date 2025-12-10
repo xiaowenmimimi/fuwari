@@ -55,7 +55,7 @@ if (Array.isArray(bannerSrc)) {
 	}
 }
 
-const bannerImage = (banner ?? bannerSrc) as string;
+const bannerImage = (banner && banner.length > 0 ? banner : bannerSrc) as string;
 const bannerText = bannerCreditText as string;
 const bannerUrl = bannerCreditUrl as string;
 ---
