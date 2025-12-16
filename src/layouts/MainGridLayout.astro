@@ -76,7 +76,62 @@ const bannerUrl = bannerCreditUrl as string;
                   src={bannerImage} position={siteConfig.banner.position}
     >
     </ImageWrapper>
+    <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
+        <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai', serif;">{siteConfig.title}</div>
+        <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai', serif;">
+            <span id="subtitle-typewriter"></span>
+        </div>
+    </div>
 </div>}
+
+<style is:global>
+    #subtitle-typewriter::after {
+        content: "|";
+        animation: blink 1s step-end infinite;
+    }
+    #subtitle-typewriter.typing-done::after {
+        display: none;
+    }
+    @keyframes blink {
+        0%, 100% { opacity: 1; }
+        50% { opacity: 0; }
+    }
+</style>
+
+<script is:inline define:vars={{ subtitle: siteConfig.subtitle }}>
+    function typeWriter(text, i, fnCallback) {
+        if (i < (text.length)) {
+            document.getElementById("subtitle-typewriter").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
+
+            setTimeout(function() {
+                typeWriter(text, i + 1, fnCallback)
+            }, 100);
+        } else if (typeof fnCallback == 'function') {
+            setTimeout(fnCallback, 700);
+        }
+    }
+
+    function startTypewriter() {
+        const subtitleElement = document.getElementById("subtitle-typewriter");
+        if (!subtitleElement) return;
+        
+        subtitleElement.classList.remove("typing-done");
+        subtitleElement.innerHTML = "";
+        setTimeout(function() {
+            typeWriter(subtitle, 0, function(){
+                subtitleElement.classList.add("typing-done");
+            });
+        }, 500); // delay before starting
+    }
+
+    document.addEventListener('astro:page-load', startTypewriter);
+    // Initial load
+    if (document.readyState === 'complete') {
+        startTypewriter();
+    } else {
+        document.addEventListener('DOMContentLoaded', startTypewriter);
+    }
+</script>
 
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
