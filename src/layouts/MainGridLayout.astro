@@ -55,7 +55,9 @@ if (Array.isArray(bannerSrc)) {
 	}
 }
 
-const bannerImage = (banner && banner.length > 0 ? banner : bannerSrc) as string;
+const bannerImage = (
+	banner && banner.length > 0 ? banner : bannerSrc
+) as string;
 const bannerText = bannerCreditText as string;
 const bannerUrl = bannerCreditUrl as string;
 ---
@@ -82,9 +84,23 @@ const bannerUrl = bannerCreditUrl as string;
             <span id="subtitle-typewriter"></span>
         </div>
     </div>
+    <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
+        <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
+            <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
+        </div>
+    </div>
 </div>}
 
 <style is:global>
+    .hero-content {
+        opacity: 0;
+        transition: opacity 0.7s ease-in-out;
+        transform: translateY(20px);
+    }
+    .is-home .hero-content {
+        opacity: 1;
+        transform: translateY(0);
+    }
     #subtitle-typewriter::after {
         content: "|";
         animation: blink 1s step-end infinite;
@@ -136,22 +152,22 @@ const bannerUrl = bannerCreditUrl as string;
 <!-- Main content -->
 <div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
-    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-auto">
+    <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-none">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
-    mx-auto gap-4 px-0 md:px-4"
+    mx-auto gap-4 px-0 md:px-4 pointer-events-auto"
         >
             <!-- Banner image credit -->
             {hasBannerCredit && <a href={bannerUrl} id="banner-credit" target="_blank" rel="noopener" aria-label="Visit image source"
                                    class:list={["group onload-animation transition-all absolute flex justify-center items-center rounded-full " +
-                                   "px-3 right-4 -top-[3.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
+                                   "px-3 right-4 -top-[5.25rem] bg-black/60 hover:bg-black/70 h-9", {"hover:pr-9 active:bg-black/80": hasBannerLink}]}
             >
-                <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
-                <div class="text-white/75 text-xs">{bannerText}</div>
-                <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
-                    {"group-hover:opacity-100": hasBannerLink}]}
-                      name="fa6-solid:arrow-up-right-from-square">
-                </Icon>
-            </a>}
+    <Icon class="text-white/75 text-[1.25rem] mr-1" name="material-symbols:copyright-outline-rounded" ></Icon>
+    <div class="text-white/75 text-xs">{bannerText}</div>
+    <Icon class:list={["transition absolute text-[oklch(0.75_0.14_var(--hue))] right-4 text-[0.75rem] opacity-0",
+        {"group-hover:opacity-100": hasBannerLink}]}
+          name="fa6-solid:arrow-up-right-from-square">
+    </Icon>
+</a>}
 
 
             <SideBar class="mb-4 row-start-2 row-end-3 col-span-2 lg:row-start-1 lg:row-end-2 lg:col-span-1 lg:max-w-[17.5rem] onload-animation" headings={headings}></SideBar>
@@ -172,7 +188,9 @@ const bannerUrl = bannerCreditUrl as string;
             </div>
         </div>
 
-        <BackToTop></BackToTop>
+        <div class="pointer-events-auto">
+            <BackToTop></BackToTop>
+        </div>
     </div>
 </div>
 
