@@ -41,9 +41,6 @@ importers:
       '@fontsource/libre-baskerville':
         specifier: ^5.2.10
         version: 5.2.10
-      '@fontsource/lxgw-wenkai':
-        specifier: ^5.2.5
-        version: 5.2.5
       '@fontsource/ma-shan-zheng':
         specifier: ^5.2.8
         version: 5.2.8
@@ -1127,9 +1124,6 @@ packages:
 
   '@fontsource/libre-baskerville@5.2.10':
     resolution: {integrity: sha512-Y/bGj4cOdWhAxU4+sBPen3MB5Og3t/WvezVL+05CJ7cvhDQUKpQFUuw/hm1IQKRc9u0lWs8VP2MKDOK2uQtloQ==}
-
-  '@fontsource/lxgw-wenkai@5.2.5':
-    resolution: {integrity: sha512-lIBouZW7qNw3VdVnjc0NC80iDfxjU7OnaKGaz6QHiHjC8z0fv9MyrHpeBMzkPnyEVabcpUu4Wf8DnaihfGVYtw==}
 
   '@fontsource/ma-shan-zheng@5.2.8':
     resolution: {integrity: sha512-/2sTIqp6RAwzx8kXP5uJo8f6Efmt4F4Cydzoqhoj+5HqglNhSiy0vkkjLzovUA3m8i0dbuWe7ZXY564d24+Lhw==}
@@ -6399,8 +6393,6 @@ snapshots:
   '@fontsource/archivo@5.2.8': {}
 
   '@fontsource/libre-baskerville@5.2.10': {}
-
-  '@fontsource/lxgw-wenkai@5.2.5': {}
 
   '@fontsource/ma-shan-zheng@5.2.8': {}
 
