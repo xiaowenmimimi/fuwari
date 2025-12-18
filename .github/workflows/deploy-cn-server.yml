@@ -30,11 +30,6 @@ jobs:
       # =========================
       - name: Setup pnpm
         uses: pnpm/action-setup@v4
-        with:
-          version: 9
-        # 作用：
-        # - 确保使用指定版本的 pnpm
-        # - 避免本地/CI pnpm 版本差异导致构建不一致
 
       # =========================
       # 3. 安装 Node.js
