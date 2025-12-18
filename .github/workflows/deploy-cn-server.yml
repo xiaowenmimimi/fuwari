@@ -1,0 +1,121 @@
+# Workflow 名称，会显示在 GitHub Actions 页面
+name: Deploy to CN Server (Nginx)
+
+# 触发条件
+on:
+  # 当 main 分支有 push 时自动触发
+  push:
+    branches: [ main ]
+
+  # 允许在 GitHub Actions 页面手动触发
+  workflow_dispatch:
+
+jobs:
+  deploy:
+    # 使用 GitHub 提供的 Ubuntu Runner
+    runs-on: ubuntu-latest
+
+    steps:
+      # =========================
+      # 1. 拉取仓库代码
+      # =========================
+      - name: Checkout code
+        uses: actions/checkout@v4
+        # 作用：
+        # - 将当前仓库代码拉到 Runner 本地
+        # - 后续 build、rsync 都基于这份代码
+
+      # =========================
+      # 2. 安装 pnpm
+      # =========================
+      - name: Setup pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+        # 作用：
+        # - 确保使用指定版本的 pnpm
+        # - 避免本地/CI pnpm 版本差异导致构建不一致
+
+      # =========================
+      # 3. 安装 Node.js
+      # =========================
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          cache: pnpm
+        # 作用：
+        # - 使用稳定的 Node.js 版本
+        # - 启用 pnpm 缓存，加快后续构建速度
+
+      # =========================
+      # 4. 安装项目依赖
+      # =========================
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+        # --frozen-lockfile：
+        # - 确保依赖版本严格与 pnpm-lock.yaml 一致
+        # - 防止 CI 中隐式升级依赖
+
+      # =========================
+      # 5. 构建 Astro 项目
+      # =========================
+      - name: Build project
+        run: pnpm build
+        # 输出结果：
+        # - 构建完成后生成 dist/ 目录
+        # - dist/ 即最终需要部署到服务器的静态文件
+
+      # =========================
+      # 6. 配置 SSH 环境
+      # =========================
+      - name: Setup SSH
+        run: |
+          # 创建 SSH 目录
+          mkdir -p ~/.ssh
+
+          # 写入私钥（来自 GitHub Secrets）
+          echo "${{ secrets.CN_SSH_PRIVATE_KEY }}" > ~/.ssh/id_ed25519
+          chmod 600 ~/.ssh/id_ed25519
+
+          # 将服务器加入 known_hosts，避免首次连接交互确认
+          ssh-keyscan -H ${{ secrets.CN_HOST }} >> ~/.ssh/known_hosts
+        # 作用：
+        # - 让 Runner 可以无交互地 SSH 登录国内服务器
+        # - 私钥通过 GitHub Secrets 安全注入
+
+      # =========================
+      # 7. 上传构建产物到服务器
+      # =========================
+      - name: Upload dist to server
+        run: |
+          # 使用时间戳作为版本号
+          TS=$(date +%Y%m%d%H%M%S)
+          echo "RELEASE_TS=$TS" >> $GITHUB_ENV
+
+          # 在服务器上创建新版本目录
+          ssh ${{ secrets.CN_USER }}@${{ secrets.CN_HOST }} \
+            "mkdir -p /var/www/fuwari/releases/$TS"
+
+          # 使用 rsync 上传 dist/ 内容
+          rsync -az --delete ./dist/ \
+            ${{ secrets.CN_USER }}@${{ secrets.CN_HOST }}:/var/www/fuwari/releases/$TS/
+        # rsync 参数说明：
+        # -a：保留文件权限、时间等
+        # -z：压缩传输，减少网络开销
+        # --delete：保证目标目录与 dist/ 完全一致
+
+      # =========================
+      # 8. 原子切换 current 软链接
+      # =========================
+      - name: Switch current symlink
+        run: |
+          ssh ${{ secrets.CN_USER }}@${{ secrets.CN_HOST }} "\
+            # 将 current 指向最新版本（原子操作）
+            ln -sfn /var/www/fuwari/releases/${{ env.RELEASE_TS }} /var/www/fuwari/current && \
+            # 清理旧版本（保留最近 5 个）
+            ls -1dt /var/www/fuwari/releases/* | tail -n +6 | xargs -r rm -rf \
+          "
+        # 作用：
+        # - ln -sfn：原子切换，不会出现“半更新”状态
+        # - 自动清理旧版本，避免磁盘无限增长
