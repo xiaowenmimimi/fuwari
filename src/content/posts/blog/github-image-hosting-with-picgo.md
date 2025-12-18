@@ -71,7 +71,7 @@ lang: zh_CN
 分支名：main
 ```
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-1.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-1.png)
 
 ---
 
@@ -84,7 +84,7 @@ lang: zh_CN
 - 选择：**Personal access tokens → Fine-grained tokens**  
 - 点击右侧按钮：**Generate new token**
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-2.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-2.png)
 
 ### 2. 配置 Token 基本信息
 
@@ -93,7 +93,7 @@ lang: zh_CN
 - **Resource owner**：选择你的 GitHub 账号  
 - **Repository access**：选择 **Only select repositories**，并勾选你的图床仓库（例如 `myImage`）
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-3.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-3.png)
 
 ### 3. 配置权限（最关键）
 
@@ -108,7 +108,7 @@ lang: zh_CN
 
 > PicGo 上传图片只需要写入仓库内容，不需要其他敏感权限。
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-4.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-4.png)
 
 ### 4. 生成 Token
 
@@ -160,28 +160,28 @@ GitHub 会生成一段以 `github_pat_` 开头的 Token（生成后复制，只�
 - 左侧菜单：Workers 和 Pages
 - 创建应用程序
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-1.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-1.png)
 
 - 选择 Connect GitHub
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-2-2.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-2-2.png)
 
 - 选择底部的 Get started
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-2.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-2.png)
 
 - 导入现有 GitHub 仓库
 - 绑定一个仓库（我这里绑定的是刚刚新建在 GitHub 的 myImage 仓库）
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-3.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-3.png)
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-4.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-4.png)
 
 - 维持默认配置后，保存并部署
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-5.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-5.png)
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-6.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-6.png)
 
 ### 2. 创建静态代理 Functions
 
@@ -215,7 +215,7 @@ export async function onRequest(context) {
 }
 ```
 
-![](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-7.png)
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-7.png)
 
 :::tip[]
 Cloudflare 会自动缓存资源。
@@ -233,6 +233,8 @@ Cloudflare 会自动缓存资源。
 > https://img.xhwen.cn
 
 只需添加 CNAME 解析到 Cloudflare Pages。
+
+![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-8.png)
 :::
 
 ### 4. 最终 CDN URL 格式
@@ -274,7 +276,7 @@ PicGo 上传后生成的 URL 自动使用 Cloudflare CDN 链接。
 
 这里是写作过程中的一个界面：
 
-![示例图片](https://myimage-9r1.pages.dev/gh/xiaowenmimimi/myImage/main/img/blog/sample_pictures.jpg)
+![示例图片](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/sample_pictures.jpg)
 :::tip[]
 Fuwari 本身支持响应式图片布局，因此无需额外适配。
 :::
