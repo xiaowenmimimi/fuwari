@@ -29,7 +29,10 @@
         display: inline-block;
     
         &:hover, &:active {
-            @apply decoration-transparent text-[var(--link-hover)];
+            @apply decoration-transparent;
+            background: var(--btn-plain-bg-hover);
+            border-bottom: 1px dashed var(--link-hover);
+            text-decoration: none;
         }
     }
 
