@@ -19,6 +19,7 @@ import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
+import "lxgw-wenkai-screen-webfont/style.css";
 
 interface Props {
 	title?: string;
@@ -88,8 +89,6 @@ const bannerOffset =
 	  data-overlayscrollbars-initialize
 >
 	<head>
-		<link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin />
-		<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/lxgw-wenkai-screen-webfont/1.7.0/style.css" />
 		<title>{pageTitle}</title>
 
 		<meta charset="UTF-8" />

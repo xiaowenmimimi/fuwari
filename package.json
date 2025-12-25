@@ -47,6 +47,7 @@
 		"astro-icon": "^1.1.5",
 		"hastscript": "^9.0.1",
 		"katex": "^0.16.23",
+		"lxgw-wenkai-screen-webfont": "^1.7.0",
 		"markdown-it": "^14.1.0",
 		"mdast-util-to-string": "^4.0.0",
 		"overlayscrollbars": "^2.12.0",
