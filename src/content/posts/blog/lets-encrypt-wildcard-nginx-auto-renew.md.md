@@ -97,7 +97,7 @@ cd acme.sh-master
 ./acme.sh --install --home /root/.acme.sh
 ```
 
-做成全局命令
+做成全局命令（可选）
 
 ```bash showLineNumbers=false wrap=false
 ln -s /root/.acme.sh/acme.sh /usr/local/bin/acme.sh
@@ -343,7 +343,7 @@ vi /etc/nginx/conf.d/blog.conf
 
 ### 配置 HTTPS 服务器（443 端口）并把 80 重定向到 https
 
-```nginx ins={15-17,19-22} {7,12}
+```nginx
 <!-- /etc/nginx/conf.d/blog.conf -->
 # 80 端口：强制跳转到 HTTPS
 server {
