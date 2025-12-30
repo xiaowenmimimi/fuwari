@@ -140,7 +140,7 @@ const bannerOffset =
 			}
 
 			// Load the hue from local storage
-			const hueCandidates = [100, 200, 250, 345];
+			const hueCandidates = [270, 350];
 			const randomHue = hueCandidates[Math.floor(Math.random() * hueCandidates.length)];
 			if (!localStorage.getItem('hue')) {
 				document.documentElement.dataset.randomHue = randomHue;
