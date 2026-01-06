@@ -11,6 +11,7 @@ export const siteConfig: SiteConfig = {
 	title: "Wen", // 网站标题&首页标题
 	subtitle: "(╹ڡ╹ )", // 网站副标题
 	homeSubtitle: "恐怖才是自由，君临才是解放，矛盾才是真理。", // 首页副标题
+	launchDate: "2025-12-18", // 上线日期
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
 		// 未手动设置主题色时, 网站主题色会随机变为 黄色(100)、蓝色(250)、青色(200) 或 粉色(345) 中的一种

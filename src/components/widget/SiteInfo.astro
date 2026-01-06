@@ -1,0 +1,78 @@
+---
+import { getCollection } from "astro:content";
+import { siteConfig } from "../../config";
+import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import WidgetLayout from "./WidgetLayout.astro";
+
+interface Props {
+	class?: string;
+	style?: string;
+}
+
+const className = Astro.props.class;
+const style = Astro.props.style;
+
+const posts = await getCollection("posts", ({ data }) => {
+	return import.meta.env.PROD ? data.draft !== true : true;
+});
+
+const postCount = posts.length;
+
+let lastUpdatedAt: Date | null = null;
+for (const post of posts) {
+	const updatedAt = post.data.updated ?? post.data.published;
+	if (!lastUpdatedAt || updatedAt.getTime() > lastUpdatedAt.getTime()) {
+		lastUpdatedAt = updatedAt;
+	}
+}
+
+const lastUpdatedText = lastUpdatedAt
+	? formatDateToYYYYMMDD(lastUpdatedAt)
+	: "-";
+const siteStartMs = new Date(siteConfig.launchDate).getTime();
+---
+
+<WidgetLayout
+	name="网站资讯"
+	id="site-info"
+	class={className}
+	style={style}
+>
+	<div class="flex flex-col gap-3">
+		<div class="flex items-center justify-between gap-4">
+			<div class="text-50 text-sm font-medium">文章数</div>
+			<div class="text-75 text-sm font-bold">{postCount}</div>
+		</div>
+		<div class="flex items-center justify-between gap-4">
+			<div class="text-50 text-sm font-medium">运行时间</div>
+			<div class="text-75 text-sm font-bold">
+				<span id="site-running-time"></span>
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-4">
+			<div class="text-50 text-sm font-medium">最后更新</div>
+			<div class="text-75 text-sm font-bold">{lastUpdatedText}</div>
+		</div>
+	</div>
+</WidgetLayout>
+
+<script is:inline define:vars={{ siteStartMs }}>
+	function formatUptime(ms) {
+		const totalSeconds = Math.max(0, Math.floor(ms / 1000));
+		const days = Math.floor(totalSeconds / 86400);
+		const hours = Math.floor((totalSeconds % 86400) / 3600);
+		const minutes = Math.floor((totalSeconds % 3600) / 60);
+		if (days > 0) return `${days} 天 ${hours} 小时`;
+		if (hours > 0) return `${hours} 小时 ${minutes} 分钟`;
+		return `${minutes} 分钟`;
+	}
+
+	function renderUptime() {
+		const el = document.getElementById("site-running-time");
+		if (!el) return;
+		el.textContent = formatUptime(Date.now() - siteStartMs);
+	}
+
+	renderUptime();
+	setInterval(renderUptime, 60 * 1000);
+</script>
