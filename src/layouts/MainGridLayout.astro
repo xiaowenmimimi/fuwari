@@ -90,7 +90,7 @@ const bannerUrl = bannerCreditUrl as string;
         </div>
     </div>
     <!-- 预加载字体字符 -->
-    <div style="visibility: hidden; position: absolute; pointer-events: none; font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">{siteConfig.subtitle}</div>
+    <div style="visibility: hidden; position: absolute; pointer-events: none; font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">{siteConfig.homeSubtitle}</div>
 </div>}
 
 <style is:global>
@@ -116,7 +116,7 @@ const bannerUrl = bannerCreditUrl as string;
     }
 </style>
 
-<script is:inline define:vars={{ subtitle: siteConfig.subtitle }}>
+<script is:inline define:vars={{ subtitle: siteConfig.homeSubtitle }}>
     function typeWriter(text, i, fnCallback) {
         if (i < (text.length)) {
             document.getElementById("subtitle-typewriter").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
