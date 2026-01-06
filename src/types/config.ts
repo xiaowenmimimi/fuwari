@@ -4,6 +4,7 @@ export type SiteConfig = {
 	title: string;
 	subtitle: string;
 	homeSubtitle: string;
+	launchDate: string;
 
 	lang:
 		| "en"
