@@ -1,7 +1,10 @@
 ---
 
 import { siteConfig } from "../config";
+
+const hueConfig = siteConfig.themeColor.hue;
+const hue = Array.isArray(hueConfig) ? (hueConfig[0] ?? 250) : hueConfig;
 ---
 
-<div id="config-carrier" data-hue={siteConfig.themeColor.hue}>
+<div id="config-carrier" data-hue={hue}>
 </div>

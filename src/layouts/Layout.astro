@@ -38,7 +38,10 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 
 // defines global css variables
 // why doing this in Layout instead of GlobalStyles: https://github.com/withastro/astro/issues/6728#issuecomment-1502203757
-const configHue = siteConfig.themeColor.hue;
+const configHueCandidates = siteConfig.themeColor.hue;
+const configHue = Array.isArray(configHueCandidates)
+	? (configHueCandidates[0] ?? 250)
+	: configHueCandidates;
 if (!banner || typeof banner !== "string" || banner.trim() === "") {
 	const bannerSrc = siteConfig.banner.src;
 	if (Array.isArray(bannerSrc)) {
@@ -121,7 +124,7 @@ const bannerOffset =
 		))}
 
 		<!-- Set the theme before the page is rendered to avoid a flash -->
-		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHue}}>
+		<script is:inline define:vars={{DEFAULT_THEME, LIGHT_MODE, DARK_MODE, AUTO_MODE, BANNER_HEIGHT_EXTEND, PAGE_WIDTH, configHueCandidates}}>
 			// Load the theme from local storage
 			const theme = localStorage.getItem('theme') || DEFAULT_THEME;
 			switch (theme) {
@@ -140,8 +143,9 @@ const bannerOffset =
 			}
 
 			// Load the hue from local storage
-			const hueCandidates = [270, 350];
-			const randomHue = hueCandidates[Math.floor(Math.random() * hueCandidates.length)];
+			const hueCandidates = Array.isArray(configHueCandidates) ? configHueCandidates : [configHueCandidates];
+			const normalizedHueCandidates = hueCandidates.length > 0 ? hueCandidates : [250];
+			const randomHue = normalizedHueCandidates[Math.floor(Math.random() * normalizedHueCandidates.length)];
 			if (!localStorage.getItem('hue')) {
 				document.documentElement.dataset.randomHue = randomHue;
 			}
