@@ -113,11 +113,9 @@ document.addEventListener('astro:after-swap', () => {
 
 function setTransparentNav() {
     const navbar = document.getElementById('navbar-bg');
-    if (document.body.scrollTop === 0 && document.documentElement.scrollTop === 0) {
-        navbar.classList.add('!bg-transparent');
-    } else {
-        navbar.classList.remove('!bg-transparent');
-    }
+	const isTop = document.body.scrollTop === 0 && document.documentElement.scrollTop === 0;
+	navbar.classList.toggle('!bg-transparent', isTop);
+	navbar.classList.toggle('navbar-glass', !isTop);
 }
 
 document.addEventListener('scroll', setTransparentNav);
