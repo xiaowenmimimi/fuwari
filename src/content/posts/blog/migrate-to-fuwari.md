@@ -7,6 +7,7 @@ tags: [博客搭建, Fuwari, 生活记录]
 category: '日常记录'
 draft: false
 lang: zh_CN
+pin: 100
 ---
 
 # Fuwari —— 我的新博客旅程 ✨
