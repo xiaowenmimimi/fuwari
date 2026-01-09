@@ -14,8 +14,8 @@ export const siteConfig: SiteConfig = {
 	launchDate: "2025-12-18", // 上线日期
 	lang: "zh_CN", // Language code, e.g. 'en', 'zh_CN', 'ja', etc.
 	themeColor: {
-		// 未手动设置主题色时, 网站主题色会随机变为 黄色(100)、蓝色(250)、青色(200) 或 粉色(345) 中的一种
-		hue: 250, // Default hue for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
+		// 用户未手动设置主题色时, 网站主题色会随机变为 蓝色(250)、青色(165) 或 粉色(345) 中的一种
+		hue: [250, 165, 345], // Default hue candidates for the theme color, from 0 to 360. e.g. red: 0, teal: 200, cyan: 250, pink: 345
 		fixed: false, // Hide the theme color picker for visitors
 	},
 	banner: {

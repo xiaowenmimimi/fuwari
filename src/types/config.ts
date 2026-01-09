@@ -19,7 +19,7 @@ export type SiteConfig = {
 		| "id";
 
 	themeColor: {
-		hue: number;
+		hue: number | number[];
 		fixed: boolean;
 	};
 	banner: {
