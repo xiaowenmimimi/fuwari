@@ -4,6 +4,20 @@
     .card-base {
         @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
     }
+    .navbar-glass {
+        background-color: rgba(255, 255, 255, 0.42);
+        backdrop-filter: blur(14px) saturate(1.25);
+        -webkit-backdrop-filter: blur(14px) saturate(1.25);
+        border: 1px solid rgba(255, 255, 255, 0.25);
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.08);
+    }
+    .dark .navbar-glass {
+        background-color: rgba(10, 10, 10, 0.38);
+        border: 1px solid rgba(255, 255, 255, 0.08);
+        box-shadow:
+            0 10px 30px rgba(0, 0, 0, 0.35);
+    }
     h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
         @apply transition;
     }
