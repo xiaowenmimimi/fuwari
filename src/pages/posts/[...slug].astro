@@ -87,6 +87,7 @@ const jsonLd = {
             <div class="onload-animation">
                 <PostMetadata
                         class="mb-5"
+						pinned={(entry.data.pin ?? 0) > 0}
                         published={entry.data.published}
                         updated={entry.data.updated}
                         tags={entry.data.tags}
