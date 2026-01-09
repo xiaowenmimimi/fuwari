@@ -22,13 +22,13 @@ export const siteConfig: SiteConfig = {
 		enable: true,
 		// 支持多张图片轮播的数组配置
 		src: [
-			"assets/images/demo-banner.png",
-			"assets/images/demo-banner.png",
-			"assets/images/demo-banner.png",
+			"assets/images/Cinnabar 2.png",
+			"assets/images/20260109.png",
+			"assets/images/wallhaven-13mrg3.jpg",
 		], // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
-			enable: true, // Display the credit text of the banner image
+			enable: false, // Display the credit text of the banner image
 			text: ["Author 1", "Author 2", "Author 3"], // Credit text to be displayed
 			url: ["", "", ""], // (Optional) URL link to the original artwork or artist's page
 		},
