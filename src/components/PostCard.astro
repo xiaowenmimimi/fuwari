@@ -37,6 +37,7 @@ const {
 const className = Astro.props.class;
 
 const hasCover = image !== undefined && image !== null && image !== "";
+const isPinned = (entry.data.pin ?? 0) > 0;
 
 const coverWidth = "28%";
 
@@ -57,7 +58,7 @@ const { remarkPluginFrontmatter } = await entry.render();
         </a>
 
         <!-- metadata -->
-        <PostMetadata published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={false} class="mb-4"></PostMetadata>
+        <PostMetadata pinned={isPinned} published={published} updated={updated} tags={tags} category={category} hideTagsForMobile={true} hideUpdateDate={false} class="mb-4"></PostMetadata>
 
         <!-- description -->
         <div class:list={["transition text-75 mb-3.5 pr-4", {"line-clamp-2 md:line-clamp-1": !description}]}>

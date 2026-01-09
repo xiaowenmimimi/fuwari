@@ -1,6 +1,6 @@
 <script lang="ts">
+import Icon from "@iconify/svelte";
 import { onMount } from "svelte";
-
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { getPostUrlBySlug } from "../utils/url-utils";
@@ -21,6 +21,7 @@ interface Post {
 		tags: string[];
 		category?: string;
 		published: Date;
+		pin?: number;
 	};
 }
 
@@ -111,8 +112,14 @@ onMount(async () => {
                 >
                     <div class="flex flex-row justify-start items-center h-full">
                         <!-- date -->
-                        <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50">
-                            {formatDate(post.data.published)}
+                        <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50 flex justify-end items-center gap-2">
+                            {#if (post.data.pin ?? 0) > 0}
+                                <span class="flex items-center gap-1 text-[var(--primary)] font-medium">
+                                    <Icon icon="material-symbols:keep" class="text-[1.05rem] shrink-0" aria-label="置顶" />
+                                    <span>置顶</span>
+                                </span>
+                            {/if}
+                            <span>{formatDate(post.data.published)}</span>
                         </div>
 
                         <!-- dot and line -->

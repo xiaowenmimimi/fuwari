@@ -9,6 +9,7 @@ interface Props {
 	class: string;
 	published: Date;
 	updated?: Date;
+	pinned?: boolean;
 	tags: string[];
 	category: string | null;
 	hideTagsForMobile?: boolean;
@@ -17,6 +18,7 @@ interface Props {
 const {
 	published,
 	updated,
+	pinned = false,
 	tags,
 	category,
 	hideTagsForMobile = false,
@@ -28,6 +30,14 @@ const className = Astro.props.class;
 <div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
     <!-- publish date -->
     <div class="flex items-center">
+		{pinned && (
+			<>
+				<div class="meta-icon">
+					<Icon name="material-symbols:keep" class="text-xl"></Icon>
+				</div>
+				<span class="text-50 text-sm font-medium mr-4">置顶</span>
+			</>
+		)}
         <div class="meta-icon"
         >
             <Icon name="material-symbols:calendar-today-outline-rounded" class="text-xl"></Icon>
