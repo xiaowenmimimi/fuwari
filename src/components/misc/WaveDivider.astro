@@ -1,0 +1,93 @@
+---
+interface Props {
+	class?: string;
+}
+
+const className = Astro.props.class;
+---
+
+<div class:list={["wave-divider", className]}>
+	<svg
+		class="waves"
+		viewBox="0 24 150 28"
+		preserveAspectRatio="none"
+		aria-hidden="true"
+		focusable="false"
+	>
+		<defs>
+			<path
+				id="wave-divider-path"
+				d="M-160 44c30 0 58-18 88-18s 58 18 88 18 58-18 88-18 58 18 88 18 v44h-352z"
+			/>
+		</defs>
+		<g class="parallax">
+			<use href="#wave-divider-path" xlink:href="#wave-divider-path" x="48" y="0" fill="var(--page-bg)" opacity="0.35" />
+			<use href="#wave-divider-path" xlink:href="#wave-divider-path" x="48" y="3" fill="var(--page-bg)" opacity="0.55" />
+			<use href="#wave-divider-path" xlink:href="#wave-divider-path" x="48" y="5" fill="var(--page-bg)" opacity="0.75" />
+			<use href="#wave-divider-path" xlink:href="#wave-divider-path" x="48" y="7" fill="var(--page-bg)" opacity="1" />
+		</g>
+	</svg>
+</div>
+
+<style>
+	.wave-divider {
+		position: absolute;
+		left: 0;
+		right: 0;
+		bottom: var(--wave-divider-bottom, -1px);
+		height: var(--wave-divider-height, 96px);
+		pointer-events: none;
+	}
+
+	.waves {
+		width: 100%;
+		height: 100%;
+		display: block;
+		contain: none;
+		transform: scaleY(var(--wave-divider-amplitude, 1.35));
+		transform-origin: 50% 100%;
+	}
+
+	.waves > .parallax use {
+		animation: wave-divider 25s cubic-bezier(0.5, 0.5, 0.45, 0.5) infinite;
+		transform: translateZ(0);
+		will-change: transform;
+		backface-visibility: hidden;
+	}
+
+	.waves > .parallax use:nth-child(1) {
+		animation-delay: calc(var(--wave-divider-delay-1, -2s) * var(--wave-divider-speed-multiplier, 1));
+		animation-duration: calc(var(--wave-divider-duration-1, 7s) * var(--wave-divider-speed-multiplier, 1));
+	}
+
+	.waves > .parallax use:nth-child(2) {
+		animation-delay: calc(var(--wave-divider-delay-2, -3s) * var(--wave-divider-speed-multiplier, 1));
+		animation-duration: calc(var(--wave-divider-duration-2, 10s) * var(--wave-divider-speed-multiplier, 1));
+	}
+
+	.waves > .parallax use:nth-child(3) {
+		animation-delay: calc(var(--wave-divider-delay-3, -4s) * var(--wave-divider-speed-multiplier, 1));
+		animation-duration: calc(var(--wave-divider-duration-3, 13s) * var(--wave-divider-speed-multiplier, 1));
+	}
+
+	.waves > .parallax use:nth-child(4) {
+		animation-delay: calc(var(--wave-divider-delay-4, -5s) * var(--wave-divider-speed-multiplier, 1));
+		animation-duration: calc(var(--wave-divider-duration-4, 20s) * var(--wave-divider-speed-multiplier, 1));
+	}
+
+	@keyframes wave-divider {
+		0% {
+			transform: translate3d(var(--wave-divider-x-from, -90px), 0, 0);
+		}
+		100% {
+			transform: translate3d(var(--wave-divider-x-to, 85px), 0, 0);
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		.waves > .parallax use {
+			animation: none;
+		}
+	}
+</style>
+

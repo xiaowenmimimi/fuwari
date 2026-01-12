@@ -154,6 +154,12 @@
     height: var(--collapsedHeight);
 }
 
+/* 文章页：内容整体更靠下，纯色背景更“高” */
+.enable-banner.is-post {
+  --main-panel-top: calc(38vh - 3.5rem);
+  --wave-divider-bottom: -30px;
+}
+
 .custom-md spoiler {
   @apply bg-[var(--codeblock-bg)] hover:bg-transparent px-1 py-0.5 overflow-hidden rounded-md transition-all duration-150;
 
