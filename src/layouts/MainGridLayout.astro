@@ -6,6 +6,7 @@ import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
+import WaveDivider from "../components/misc/WaveDivider.astro";
 import TOC from "../components/widget/TOC.astro";
 import { siteConfig } from "../config";
 import {
@@ -74,10 +75,11 @@ const bannerUrl = bannerCreditUrl as string;
 
 <!-- Banner -->
 {siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: -${BANNER_HEIGHT_EXTEND}vh`}>
-    <ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
+	<ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
                   src={bannerImage} position={siteConfig.banner.position}
     >
     </ImageWrapper>
+	<WaveDivider class="z-20"></WaveDivider>
     <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
         <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">{siteConfig.title}</div>
         <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">
@@ -94,6 +96,9 @@ const bannerUrl = bannerCreditUrl as string;
 </div>}
 
 <style is:global>
+	.enable-banner:not(.is-post) #banner-wrapper .wave-divider {
+		display: none;
+	}
     .hero-content {
         opacity: 0;
         transition: opacity 0.7s ease-in-out;
@@ -152,7 +157,7 @@ const bannerUrl = bannerCreditUrl as string;
 </script>
 
 <!-- Main content -->
-<div class="absolute w-full z-30 pointer-events-none" style={`top: ${mainPanelTop}`}>
+<div class="absolute w-full z-30 pointer-events-none" style={`top: var(--main-panel-top, ${mainPanelTop})`}>
     <!-- The pointer-events-none here prevent blocking the click event of the TOC -->
     <div class="relative max-w-[var(--page-width)] mx-auto pointer-events-none">
         <div id="main-grid" class="transition duration-700 w-full left-0 right-0 grid grid-cols-[17.5rem_auto] grid-rows-[auto_1fr_auto] lg:grid-rows-[auto]
