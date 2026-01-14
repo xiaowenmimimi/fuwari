@@ -166,6 +166,7 @@ html, body {
 
 /* 文章页：内容整体更靠下，纯色背景更“高” */
 .enable-banner.is-post {
+  --banner-extend-vh: 65vh; /* 数值越小：图片露出越多；分界越靠下 */
   --main-panel-top: calc(38vh - 3.5rem);
   --wave-divider-bottom: -30px;
 }
