@@ -45,6 +45,13 @@ export const siteConfig: SiteConfig = {
 		//   sizes: '32x32',              // (Optional) Size of the favicon, set only if you have favicons of different sizes
 		// }
 	],
+	waline: {
+		serverURL: "https://comment.xhwen.cn", // Waline 服务端地址（必填）
+		lang: "zh-CN", // 评论区语言（可选），例如 zh-CN 、 en
+		login: "enable", // 登录方式（可选），例如 enable / disable / force
+		dark: "html.dark", // 暗色模式选择器（可选），默认 html.dark
+		pageview: true, // 是否开启访问量统计
+	},
 };
 
 export const navBarConfig: NavBarConfig = {

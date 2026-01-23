@@ -38,6 +38,7 @@ export type SiteConfig = {
 	};
 
 	favicon: Favicon[];
+	waline: WalineConfig;
 };
 
 export type Favicon = {
@@ -101,4 +102,12 @@ export type BlogPostData = {
 
 export type ExpressiveCodeConfig = {
 	theme: string;
+};
+
+export type WalineConfig = {
+	serverURL: string;
+	lang?: string;
+	login?: string;
+	dark?: string;
+	pageview?: boolean;
 };
