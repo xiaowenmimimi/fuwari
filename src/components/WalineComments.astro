@@ -1,0 +1,464 @@
+---
+interface Props {
+	serverURL: string;
+	lang?: string;
+	login?: string;
+	dark?: string;
+	pageview?: boolean;
+}
+
+const { serverURL, lang, login, dark = "html.dark", pageview } = Astro.props;
+---
+<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
+<div class="card-base z-10 relative w-full mb-4 pb-4">
+	<div
+		class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
+			before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
+			before:absolute before:left-[-16px] before:top-[5.5px]"
+	>
+		评论
+	</div>
+	<div class="px-4">
+		<div id="waline"></div>
+	</div>
+</div>
+<style is:global>
+	[data-waline] {
+		font-family: var(--font-body);
+
+		--waline-font-size: 1.05rem;
+		--waline-theme-color: var(--primary);
+		--waline-active-color: var(--primary);
+		--waline-bg-color: var(--card-bg);
+		--waline-bg-color-light: var(--btn-regular-bg);
+		--waline-bg-color-hover: var(--btn-regular-bg-hover);
+		--waline-border-color: var(--line-divider);
+		--waline-color: var(--btn-content);
+		--waline-info-bg-color: var(--btn-regular-bg);
+		--waline-badge-color: var(--primary);
+		--waline-border: 1px solid var(--line-divider);
+		--waline-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+		--waline-avatar-radius: 0.75rem;
+	}
+
+	@supports (color: color-mix(in srgb, #000 0%, #fff)) {
+		[data-waline] {
+			--waline-active-color: color-mix(in srgb, var(--primary) 85%, white);
+			--waline-info-color: color-mix(in srgb, var(--btn-content) 65%, transparent);
+		}
+	}
+
+	html.dark [data-waline] {
+		--waline-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+	}
+
+	#waline [data-waline] .wl-panel,
+	#waline [data-waline] .wl-avatar,
+	#waline [data-waline] .wl-btn {
+		border-radius: var(--radius-large);
+	}
+
+	#waline [data-waline] .wl-panel {
+		border: 1px solid var(--line-divider);
+		box-shadow: var(--waline-box-shadow);
+		transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease, background 180ms ease;
+	}
+
+	@supports (background: color-mix(in srgb, #000 0%, transparent)) {
+		#waline [data-waline] .wl-panel {
+			border-color: color-mix(in srgb, var(--line-divider) 70%, transparent);
+			background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+			backdrop-filter: blur(14px) saturate(1.2);
+			-webkit-backdrop-filter: blur(14px) saturate(1.2);
+		}
+	}
+
+	@supports (border-color: color-mix(in srgb, #000 0%, #fff)) {
+		#waline [data-waline] .wl-panel:focus-within {
+			border-color: color-mix(in srgb, var(--primary) 55%, var(--line-divider));
+			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.1);
+		}
+
+		html.dark #waline [data-waline] .wl-panel:focus-within {
+			box-shadow: 0 12px 35px rgba(0, 0, 0, 0.45);
+		}
+	}
+
+	#waline [data-waline] .wl-header {
+		background: var(--btn-regular-bg);
+		border-bottom: 1px dashed var(--line-divider);
+		border-top-left-radius: var(--radius-large);
+		border-top-right-radius: var(--radius-large);
+	}
+
+	@supports (background: color-mix(in srgb, #000 0%, transparent)) {
+		#waline [data-waline] .wl-header {
+			background: color-mix(in srgb, var(--btn-regular-bg) 85%, transparent);
+		}
+	}
+
+	#waline [data-waline] .wl-header-item {
+		align-items: center;
+	}
+
+	#waline [data-waline] .wl-header label {
+		font-size: 0.9em;
+		color: color-mix(in srgb, var(--btn-content) 75%, transparent);
+		padding: 0.5rem 0.5rem;
+	}
+
+	#waline [data-waline] .wl-header input {
+		box-sizing: border-box;
+		font-size: 0.95em;
+		border-radius: 0.75rem;
+		padding: 0.3rem 0.6rem;
+		line-height: 1.2;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 70%, transparent);
+		background: color-mix(in srgb, var(--card-bg) 70%, transparent);
+		transition: background 160ms ease, border-color 160ms ease;
+	}
+
+	#waline [data-waline] .wl-header input:focus {
+		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+		border-color: color-mix(in srgb, var(--primary) 55%, var(--line-divider));
+	}
+
+	#waline [data-waline] .wl-editor {
+		border-radius: 0.875rem;
+		padding: 0.75rem 0.9rem;
+		background: color-mix(in srgb, var(--card-bg) 70%, transparent);
+	}
+
+	#waline [data-waline] .wl-editor:focus {
+		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+	}
+
+	#waline [data-waline] .wl-footer {
+		padding: 0.1rem 0.25rem 0.25rem;
+	}
+
+	#waline [data-waline] .wl-action {
+		width: 1.75em;
+		height: 1.75em;
+		border-radius: 0.6rem;
+		transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+	}
+
+	#waline [data-waline] .wl-action:hover {
+		background: var(--btn-plain-bg-hover);
+	}
+
+	#waline [data-waline] .wl-action:active {
+		transform: scale(0.96);
+		background: var(--btn-plain-bg-active);
+	}
+
+	#waline [data-waline] .wl-btn {
+		border-color: color-mix(in srgb, var(--line-divider) 70%, transparent);
+		background: color-mix(in srgb, var(--btn-regular-bg) 75%, transparent);
+		transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
+	}
+
+	#waline [data-waline] .wl-btn:hover {
+		background: var(--btn-regular-bg-hover);
+		border-color: color-mix(in srgb, var(--primary) 35%, var(--line-divider));
+	}
+
+	#waline [data-waline] .wl-btn:active {
+		transform: scale(0.98);
+		background: var(--btn-regular-bg-active);
+	}
+
+	#waline [data-waline] .wl-btn.primary {
+		color: white;
+		border-color: transparent;
+		background: var(--primary);
+	}
+
+	#wln-toast-root {
+		position: fixed;
+		left: 0;
+		right: 0;
+		top: calc(env(safe-area-inset-top, 0px) + 1.25rem);
+		z-index: 9999;
+		display: flex;
+		justify-content: center;
+		pointer-events: none;
+		padding: 0 1rem;
+	}
+
+	.wln-toast {
+		pointer-events: auto;
+		max-width: min(34rem, 100%);
+		border-radius: 0.875rem;
+		padding: 0.75rem 1rem;
+		backdrop-filter: blur(12px);
+		-webkit-backdrop-filter: blur(12px);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+		border: 1px solid rgba(255, 255, 255, 0.22);
+		background: rgba(20, 20, 20, 0.72);
+		color: rgba(255, 255, 255, 0.92);
+		font-size: 0.95rem;
+		line-height: 1.4;
+		transform: translateY(-10px);
+		opacity: 0;
+		transition: transform 160ms ease, opacity 160ms ease;
+	}
+
+	html:not(.dark) .wln-toast {
+		background: rgba(255, 255, 255, 0.82);
+		color: rgba(0, 0, 0, 0.78);
+		border: 1px solid rgba(0, 0, 0, 0.08);
+		box-shadow: 0 12px 30px rgba(0, 0, 0, 0.12);
+	}
+
+	.wln-toast.show {
+		transform: translateY(0);
+		opacity: 1;
+	}
+</style>
+<script is:inline define:vars={{ serverURL, lang, login, dark, pageview }}>
+	const TOO_FAST_RE = /comment too fast!?/i;
+	const TOO_FAST_TEXT = "评论太频繁，请 1 分钟后再试。";
+	const REQUIRED_META_RE = /(NickName.*(cannot|required)|E-?Mail.*(error|required)|Please.*email|昵称.*(必填|不能为空)|邮箱.*(必填|不能为空))/i;
+	const REQUIRED_META_TEXT = "昵称和邮箱为必填项，请填写后再提交。";
+	const INVALID_EMAIL_TEXT = "邮箱格式不正确，请检查后再提交。";
+
+	const normalizePathname = (pathname) => {
+		if (!pathname) return "/";
+		if (pathname !== "/" && pathname.endsWith("/")) {
+			return pathname.slice(0, -1);
+		}
+		return pathname;
+	};
+
+	const getEnhanceState = () => {
+		window.__walineEnhance ??= {
+			toast: { lastAt: 0, lastText: "", lastSubmitAt: 0 },
+			patch: { alertPatched: false, observer: null, requiredMetaGuard: false },
+			waline: { client: null, clientPromise: null }
+		};
+		return window.__walineEnhance;
+	};
+
+	const loadWaline = async () => {
+		const state = getEnhanceState();
+		if (state.waline.client) return state.waline.client;
+		if (!state.waline.clientPromise) {
+			state.waline.clientPromise = import("https://unpkg.com/@waline/client@v3/dist/waline.js");
+		}
+		const module = await state.waline.clientPromise;
+		state.waline.client = module;
+		return module;
+	};
+
+	const ensureToastRoot = () => {
+		let root = document.getElementById("wln-toast-root");
+		if (!root) {
+			root = document.createElement("div");
+			root.id = "wln-toast-root";
+			document.body.appendChild(root);
+		}
+		return root;
+	};
+
+	const showToast = (message) => {
+		const state = getEnhanceState();
+		const now = Date.now();
+		const text = String(message || "");
+		if (text && text === state.toast.lastText && now - state.toast.lastAt < 700) return;
+		state.toast.lastAt = now;
+		state.toast.lastText = text;
+
+		const root = ensureToastRoot();
+		const toast = document.createElement("div");
+		toast.className = "wln-toast";
+		toast.textContent = text;
+		root.appendChild(toast);
+
+		requestAnimationFrame(() => {
+			toast.classList.add("show");
+		});
+
+		const remove = () => {
+			if (!toast.isConnected) return;
+			toast.classList.remove("show");
+			window.setTimeout(() => toast.remove(), 180);
+		};
+
+		window.setTimeout(remove, 2600);
+		toast.addEventListener("click", remove, { once: true });
+	};
+
+	const canNotifyTooFast = () => {
+		const state = getEnhanceState();
+		const lastSubmitAt = Number(state.toast.lastSubmitAt || 0);
+		if (!lastSubmitAt) return false;
+		return Date.now() - lastSubmitAt < 5000;
+	};
+
+	const patchAlertOnce = () => {
+		const state = getEnhanceState();
+		if (state.patch.alertPatched) return;
+		state.patch.alertPatched = true;
+
+		const originalAlert = typeof window.alert === "function" ? window.alert.bind(window) : null;
+
+		window.alert = (message) => {
+			const text = String(message ?? "");
+			if (TOO_FAST_RE.test(text)) {
+				if (canNotifyTooFast()) showToast(TOO_FAST_TEXT);
+				return;
+			}
+			if (REQUIRED_META_RE.test(text)) {
+				showToast(REQUIRED_META_TEXT);
+				return;
+			}
+			return originalAlert?.(message);
+		};
+	};
+
+	const replaceAlertTextInElement = (element, originalText) => {
+		if (!element) return false;
+		const walker = document.createTreeWalker(element, NodeFilter.SHOW_TEXT);
+		let replaced = false;
+		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
+			const value = node.nodeValue ?? "";
+			if (TOO_FAST_RE.test(value) && canNotifyTooFast()) {
+				node.nodeValue = value.replace(TOO_FAST_RE, TOO_FAST_TEXT);
+				replaced = true;
+			}
+			if (REQUIRED_META_RE.test(value)) {
+				node.nodeValue = REQUIRED_META_TEXT;
+				replaced = true;
+			}
+		}
+		if (replaced && originalText) {
+			if (TOO_FAST_RE.test(originalText) && canNotifyTooFast()) showToast(TOO_FAST_TEXT);
+			else if (REQUIRED_META_RE.test(originalText)) showToast(REQUIRED_META_TEXT);
+		}
+		return replaced;
+	};
+
+	const setupAlertObserverOnce = () => {
+		const state = getEnhanceState();
+		if (state.patch.observer) return;
+
+		const observer = new MutationObserver((mutations) => {
+			for (const mutation of mutations) {
+				for (const addedNode of mutation.addedNodes) {
+					if (!(addedNode instanceof HTMLElement)) continue;
+					if (!canNotifyTooFast()) continue;
+					const text = addedNode.textContent || "";
+					if (!TOO_FAST_RE.test(text)) continue;
+					replaceAlertTextInElement(addedNode, text);
+				}
+			}
+		});
+
+		observer.observe(document.body, { childList: true, subtree: true });
+		state.patch.observer = observer;
+	};
+
+	const setupRequiredMetaGuardOnce = () => {
+		const state = getEnhanceState();
+		if (state.patch.requiredMetaGuard) return;
+		state.patch.requiredMetaGuard = true;
+
+		const findMetaInput = (keys) => {
+			const header = document.querySelector("#waline .wl-header");
+			if (!header) return null;
+			const items = header.querySelectorAll(".wl-header-item");
+			for (const item of items) {
+				const label = item.querySelector("label");
+				const input = item.querySelector("input");
+				if (!(input instanceof HTMLInputElement)) continue;
+				const labelText = (label?.textContent || "").trim().toLowerCase();
+				if (keys.some((k) => labelText.includes(k))) return input;
+				const nameAttr = (input.getAttribute("name") || "").toLowerCase();
+				if (keys.some((k) => nameAttr.includes(k))) return input;
+				const placeholder = (input.getAttribute("placeholder") || "").toLowerCase();
+				if (keys.some((k) => placeholder.includes(k))) return input;
+			}
+			return null;
+		};
+
+		const isValidEmail = (value) => {
+			const v = String(value || "").trim();
+			if (!v) return false;
+			return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(v);
+		};
+
+		const onClickCapture = (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+			if ("isTrusted" in event && !event.isTrusted) return;
+			const submitBtn = target.closest(".wl-info .wl-btn.primary");
+			if (!submitBtn) return;
+			getEnhanceState().toast.lastSubmitAt = Date.now();
+
+			const nickInput = findMetaInput(["nick", "nickname", "昵称"]);
+			const mailInput = findMetaInput(["mail", "email", "e-mail", "邮箱"]);
+			const nick = nickInput?.value?.trim() || "";
+			const mail = mailInput?.value?.trim() || "";
+
+			if (!nick || !mail) {
+				showToast(REQUIRED_META_TEXT);
+				if (!nick) nickInput?.focus?.();
+				else mailInput?.focus?.();
+				event.preventDefault?.();
+				event.stopPropagation?.();
+				event.stopImmediatePropagation?.();
+				return;
+			}
+
+			if (!isValidEmail(mail)) {
+				showToast(INVALID_EMAIL_TEXT);
+				mailInput?.focus?.();
+				event.preventDefault?.();
+				event.stopPropagation?.();
+				event.stopImmediatePropagation?.();
+			}
+		};
+
+		const root = document.querySelector("#waline");
+		if (root) root.addEventListener("click", onClickCapture, true);
+	};
+
+	const initWaline = async () => {
+		patchAlertOnce();
+		setupAlertObserverOnce();
+		setupRequiredMetaGuardOnce();
+
+		const waline = await loadWaline();
+		const el = document.querySelector("#waline");
+		if (!el) return;
+		el.innerHTML = "";
+		const pageKey = normalizePathname(window.location.pathname);
+		const options = {
+			el: "#waline",
+			serverURL,
+			path: pageKey,
+			dark,
+			requiredMeta: ["nick", "mail"]
+		};
+		if (typeof lang !== "undefined") options.lang = lang;
+		if (typeof login !== "undefined") options.login = login;
+		if (typeof pageview !== "undefined") options.pageview = pageview;
+		waline?.init?.(options);
+	};
+
+	const onReady = () => {
+		initWaline();
+	};
+
+	document.addEventListener("astro:page-load", onReady);
+	if (document.readyState === "complete" || document.readyState === "interactive") {
+		onReady();
+	} else {
+		document.addEventListener("DOMContentLoaded", onReady);
+	}
+	if (window?.swup?.hooks) {
+		window.swup.hooks.on("page:view", onReady);
+	}
+</script>
