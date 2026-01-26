@@ -9,6 +9,11 @@ import { Icon } from "astro-icon/components";
             <Icon name="material-symbols:keyboard-arrow-up-rounded" class="mx-auto"></Icon>
         </button>
     </div>
+    <div id="jump-to-comments-btn" class="back-to-top-btn jump-to-comments-btn flex items-center rounded-2xl overflow-hidden transition" onclick="jumpToComments()">
+        <button aria-label="Jump to Comments" class="btn-card h-[3.75rem] w-[3.75rem]">
+            <Icon name="material-symbols:forum-rounded" class="mx-auto"></Icon>
+        </button>
+    </div>
 </div>
 
 <style lang="stylus">
@@ -40,10 +45,23 @@ import { Icon } from "astro-icon/components";
     &:active
       transform: translateX(5rem) scale(0.9)
 
+.jump-to-comments-btn
+    bottom: 5.5rem
+
+:global(body:not(.is-post)) #jump-to-comments-btn
+    display: none
+
 </style>
 
 <script is:raw is:inline>
 function backToTop() {
     window.scroll({ top: 0, behavior: 'smooth' });
+}
+
+function jumpToComments() {
+    const target = document.getElementById('waline');
+    if (!target) return;
+    const top = target.getBoundingClientRect().top + window.scrollY - 88;
+    window.scroll({ top: Math.max(0, top), behavior: 'smooth' });
 }
 </script>
