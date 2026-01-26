@@ -1,7 +1,9 @@
 ---
 import { getCollection } from "astro:content";
 import { siteConfig } from "../../config";
+import { PAGE_SIZE } from "../../constants/constants";
 import { formatDateToYYYYMMDD } from "../../utils/date-utils";
+import { getPostUrlBySlug, url } from "../../utils/url-utils";
 import WidgetLayout from "./WidgetLayout.astro";
 
 interface Props {
@@ -30,6 +32,27 @@ const lastUpdatedText = lastUpdatedAt
 	? formatDateToYYYYMMDD(lastUpdatedAt)
 	: "-";
 const siteStartMs = new Date(siteConfig.launchDate).getTime();
+const walineServerURL = siteConfig.waline?.serverURL;
+const walinePageviewEnabled = siteConfig.waline?.pageview ?? false;
+const normalizeForWaline = (pathname: string) => {
+	if (!pathname) return "/";
+	if (pathname !== "/" && pathname.endsWith("/")) return pathname.slice(0, -1);
+	return pathname;
+};
+const totalPages = Math.ceil(postCount / PAGE_SIZE);
+const allPageviewPaths = Array.from(
+	new Set(
+		[
+			url("/"),
+			url("/archive/"),
+			url("/about/"),
+			...Array.from({ length: Math.max(0, totalPages - 1) }, (_, i) =>
+				url(`/${i + 2}/`),
+			),
+			...posts.map((post) => getPostUrlBySlug(post.slug)),
+		].map(normalizeForWaline),
+	),
+);
 ---
 
 <WidgetLayout
@@ -44,6 +67,12 @@ const siteStartMs = new Date(siteConfig.launchDate).getTime();
 			<div class="text-75 text-sm font-bold">{postCount}</div>
 		</div>
 		<div class="flex items-center justify-between gap-4">
+			<div class="text-50 text-sm font-medium">总浏览数</div>
+			<div class="text-75 text-sm font-bold">
+				<span id="site-total-pageviews">-</span>
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-4">
 			<div class="text-50 text-sm font-medium">运行时间</div>
 			<div class="text-75 text-sm font-bold">
 				<span id="site-running-time"></span>
@@ -56,7 +85,19 @@ const siteStartMs = new Date(siteConfig.launchDate).getTime();
 	</div>
 </WidgetLayout>
 
-<script is:inline define:vars={{ siteStartMs }}>
+<div id="site-total-pageviews-source" class="hidden">
+	{allPageviewPaths.map((p) => (
+		<span class="waline-pageview-count" data-path={p}>-</span>
+	))}
+</div>
+
+<style is:global>
+	body:not(.is-home) widget-layout[data-id="site-info"] {
+		display: none;
+	}
+</style>
+
+<script is:inline define:vars={{ siteStartMs, walineServerURL, walinePageviewEnabled }}>
 	function formatUptime(ms) {
 		const totalSeconds = Math.max(0, Math.floor(ms / 1000));
 		const days = Math.floor(totalSeconds / 86400);
@@ -75,4 +116,90 @@ const siteStartMs = new Date(siteConfig.launchDate).getTime();
 
 	renderUptime();
 	setInterval(renderUptime, 60 * 1000);
+
+	const parseCount = (text) => {
+		const v = String(text ?? "").replace(/[^\d]/g, "");
+		if (!v) return null;
+		const n = Number.parseInt(v, 10);
+		return Number.isFinite(n) ? n : null;
+	};
+
+	const renderTotalPageviews = () => {
+		const output = document.getElementById("site-total-pageviews");
+		const source = document.getElementById("site-total-pageviews-source");
+		if (!output || !source) return;
+
+		const nodes = source.querySelectorAll(".waline-pageview-count");
+		let total = 0;
+		let hasValue = false;
+		for (const node of nodes) {
+			const n = parseCount(node.textContent);
+			if (n === null) continue;
+			hasValue = true;
+			total += n;
+		}
+
+		if (hasValue) output.textContent = String(total);
+	};
+
+	const normalizePathname = (pathname) => {
+		if (!pathname) return "/";
+		if (pathname !== "/" && pathname.endsWith("/")) return pathname.slice(0, -1);
+		return pathname;
+	};
+
+	const updatePageviews = async () => {
+		if (!walinePageviewEnabled || !walineServerURL) return;
+		if (!document.querySelector(".waline-pageview-count")) return;
+
+		window.__walinePageviewCountConfig = {
+			serverURL: walineServerURL,
+			enabled: walinePageviewEnabled,
+		};
+
+		try {
+			window.__walinePageviewCountAbort?.();
+		} catch {}
+
+		const module = await import("https://unpkg.com/@waline/client@v3/dist/pageview.js");
+		const path = normalizePathname(window.location.pathname);
+		window.__walinePageviewCountAbort = module.pageviewCount?.({
+			serverURL: walineServerURL,
+			path,
+			update: false,
+		});
+	};
+
+	const setupTotalPageviewsObserver = () => {
+		if (window.__walineTotalPageviewsObserverAdded) return;
+		window.__walineTotalPageviewsObserverAdded = true;
+
+		const source = document.getElementById("site-total-pageviews-source");
+		if (!source) return;
+
+		const observer = new MutationObserver(() => renderTotalPageviews());
+		observer.observe(source, {
+			childList: true,
+			subtree: true,
+			characterData: true,
+		});
+		window.__walineTotalPageviewsObserver = observer;
+	};
+
+	const onReady = () => {
+		if (!document.body.classList.contains("is-home")) return;
+		setupTotalPageviewsObserver();
+		updatePageviews();
+		renderTotalPageviews();
+	};
+
+	document.addEventListener("astro:page-load", onReady);
+	if (document.readyState === "complete" || document.readyState === "interactive") {
+		onReady();
+	} else {
+		document.addEventListener("DOMContentLoaded", onReady);
+	}
+	if (window?.swup?.hooks) {
+		window.swup.hooks.on("page:view", onReady);
+	}
 </script>
