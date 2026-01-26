@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { siteConfig } from "../config";
 import I18nKey from "../i18n/i18nKey";
 import { i18n } from "../i18n/translation";
 import { formatDateToYYYYMMDD } from "../utils/date-utils";
@@ -14,6 +15,7 @@ interface Props {
 	category: string | null;
 	hideTagsForMobile?: boolean;
 	hideUpdateDate?: boolean;
+	pageviewPath?: string;
 }
 const {
 	published,
@@ -23,8 +25,11 @@ const {
 	category,
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
+	pageviewPath,
 } = Astro.props;
 const className = Astro.props.class;
+const walineServerURL = siteConfig.waline?.serverURL;
+const walinePageviewEnabled = siteConfig.waline?.pageview ?? false;
 ---
 
 <div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
@@ -55,6 +60,15 @@ const className = Astro.props.class;
             <span class="text-50 text-sm font-medium">{formatDateToYYYYMMDD(updated)}</span>
         </div>
     )}
+
+    <div class="flex items-center">
+        <div class="meta-icon">
+            <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
+        </div>
+        <span class="text-50 text-sm font-medium">
+            <span class="waline-pageview-count" data-path={pageviewPath}>-</span> 次浏览
+        </span>
+    </div>
 
     <!-- categories -->
     <div class="flex items-center">
@@ -90,3 +104,49 @@ const className = Astro.props.class;
         </div>
     </div>
 </div>
+
+<script is:inline define:vars={{ walineServerURL, walinePageviewEnabled }}>
+	const normalizePathname = (pathname) => {
+		if (!pathname) return "/";
+		if (pathname !== "/" && pathname.endsWith("/")) return pathname.slice(0, -1);
+		return pathname;
+	};
+
+	const updatePageviews = async () => {
+		const config = window.__walinePageviewCountConfig;
+		if (!config?.enabled || !config?.serverURL) return;
+		if (!document.querySelector(".waline-pageview-count")) return;
+
+		try {
+			window.__walinePageviewCountAbort?.();
+		} catch {}
+
+		const module = await import("https://unpkg.com/@waline/client@v3/dist/pageview.js");
+		const path = normalizePathname(window.location.pathname);
+		window.__walinePageviewCountAbort = module.pageviewCount?.({
+			serverURL: config.serverURL,
+			path,
+			update: false,
+		});
+	};
+
+	window.__walinePageviewCountConfig = {
+		serverURL: walineServerURL,
+		enabled: walinePageviewEnabled,
+	};
+
+	if (!window.__walinePageviewCountListenersAdded) {
+		window.__walinePageviewCountListenersAdded = true;
+		document.addEventListener("astro:page-load", updatePageviews);
+		if (document.readyState === "complete" || document.readyState === "interactive") {
+			updatePageviews();
+		} else {
+			document.addEventListener("DOMContentLoaded", updatePageviews);
+		}
+		if (window?.swup?.hooks) {
+			window.swup.hooks.on("page:view", updatePageviews);
+		}
+	} else {
+		updatePageviews();
+	}
+</script>

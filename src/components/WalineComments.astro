@@ -7,7 +7,13 @@ interface Props {
 	pageview?: boolean;
 }
 
-const { serverURL, lang, login, dark = "html.dark", pageview } = Astro.props;
+const {
+	serverURL,
+	lang,
+	login,
+	dark = "html.dark",
+	pageview = true,
+} = Astro.props;
 ---
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 <div class="card-base z-10 relative w-full mb-4 pb-4">
@@ -435,6 +441,10 @@ const { serverURL, lang, login, dark = "html.dark", pageview } = Astro.props;
 		if (!el) return;
 		el.innerHTML = "";
 		const pageKey = normalizePathname(window.location.pathname);
+		for (const node of document.querySelectorAll(".waline-pageview-count")) {
+			if (!(node instanceof HTMLElement)) continue;
+			if (!node.getAttribute("data-path")) node.setAttribute("data-path", pageKey);
+		}
 		const options = {
 			el: "#waline",
 			serverURL,
