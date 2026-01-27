@@ -50,7 +50,10 @@ const getUmamiToken = async () => {
 			const res = await fetch(new URL("/api/auth/login", UMAMI_HOST), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ username: UMAMI_USERNAME, password: UMAMI_PASSWORD }),
+				body: JSON.stringify({
+					username: UMAMI_USERNAME,
+					password: UMAMI_PASSWORD,
+				}),
 			});
 			if (!res.ok) return null;
 			const data = (await res.json()) as { token?: string };
@@ -83,7 +86,9 @@ const getUmamiPathPageviewsMap = async () => {
 		u.searchParams.set("limit", "10000");
 
 		try {
-			const res = await fetch(u, { headers: { Authorization: `Bearer ${token}` } });
+			const res = await fetch(u, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 			if (!res.ok) return null;
 			const rows = (await res.json()) as Array<{ x: string; y: number }>;
 			const map = new Map<string, number>();
@@ -92,7 +97,8 @@ const getUmamiPathPageviewsMap = async () => {
 				const v = Number(row.y);
 				if (!Number.isFinite(v)) continue;
 				map.set(row.x, v);
-				if (row.x !== "/" && row.x.endsWith("/")) map.set(row.x.slice(0, -1), v);
+				if (row.x !== "/" && row.x.endsWith("/"))
+					map.set(row.x.slice(0, -1), v);
 				if (row.x !== "/" && !row.x.endsWith("/")) map.set(`${row.x}/`, v);
 			}
 			return map;
