@@ -53,7 +53,10 @@ const getUmamiToken = async () => {
 			const res = await fetch(new URL("/api/auth/login", UMAMI_HOST), {
 				method: "POST",
 				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({ username: UMAMI_USERNAME, password: UMAMI_PASSWORD }),
+				body: JSON.stringify({
+					username: UMAMI_USERNAME,
+					password: UMAMI_PASSWORD,
+				}),
 			});
 			if (!res.ok) return null;
 			const data = (await res.json()) as { token?: string };
@@ -84,7 +87,9 @@ const getUmamiTotalPageviews = async () => {
 		u.searchParams.set("endAt", String(endAt));
 
 		try {
-			const res = await fetch(u, { headers: { Authorization: `Bearer ${token}` } });
+			const res = await fetch(u, {
+				headers: { Authorization: `Bearer ${token}` },
+			});
 			if (!res.ok) return null;
 			const data = (await res.json()) as { pageviews?: number };
 			const n = Number(data.pageviews);
