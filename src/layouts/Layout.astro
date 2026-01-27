@@ -163,6 +163,13 @@ const bannerOffset =
 			'page-width': `${PAGE_WIDTH}rem`,
 		}}></style>  <!-- defines global css variables. This will be applied to <html> <body> and some other elements idk why -->
 
+		<script
+			defer
+			src="https://analytics.xhwen.cn/script.js"
+			data-website-id="1622d120-0aaa-4728-804b-0a719cdeef93"
+			data-swup-ignore-script
+			data-auto-track="false"
+		></script>
 
 		<slot name="head"></slot>
 
@@ -396,6 +403,32 @@ function init() {
 /* Load settings when entering the site */
 init();
 
+let lastTrackedPath: string | null = null;
+let pendingTrackPath: string | null = null;
+function trackUmamiPageview(tries = 0) {
+	const currentPath = `${window.location.pathname}${window.location.search}`;
+	if (lastTrackedPath === currentPath) return;
+
+	const maxTries = 25;
+	const umami = (window as unknown as { umami?: { track?: () => void } }).umami;
+	if (umami?.track) {
+		umami.track();
+		lastTrackedPath = currentPath;
+		pendingTrackPath = null;
+		return;
+	}
+
+	if (tries >= maxTries) {
+		if (pendingTrackPath === currentPath) pendingTrackPath = null;
+		return;
+	}
+
+	if (pendingTrackPath === currentPath) return;
+	pendingTrackPath = currentPath;
+	window.setTimeout(() => trackUmamiPageview(tries + 1), 200);
+}
+trackUmamiPageview();
+
 const setup = () => {
 	// TODO: temp solution to change the height of the banner
 /*
@@ -466,6 +499,7 @@ const setup = () => {
 		if (heightExtend) {
 			heightExtend.classList.remove('hidden')
 		}
+		trackUmamiPageview()
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {
