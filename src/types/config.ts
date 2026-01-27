@@ -109,5 +109,4 @@ export type WalineConfig = {
 	lang?: string;
 	login?: string;
 	dark?: string;
-	pageview?: boolean;
 };

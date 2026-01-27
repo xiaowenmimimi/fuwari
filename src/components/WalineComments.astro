@@ -12,7 +12,7 @@ const {
 	lang,
 	login,
 	dark = "html.dark",
-	pageview = true,
+	pageview = false,
 } = Astro.props;
 ---
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
@@ -441,10 +441,6 @@ const {
 		if (!el) return;
 		el.innerHTML = "";
 		const pageKey = normalizePathname(window.location.pathname);
-		for (const node of document.querySelectorAll(".waline-pageview-count")) {
-			if (!(node instanceof HTMLElement)) continue;
-			if (!node.getAttribute("data-path")) node.setAttribute("data-path", pageKey);
-		}
 		const options = {
 			el: "#waline",
 			serverURL,
