@@ -4,7 +4,7 @@ published: 2026-01-08
 description: 在 CentOS 7.9 服务器上，使用 Docker + docker-compose 部署 Umami 统计服务的过程，并通过 Nginx 反向代理启用 HTTPS，用于博客的访客数、浏览量与文章访问统计。
 tags: [博客搭建, Umami, Nginx]
 category: 技术教程
-draft: true
+draft: false
 ---
 
 ## 方案说明
