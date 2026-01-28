@@ -39,6 +39,7 @@ export type SiteConfig = {
 
 	favicon: Favicon[];
 	waline: WalineConfig;
+	umami: UmamiConfig;
 };
 
 export type Favicon = {
@@ -109,4 +110,9 @@ export type WalineConfig = {
 	lang?: string;
 	login?: string;
 	dark?: string;
+};
+
+export type UmamiConfig = {
+	host: string;
+	apiKey: string;
 };

@@ -51,6 +51,10 @@ export const siteConfig: SiteConfig = {
 		login: "enable", // 登录方式（可选），例如 enable / disable / force
 		dark: "html.dark", // 暗色模式选择器（可选），默认 html.dark
 	},
+	umami: {
+		host: "https://analytics.xhwen.cn", // Umami 服务端地址
+		apiKey: "change_me", // Umami 服务端 API 密钥
+	},
 };
 
 export const navBarConfig: NavBarConfig = {
