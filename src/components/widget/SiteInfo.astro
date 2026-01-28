@@ -30,82 +30,7 @@ const lastUpdatedText = lastUpdatedAt
 	? formatDateToYYYYMMDD(lastUpdatedAt)
 	: "-";
 const siteStartMs = new Date(siteConfig.launchDate).getTime();
-
-const UMAMI_HOST = import.meta.env.UMAMI_HOST ?? "https://analytics.xhwen.cn";
-const UMAMI_WEBSITE_ID =
-	import.meta.env.UMAMI_WEBSITE_ID ?? "1622d120-0aaa-4728-804b-0a719cdeef93";
-const UMAMI_TOKEN = import.meta.env.UMAMI_TOKEN;
-const UMAMI_USERNAME = import.meta.env.UMAMI_USERNAME;
-const UMAMI_PASSWORD = import.meta.env.UMAMI_PASSWORD;
-
-const getUmamiToken = async () => {
-	const g = globalThis;
-	const anyG = g as unknown as Record<string, unknown>;
-	const key = "__umamiAuthTokenPromiseV1";
-	const existing = anyG[key] as Promise<string | null> | undefined;
-	if (existing) return existing;
-
-	const p = (async () => {
-		if (UMAMI_TOKEN) return UMAMI_TOKEN;
-		if (!UMAMI_USERNAME || !UMAMI_PASSWORD) return null;
-
-		try {
-			const res = await fetch(new URL("/api/auth/login", UMAMI_HOST), {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					username: UMAMI_USERNAME,
-					password: UMAMI_PASSWORD,
-				}),
-			});
-			if (!res.ok) return null;
-			const data = (await res.json()) as { token?: string };
-			return data.token ?? null;
-		} catch {
-			return null;
-		}
-	})();
-
-	anyG[key] = p;
-	return p;
-};
-
-const getUmamiTotalPageviews = async () => {
-	const g = globalThis as unknown as Record<string, unknown>;
-	const key = "__umamiTotalPageviewsPromiseV1";
-	const existing = g[key] as Promise<number | null> | undefined;
-	if (existing) return existing;
-
-	const p = (async () => {
-		const token = await getUmamiToken();
-		if (!token) return null;
-		const endAt = Date.now();
-		const startAt = Number.isFinite(siteStartMs) ? siteStartMs : 0;
-
-		const u = new URL(`/api/websites/${UMAMI_WEBSITE_ID}/stats`, UMAMI_HOST);
-		u.searchParams.set("startAt", String(startAt));
-		u.searchParams.set("endAt", String(endAt));
-
-		try {
-			const res = await fetch(u, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			if (!res.ok) return null;
-			const data = (await res.json()) as { pageviews?: number };
-			const n = Number(data.pageviews);
-			return Number.isFinite(n) ? n : null;
-		} catch {
-			return null;
-		}
-	})();
-
-	g[key] = p;
-	return p;
-};
-
-const totalPageviews = await getUmamiTotalPageviews();
-const totalPageviewsText =
-	typeof totalPageviews === "number" ? String(totalPageviews) : "-";
+const totalPageviewsText = "-";
 ---
 
 <WidgetLayout
@@ -120,9 +45,15 @@ const totalPageviewsText =
 			<div class="text-75 text-sm font-bold">{postCount}</div>
 		</div>
 		<div class="flex items-center justify-between gap-4">
+			<div class="text-50 text-sm font-medium">访问次数</div>
+			<div class="text-75 text-sm font-bold">
+				<span data-umami-total-visits>-</span>
+			</div>
+		</div>
+		<div class="flex items-center justify-between gap-4">
 			<div class="text-50 text-sm font-medium">总浏览数</div>
 			<div class="text-75 text-sm font-bold">
-				<span id="site-total-pageviews">{totalPageviewsText}</span>
+				<span data-umami-total-pageviews>{totalPageviewsText}</span>
 			</div>
 		</div>
 		<div class="flex items-center justify-between gap-4">

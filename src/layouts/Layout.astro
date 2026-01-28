@@ -20,6 +20,7 @@ import type { Favicon } from "../types/config";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
 import "lxgw-wenkai-screen-webfont/style.css";
+import UmamiAnalytics from "../components/misc/UmamiAnalytics.astro";
 
 interface Props {
 	title?: string;
@@ -98,6 +99,8 @@ const bannerOffset =
 		<meta charset="UTF-8" />
 		<meta name="description" content={description || pageTitle}>
 		<meta name="author" content={profileConfig.name}>
+        
+        <UmamiAnalytics />
 
 		<meta property="og:site_name" content={siteConfig.title}>
 		<meta property="og:url" content={Astro.url}>

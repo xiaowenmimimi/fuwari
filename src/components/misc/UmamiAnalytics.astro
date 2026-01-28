@@ -1,0 +1,154 @@
+---
+import { siteConfig } from "@/config";
+
+const UMAMI_HOST = siteConfig.umami.host;
+const UMAMI_API_KEY = import.meta.env.UMAMI_API_KEY ?? siteConfig.umami.apiKey;
+---
+
+<script is:inline define:vars={{ UMAMI_HOST, UMAMI_API_KEY }}>
+    (function () {
+        if (window.umamiAnalyticsInitialized) return;
+        window.umamiAnalyticsInitialized = true;
+
+        const CACHE_TTL = 60000; // 缓存有效期 60 秒
+        const cache = new Map(); // 存储 { value: string, timestamp: number }
+        const fetching = new Map(); // 使用 Map 存储正在进行的 promise，以便复用
+
+        async function fetchStats(path) {
+            const cacheKey = path || "total";
+            
+            // 检查缓存
+            if (cache.has(cacheKey)) {
+                const { value, timestamp } = cache.get(cacheKey);
+                if (Date.now() - timestamp < CACHE_TTL) {
+                    return value;
+                }
+            }
+
+            if (fetching.has(cacheKey)) return fetching.get(cacheKey);
+
+            const promise = (async () => {
+                try {
+                    const u = new URL("/api/analytics/stats", UMAMI_HOST);
+                    u.searchParams.set("range", "all");
+                    if (path) {
+                        u.searchParams.set("path", path);
+                    }
+                    
+                    const res = await fetch(u.toString(), {
+                        headers: { "x-api-key": UMAMI_API_KEY },
+                    });
+                    
+                    if (!res.ok) throw new Error(res.statusText);
+                    const data = await res.json();
+                    
+                    // 构造返回对象
+                    const result = {
+                        pageviews: String(data.pageviews || 0),
+                        visits: String(data.visits || 0)
+                    };
+                    
+                    // 写入缓存
+                    cache.set(cacheKey, { value: result, timestamp: Date.now() });
+                    
+                    return result;
+                } catch (e) {
+                    console.error("[Umami] Fetch error:", e);
+                    return null;
+                } finally {
+                    fetching.delete(cacheKey);
+                }
+            })();
+
+            fetching.set(cacheKey, promise);
+            return promise;
+        }
+
+        const updateElements = () => {
+            // Update individual pageviews
+            const pageviewElements = document.querySelectorAll("[data-umami-pageview-path]");
+            const pathsToFetch = new Set();
+
+            pageviewElements.forEach((el) => {
+                if (el.dataset.loaded) return;
+                const path = el.getAttribute("data-umami-pageview-path") || window.location.pathname;
+                pathsToFetch.add(path);
+            });
+
+            pathsToFetch.forEach(async (path) => {
+                const data = await fetchStats(path);
+                if (data !== null) {
+                    document.querySelectorAll(`[data-umami-pageview-path="${path}"]`).forEach((el) => {
+                        el.textContent = data.pageviews;
+                        el.dataset.loaded = "true";
+                    });
+                }
+            });
+
+            // Update total pageviews & visits
+            const totalPageviewsElements = document.querySelectorAll("[data-umami-total-pageviews]");
+            const totalVisitsElements = document.querySelectorAll("[data-umami-total-visits]");
+            
+            if (totalPageviewsElements.length > 0 || totalVisitsElements.length > 0) {
+                const needsFetch = 
+                    Array.from(totalPageviewsElements).some(el => !el.dataset.loaded) ||
+                    Array.from(totalVisitsElements).some(el => !el.dataset.loaded);
+
+                if (needsFetch) {
+                    fetchStats(null).then(data => {
+                        if (data !== null) {
+                            totalPageviewsElements.forEach(el => {
+                                el.textContent = data.pageviews;
+                                el.dataset.loaded = "true";
+                            });
+                            totalVisitsElements.forEach(el => {
+                                el.textContent = data.visits;
+                                el.dataset.loaded = "true";
+                            });
+                        }
+                    });
+                }
+            }
+        };
+
+        // Initial run
+        if (document.readyState === 'loading') {
+            document.addEventListener('DOMContentLoaded', () => {
+                requestAnimationFrame(updateElements);
+                if (document.body) {
+                    observer.observe(document.body, { childList: true, subtree: true });
+                }
+            });
+        } else {
+            requestAnimationFrame(updateElements);
+            if (document.body) {
+                observer.observe(document.body, { childList: true, subtree: true });
+            }
+        }
+
+        // Observer for dynamic content changes (Swup, etc.)
+        const observer = new MutationObserver((mutations) => {
+            let shouldUpdate = false;
+            for (const mutation of mutations) {
+                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
+                    shouldUpdate = true;
+                    break;
+                }
+            }
+            if (shouldUpdate) {
+                updateElements();
+            }
+        });
+
+        // Also listen for Swup events if available as a backup or for specific triggers
+        document.addEventListener('swup:page:view', () => {
+            // 页面切换时，强制清除所有浏览量元素的 loaded 状态，以便触发更新逻辑（是否请求由 fetchStats 内部缓存决定）
+            const allElements = document.querySelectorAll("[data-umami-total-pageviews], [data-umami-pageview-path]");
+            allElements.forEach(el => {
+                delete el.dataset.loaded;
+            });
+            
+            updateElements();
+        });
+    })();
+</script>

@@ -27,100 +27,7 @@ const {
 	pageviewPath,
 } = Astro.props;
 const className = Astro.props.class;
-
-const UMAMI_HOST = import.meta.env.UMAMI_HOST ?? "https://analytics.xhwen.cn";
-const UMAMI_WEBSITE_ID =
-	import.meta.env.UMAMI_WEBSITE_ID ?? "1622d120-0aaa-4728-804b-0a719cdeef93";
-const UMAMI_TOKEN = import.meta.env.UMAMI_TOKEN;
-const UMAMI_USERNAME = import.meta.env.UMAMI_USERNAME;
-const UMAMI_PASSWORD = import.meta.env.UMAMI_PASSWORD;
-
-const getUmamiToken = async () => {
-	const g = globalThis;
-	const anyG = g as unknown as Record<string, unknown>;
-	const key = "__umamiAuthTokenPromiseV1";
-	const existing = anyG[key] as Promise<string | null> | undefined;
-	if (existing) return existing;
-
-	const p = (async () => {
-		if (UMAMI_TOKEN) return UMAMI_TOKEN;
-		if (!UMAMI_USERNAME || !UMAMI_PASSWORD) return null;
-
-		try {
-			const res = await fetch(new URL("/api/auth/login", UMAMI_HOST), {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					username: UMAMI_USERNAME,
-					password: UMAMI_PASSWORD,
-				}),
-			});
-			if (!res.ok) return null;
-			const data = (await res.json()) as { token?: string };
-			return data.token ?? null;
-		} catch {
-			return null;
-		}
-	})();
-
-	anyG[key] = p;
-	return p;
-};
-
-const getUmamiPathPageviewsMap = async () => {
-	const g = globalThis as unknown as Record<string, unknown>;
-	const key = "__umamiPathPageviewsMapPromiseV1";
-	const existing = g[key] as Promise<Map<string, number> | null> | undefined;
-	if (existing) return existing;
-
-	const p = (async () => {
-		const token = await getUmamiToken();
-		if (!token) return null;
-
-		const endAt = Date.now();
-		const startAt = 0;
-		const u = new URL(`/api/websites/${UMAMI_WEBSITE_ID}/metrics`, UMAMI_HOST);
-		u.searchParams.set("startAt", String(startAt));
-		u.searchParams.set("endAt", String(endAt));
-		u.searchParams.set("type", "path");
-		u.searchParams.set("limit", "10000");
-
-		try {
-			const res = await fetch(u, {
-				headers: { Authorization: `Bearer ${token}` },
-			});
-			if (!res.ok) return null;
-			const rows = (await res.json()) as Array<{ x: string; y: number }>;
-			const map = new Map<string, number>();
-			for (const row of rows) {
-				if (!row?.x) continue;
-				const v = Number(row.y);
-				if (!Number.isFinite(v)) continue;
-				map.set(row.x, v);
-				if (row.x !== "/" && row.x.endsWith("/"))
-					map.set(row.x.slice(0, -1), v);
-				if (row.x !== "/" && !row.x.endsWith("/")) map.set(`${row.x}/`, v);
-			}
-			return map;
-		} catch {
-			return null;
-		}
-	})();
-
-	g[key] = p;
-	return p;
-};
-
-const getPageviewsText = async (path: string) => {
-	const map = await getUmamiPathPageviewsMap();
-	if (!map) return "-";
-	const v = map.get(path);
-	if (typeof v === "number") return String(v);
-	return "0";
-};
-
 const resolvedPageviewPath = pageviewPath ?? Astro.url.pathname;
-const pageviewsText = await getPageviewsText(resolvedPageviewPath);
 ---
 
 <div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
@@ -157,7 +64,7 @@ const pageviewsText = await getPageviewsText(resolvedPageviewPath);
             <Icon name="material-symbols:visibility-outline-rounded" class="text-xl"></Icon>
         </div>
         <span class="text-50 text-sm font-medium">
-            <span>{pageviewsText}</span> 次浏览
+            <span data-umami-pageview-path={resolvedPageviewPath}>-</span> 次浏览
         </span>
     </div>
 

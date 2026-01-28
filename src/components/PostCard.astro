@@ -40,7 +40,7 @@ const hasCover = image !== undefined && image !== null && image !== "";
 const isPinned = (entry.data.pin ?? 0) > 0;
 
 const coverWidth = "28%";
-const pageviewPath = url !== "/" && url.endsWith("/") ? url.slice(0, -1) : url;
+const pageviewPath = url;
 
 const { remarkPluginFrontmatter } = await entry.render();
 ---
