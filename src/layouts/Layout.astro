@@ -408,14 +408,23 @@ init();
 
 let lastTrackedPath: string | null = null;
 let pendingTrackPath: string | null = null;
-function trackUmamiPageview(tries = 0) {
-	const currentPath = `${window.location.pathname}${window.location.search}`;
+let nextUmamiUrl: string | null = null;
+function trackUmamiPageview(tries = 0, urlOverride: string | null = null) {
+	const desiredUrl = urlOverride ?? window.location.href;
+	const currentPath = (() => {
+		try {
+			const u = new URL(desiredUrl, window.location.origin);
+			return `${u.pathname}${u.search}`;
+		} catch {
+			return `${window.location.pathname}${window.location.search}`;
+		}
+	})();
 	if (lastTrackedPath === currentPath) return;
 
 	const maxTries = 25;
-	const umami = (window as unknown as { umami?: { track?: () => void } }).umami;
+	const umami = (window as unknown as { umami?: { track?: (...args: unknown[]) => void } }).umami;
 	if (umami?.track) {
-		umami.track();
+		umami.track((props: unknown) => ({ ...(props as Record<string, unknown>), url: desiredUrl }));
 		lastTrackedPath = currentPath;
 		pendingTrackPath = null;
 		return;
@@ -428,7 +437,7 @@ function trackUmamiPageview(tries = 0) {
 
 	if (pendingTrackPath === currentPath) return;
 	pendingTrackPath = currentPath;
-	window.setTimeout(() => trackUmamiPageview(tries + 1), 200);
+	window.setTimeout(() => trackUmamiPageview(tries + 1, urlOverride), 200);
 }
 trackUmamiPageview();
 
@@ -464,6 +473,7 @@ const setup = () => {
 	})
 	window.swup.hooks.on('content:replace', initCustomScrollbar)
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+		nextUmamiUrl = visit.to.url;
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {
@@ -502,7 +512,9 @@ const setup = () => {
 		if (heightExtend) {
 			heightExtend.classList.remove('hidden')
 		}
-		trackUmamiPageview()
+		const u = nextUmamiUrl;
+		nextUmamiUrl = null;
+		trackUmamiPageview(0, u)
 	});
 	window.swup.hooks.on('visit:end', (_visit: {to: {url: string}}) => {
 		setTimeout(() => {
