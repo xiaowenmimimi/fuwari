@@ -1,0 +1,131 @@
+---
+import type { UserSubjectCollection } from "@/types/bangumi";
+
+interface Props {
+	item: UserSubjectCollection;
+}
+
+const { item } = Astro.props;
+
+const subject_base_url = "https://bgm.tv/subject/";
+
+const rawTags =
+	Array.isArray(item.tags) && item.tags.length > 0
+		? item.tags
+		: item.subject?.tags?.map((tag) => tag.name) || [];
+const tags = rawTags.filter(Boolean).slice(0, 3);
+const extraTagCount = Math.max(0, rawTags.length - tags.length);
+
+const getStatusColor = (type: number) => {
+	switch (type) {
+		case 1:
+			return "bg-blue-500";
+		case 2:
+			return "bg-green-500";
+		case 3:
+			return "bg-yellow-500";
+		case 4:
+			return "bg-orange-500";
+		case 5:
+			return "bg-red-500";
+		default:
+			return "bg-gray-500";
+	}
+};
+
+const getStatusText = (type: number) => {
+	const isGame = item.subject?.type === 4;
+	switch (type) {
+		case 1:
+			return "想看";
+		case 2:
+			return isGame ? "玩过" : "看过";
+		case 3:
+			return isGame ? "在玩" : "在看";
+		case 4:
+			return "搁置";
+		case 5:
+			return "抛弃";
+		default:
+			return "未知";
+	}
+};
+---
+
+<a
+  href={`${subject_base_url}${item.subject.id}`}
+  target="_blank"
+  rel="noopener noreferrer nofollow"
+  class="group relative block overflow-hidden rounded-xl bg-white shadow-lg ring-1 ring-black/5 transition-all duration-200 hover:-translate-y-0.5 hover:shadow-2xl focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/40 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:bg-gray-800 dark:ring-white/10 dark:focus-visible:ring-offset-gray-900"
+>
+  <div class="aspect-[2/3] relative overflow-hidden" >
+    {item.subject?.images?.medium ? (
+      <img
+        src={item.subject.images.medium}
+        alt={item.subject.name_cn || item.subject.name}
+        class="w-full h-full object-cover pointer-events-none"
+        loading="lazy"
+      />
+    ) : (
+      <div class="w-full h-full bg-gray-200 dark:bg-gray-700 flex items-center justify-center">
+        <div class="text-gray-400 text-4xl">📖</div>
+      </div>
+    )}
+
+    <!-- Status badge -->
+    <div class={`absolute top-2 left-2 px-2 py-1 rounded-full text-xs text-white font-medium shadow-sm ${getStatusColor(item.type)}`}>
+      {getStatusText(item.type)}
+    </div>
+  </div>
+
+  <!-- Info overlay on hover -->
+  <div class="absolute inset-x-0 bottom-0 bg-gradient-to-t from-black/85 via-black/55 to-transparent text-white p-3 sm:p-4 transform translate-y-0 sm:translate-y-full sm:group-hover:translate-y-0 transition-transform duration-200">
+    <h3 class="font-bold text-sm mb-1 line-clamp-2">
+      {item.subject.name_cn || item.subject.name}
+    </h3>
+
+    {(item.subject.score || item.comment) && (
+      <div class="flex items-center justify-between mb-2">
+        {item.subject.score && (
+          <div class="flex items-center gap-1">
+            <div class="text-yellow-400">⭐</div>
+            <span class="text-sm">{item.subject.score}</span>
+          </div>
+        )}
+
+        {item.comment && (
+          <div class="relative group/comment">
+            <div class="text-sm text-gray-300 cursor-help">💬</div>
+            <div class="absolute bottom-full right-0 mb-2 px-3 py-2 bg-gray-900 text-white text-xs rounded-lg opacity-0 group-hover/comment:opacity-100 transition-opacity duration-150 w-32 sm:w-44 xl:w-52 z-10 pointer-events-none">
+              {item.comment}
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+    {tags.length > 0 && (
+      <div class="flex flex-wrap gap-1">
+        {tags.map((tag) => (
+          <span class="px-2 py-0.5 rounded-full text-[11px] bg-white/15 text-white/90">
+            {tag}
+          </span>
+        ))}
+        {extraTagCount > 0 && (
+          <span class="px-2 py-0.5 rounded-full text-[11px] bg-white/10 text-white/70">
+            +{extraTagCount}
+          </span>
+        )}
+      </div>
+    )}
+  </div>
+</a>
+
+<style>
+	.line-clamp-2 {
+		display: -webkit-box;
+		-webkit-line-clamp: 2;
+		-webkit-box-orient: vertical;
+		overflow: hidden;
+	}
+</style>

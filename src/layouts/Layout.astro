@@ -37,6 +37,7 @@ let { title, banner, description, lang, setOGTypeArticle } = Astro.props;
 // so use Swup hooks instead to change the height immediately when a link is clicked
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 const isPostPage = Astro.url.pathname.startsWith(url("/posts/"));
+const isBangumiPage = pathsEqual(Astro.url.pathname, url("/bangumi"));
 
 // defines global css variables
 // why doing this in Layout instead of GlobalStyles: https://github.com/withastro/astro/issues/6728#issuecomment-1502203757
@@ -179,7 +180,7 @@ const bannerOffset =
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>
-	<body class=" min-h-screen transition " class:list={[{"is-home": isHomePage, "is-post": isPostPage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen transition " class:list={[{"is-home": isHomePage, "is-post": isPostPage, "is-bangumi": isBangumiPage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
@@ -507,6 +508,11 @@ const setup = () => {
 			bodyElement!.classList.add('is-post');
 		} else {
 			bodyElement!.classList.remove('is-post');
+		}
+		if (pathsEqual(visit.to.url, url('/bangumi'))) {
+			bodyElement!.classList.add('is-bangumi');
+		} else {
+			bodyElement!.classList.remove('is-bangumi');
 		}
 
 		// increase the page height during page transition to prevent the scrolling animation from jumping
