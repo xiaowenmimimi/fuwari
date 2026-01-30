@@ -1,0 +1,112 @@
+---
+interface Tab {
+	id: string;
+	name: string;
+	count?: number;
+}
+
+interface Props {
+	tabs: Tab[];
+	activeTab: string;
+}
+
+const { tabs, activeTab } = Astro.props;
+---
+
+<div class="border-b border-gray-200 dark:border-gray-700 mb-3">
+  <nav class="flex gap-6 overflow-x-auto py-1" aria-label="Tabs">
+    {tabs.map((tab) => (
+      <button
+        class:list={[
+          "shrink-0 whitespace-nowrap py-3 sm:py-4 px-1 border-b-2 font-medium text-xs sm:text-sm transition-colors duration-200 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[var(--primary)]/30 focus-visible:ring-offset-2 focus-visible:ring-offset-white dark:focus-visible:ring-offset-gray-900 rounded-sm",
+          {
+            "border-[var(--primary)] text-[var(--primary)]": tab.id === activeTab,
+            "border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300 dark:text-gray-400 dark:hover:text-gray-300": tab.id !== activeTab
+          }
+        ]}
+        data-tab={tab.id}
+        type="button"
+      >
+        {tab.name}
+        {tab.count !== undefined && (
+          <span class="ml-2 bg-gray-100 dark:bg-gray-700 text-gray-600 dark:text-gray-300 py-0.5 px-2 rounded-full text-xs">
+            {tab.count}
+          </span>
+        )}
+      </button>
+    ))}
+  </nav>
+</div>
+
+<script>
+  function initTabNavigation() {
+    const tabButtons = document.querySelectorAll('[data-tab]');
+    const sections = document.querySelectorAll('[data-section]');
+
+    tabButtons.forEach(button => {
+      const htmlButton = button as HTMLButtonElement;
+      if (htmlButton.dataset.tabInitialized === 'true') {
+        return;
+      }
+      htmlButton.dataset.tabInitialized = 'true';
+
+      htmlButton.addEventListener('click', (event) => {
+        const currentButton = event.currentTarget as HTMLButtonElement;
+        const targetTab = currentButton.dataset.tab;
+
+        tabButtons.forEach(btn => {
+          const b = btn as HTMLButtonElement;
+          b.classList.remove('border-[var(--primary)]', 'text-[var(--primary)]');
+          b.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+        });
+
+        currentButton.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
+        currentButton.classList.add('border-[var(--primary)]', 'text-[var(--primary)]');
+
+        sections.forEach(section => {
+          const htmlSection = section as HTMLElement;
+          if (htmlSection.dataset.section === targetTab) {
+            htmlSection.classList.remove('hidden');
+          } else {
+            htmlSection.classList.add('hidden');
+          }
+        });
+
+        const activeSection = Array.from(sections).find(section => {
+          const htmlSection = section as HTMLElement;
+          return htmlSection.dataset.section === targetTab;
+        }) as HTMLElement | undefined;
+
+        if (activeSection) {
+          const pagination = activeSection.querySelector<HTMLElement>(`[data-pagination-section="${targetTab}"]`);
+          if (pagination) {
+            const e = new CustomEvent('updatePagination', {
+              detail: {}
+            });
+            pagination.dispatchEvent(e);
+          }
+        }
+      });
+    });
+  }
+
+  function setupTabNavigation() {
+    if (document.readyState === 'loading') {
+      document.addEventListener('DOMContentLoaded', initTabNavigation, { once: true });
+    } else {
+      initTabNavigation();
+    }
+  }
+
+  setupTabNavigation();
+
+  document.addEventListener('astro:page-load', () => {
+    initTabNavigation();
+  });
+
+  if (window?.swup?.hooks) {
+    window.swup.hooks.on('page:view', () => {
+      initTabNavigation();
+    });
+  }
+</script>

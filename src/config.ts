@@ -62,6 +62,11 @@ export const navBarConfig: NavBarConfig = {
 		LinkPreset.Home,
 		LinkPreset.Archive,
 		LinkPreset.About,
+		{
+			// Bangumi 功能参考：https://kasuha.com/posts/fuwari-enhance-ep2/
+			name: "Bangumi",
+			url: "/bangumi/",
+		},
 		// {
 		// 	name: "GitHub",
 		// 	url: "https://github.com/saicaca/fuwari", // Internal links should not include the base path, as it is automatically added
