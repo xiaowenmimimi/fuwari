@@ -2,7 +2,7 @@
 title: 使用 Cloudflare Pages 自动部署 Astro 博客
 published: 2025-12-12
 description: Astro 博客部署教程，从 GitHub 仓库到 Cloudflare Pages 自动部署成功上线的完整流程
-tags: [Astro, Fuwari, 博客搭建]
+tags: [Cloudflare, 博客搭建]
 category: 技术教程
 draft: false
 ---
