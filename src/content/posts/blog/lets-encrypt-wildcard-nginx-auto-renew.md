@@ -2,7 +2,7 @@
 title: 使用 Let’s Encrypt 为域名申请 SSL 证书并实现自动续期
 published: 2025-12-24
 description: 在阿里云 DNS 环境下，使用 Let’s Encrypt 申请通配符 SSL 证书并通过 Nginx 实现自动续期的完整实践。
-tags: [域名, Nginx, 博客搭建]
+tags: [域名, 博客搭建]
 category: 技术教程
 draft: false
 ---

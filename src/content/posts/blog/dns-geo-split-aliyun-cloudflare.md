@@ -2,7 +2,7 @@
 title: 阿里云 DNS + Cloudflare Pages 实现国内 / 海外分流
 published: 2025-12-22
 description: 在使用 Cloudflare Pages 的前提下，为国内提供更稳定、更快的访问入口，并保持整套方案长期可维护。
-tags: [Astro, Fuwari, 博客搭建]
+tags: [DNS, Cloudflare, 博客搭建]
 category: 技术教程
 draft: false
 ---

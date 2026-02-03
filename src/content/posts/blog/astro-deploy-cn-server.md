@@ -2,7 +2,7 @@
 title: GitHub Actions 自动部署 Astro 博客到服务器
 published: 2025-12-18
 description: 使用 Nginx + GitHub Actions 实现每次 git push main 后，项目自动构建并把最新的静态产物部署到服务器，通过 Nginx 对外提供访问。
-tags: [Astro, Fuwari, 博客搭建]
+tags: [GitHub, 博客搭建]
 category: 技术教程
 draft: false
 ---

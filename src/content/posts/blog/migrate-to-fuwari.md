@@ -3,7 +3,7 @@ title: Fuwari —— 我的新博客旅程
 published: 2025-12-05
 description: 记录从 Hexo Butterfly 搬家到 Astro Fuwari 的小小故事，一个重新开始写博客的契机。
 image: ''
-tags: [博客搭建, Fuwari, 生活记录]
+tags: [博客搭建, 生活记录]
 category: '日常记录'
 draft: false
 lang: zh_CN

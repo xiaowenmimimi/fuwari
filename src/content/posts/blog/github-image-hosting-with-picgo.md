@@ -4,7 +4,7 @@ published: 2025-12-05
 updated: 2025-12-09
 description: 搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速
 image: ''
-tags: [图床, 博客搭建]
+tags: [图床, 博客搭建, Cloudflare]
 category: 技术教程
 draft: false
 lang: zh_CN
