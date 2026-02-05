@@ -37,7 +37,7 @@ const getStatusText = (type: number) => {
 	const isGame = item.subject?.type === 4;
 	switch (type) {
 		case 1:
-			return "想看";
+			return isGame ? "想玩" : "想看";
 		case 2:
 			return isGame ? "玩过" : "看过";
 		case 3:
