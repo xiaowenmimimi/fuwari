@@ -57,7 +57,11 @@ const filters = [
 		label: isGameSection ? "玩过" : "看过",
 		count: statusCounts.collect || 0,
 	},
-	{ value: "wish", label: "想看", count: statusCounts.wish || 0 },
+	{
+		value: "wish",
+		label: isGameSection ? "想玩" : "想看",
+		count: statusCounts.wish || 0,
+	},
 	{ value: "on_hold", label: "搁置", count: statusCounts.on_hold || 0 },
 	{ value: "dropped", label: "抛弃", count: statusCounts.dropped || 0 },
 ].filter((filter) => filter.value === "all" || filter.count > 0);
