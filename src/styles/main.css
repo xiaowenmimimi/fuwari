@@ -126,7 +126,7 @@
     }
 }
 
-:root {
+/* :root {
     --font-body: "LXGW WenKai Screen", "LXGW WenKai", Roboto, ui-sans-serif, system-ui, -apple-system, "Segoe UI", "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
     --font-heading: "LXGW WenKai Screen", "LXGW WenKai", serif;
     --font-mono: "JetBrains Mono Variable", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
@@ -134,7 +134,7 @@
 
 html, body {
     font-family: var(--font-body);
-}
+} */
 
 .custom-md img, #post-cover img {
     @apply cursor-zoom-in
