@@ -155,6 +155,14 @@ Cloudflare Pages 负责：
 
 ![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/dns-geo-split-aliyun-cloudflare-2.png)
 
+:::warning[Cloudflare Pages 注意事项]
+Cloudflare Pages 必须配置对应的自定义域名。
+
+> 阿里云 DNS 的 CNAME 只是把域名解析到 Cloudflare，
+> 但 Cloudflare 只有在配置了对应的自定义域名后，才会为该域名签发证书、建立路由，并把请求转发到对应的 Pages / Worker。
+> 否则 Cloudflare 不知道这个域名该指向哪个服务，会直接拒绝或返回错误。
+:::
+
 ---
 
 ## 三、Astro 与服务器侧注意事项
