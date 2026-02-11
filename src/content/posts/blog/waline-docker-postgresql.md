@@ -1,7 +1,7 @@
 ---
 title: 搭建 Waline 评论系统
 published: 2026-01-14
-description: 使用 Docker + PostgreSQL 搭建 Waline 评论系统，适配 Astro Fuwari 主题，并支持 Cloudflare Pages 与自建服务器的国内 / 海外 DNS 分流架构。
+description: 使用 Docker + PostgreSQL 在自建服务器搭建 Waline 评论系统。
 tags: [Waline, 博客搭建]
 category: 技术教程
 draft: false
@@ -9,32 +9,15 @@ draft: false
 
 ## 一、背景与整体架构说明
 
-### 1.博客部署背景
-
-当前博客采用 **双部署 + DNS 分流** 的方式：
-
-- **海外访问**
-  - Cloudflare Pages
-- **国内访问**
-  - 自建服务器（Nginx）
-- **DNS**
-  - 按地域解析（国内 / 海外）
-
-博客技术栈：
-
-- Astro
-- Fuwari 主题
-
-### 2.评论系统目标
+### 1.评论系统目标
 
 - **无需登录即可评论**（匿名）
-- 国内 / 海外访问稳定
 - 与博客前端部署方式解耦
 - 数据可控，可长期维护
 - 能在低配置服务器上稳定运行
 
 
-### 3.最终方案选择
+### 2.最终方案选择
 
 > **Docker 部署 Waline + PostgreSQL 数据库 + 独立评论域名**
 
@@ -62,7 +45,7 @@ Waline 的定位非常明确：**为自建博客服务的轻量评论系统**。
 | PostgreSQL | 强烈推荐 | 内存可控、稳定、并发友好 |
 | MySQL | 可选 | 同样稳定，但 PG 在复杂查询上更强 |
 | SQLite | 仅低流量 | 并发写入能力有限 |
-| MongoDB | 不推荐同机 | 常驻内存大，2G 机器容易吃紧 |
+| MongoDB | 不推荐同机 | 常驻内存大，低配置机器容易吃紧 |
 
 **结论**：  
 如果数据库和 Waline 在同一台服务器上 —— PostgreSQL 是最稳妥的选择。
@@ -88,20 +71,6 @@ Waline 的定位非常明确：**为自建博客服务的轻量评论系统**。
                       ▼
               Docker: PostgreSQL
 ```
-
-### 评论系统必须使用独立域名
-
-> 示例：`comment.example.com`
-
-- 评论系统与博客主站完全解耦
-- 前端无论部署在 Cloudflare Pages 还是自建服务器，都访问该域名
-
-### DNS 分流策略
-
-| 区域 | comment.example.com 指向 |
-| -- | ---------------------- |
-| 国内 | 国内服务器 IP               |
-| 海外 | Cloudflare / 海外入口      |
 
 ---
 
