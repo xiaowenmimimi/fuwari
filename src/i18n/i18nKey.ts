@@ -28,6 +28,7 @@ enum I18nKey {
 	systemMode = "systemMode",
 
 	more = "more",
+	less = "less",
 
 	author = "author",
 	publishedAt = "publishedAt",

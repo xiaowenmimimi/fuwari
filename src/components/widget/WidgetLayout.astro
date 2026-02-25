@@ -23,8 +23,11 @@ const className = Astro.props.class;
     </div>
     {isCollapsed && <div class="expand-btn px-4 -mb-2">
         <button class="btn-plain rounded-lg w-full h-9">
-            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2">
+            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2 txt-more">
                 <Icon name="material-symbols:more-horiz" class="text-[1.75rem]"></Icon> {i18n(I18nKey.more)}
+            </div>
+            <div class="text-[var(--primary)] flex items-center justify-center gap-2 -translate-x-2 hidden txt-less">
+                <Icon name="material-symbols:keyboard-arrow-up" class="text-[1.75rem]"></Icon> {i18n(I18nKey.less)}
             </div>
         </button>
     </div>}
@@ -48,8 +51,12 @@ const className = Astro.props.class;
             const btn = this.querySelector('.expand-btn');
             const wrapper = this.querySelector(`#${id}`)
             btn!.addEventListener('click', () => {
-                wrapper!.classList.remove('collapsed');
-                btn!.classList.add('hidden');
+                wrapper!.classList.toggle('collapsed');
+                const more = btn!.querySelector('.txt-more');
+                const less = btn!.querySelector('.txt-less');
+                more!.classList.toggle('hidden');
+                less!.classList.toggle('hidden');
+                btn!.classList.toggle('mt-2');
             })
         }
     }
