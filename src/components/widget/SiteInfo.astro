@@ -39,34 +39,34 @@ const totalPageviewsText = "-";
 	class={className}
 	style={style}
 >
-	<div class="flex flex-col gap-3">
-		<div class="flex items-center justify-between gap-4">
-			<div class="text-50 text-sm font-medium">文章数</div>
-			<div class="text-75 text-sm font-bold">{postCount}</div>
+	<div class="grid grid-cols-2 gap-3">
+		<div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3 flex flex-col items-center justify-center gap-1">
+			<div class="text-neutral-500 dark:text-neutral-400 text-xs font-medium">文章数</div>
+			<div class="text-xl font-bold text-[var(--primary)]">{postCount}</div>
 		</div>
-		<div class="flex items-center justify-between gap-4">
-			<div class="text-50 text-sm font-medium">访问次数</div>
-			<div class="text-75 text-sm font-bold">
+		<div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3 flex flex-col items-center justify-center gap-1">
+			<div class="text-neutral-500 dark:text-neutral-400 text-xs font-medium">访问次数</div>
+			<div class="text-xl font-bold text-[var(--primary)]">
 				<span data-umami-total-visits>-</span>
 			</div>
 		</div>
-		<div class="flex items-center justify-between gap-4">
-			<div class="text-50 text-sm font-medium">总浏览数</div>
-			<div class="text-75 text-sm font-bold">
+		<div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3 flex flex-col items-center justify-center gap-1">
+			<div class="text-neutral-500 dark:text-neutral-400 text-xs font-medium">总浏览数</div>
+			<div class="text-xl font-bold text-[var(--primary)]">
 				<span data-umami-total-pageviews>{totalPageviewsText}</span>
 			</div>
 		</div>
-		<div class="flex items-center justify-between gap-4">
-			<div class="text-50 text-sm font-medium">运行时间</div>
-			<div class="text-75 text-sm font-bold">
-				<span id="site-running-time"></span>
+		<div class="bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3 flex flex-col items-center justify-center gap-1">
+			<div class="text-neutral-500 dark:text-neutral-400 text-xs font-medium">运行天数</div>
+			<div class="text-xl font-bold text-[var(--primary)]">
+				<span id="site-running-days"></span>
 			</div>
 		</div>
-		<div class="flex items-center justify-between gap-4">
-			<div class="text-50 text-sm font-medium">最后更新</div>
-			<div class="text-75 text-sm font-bold">{lastUpdatedText}</div>
-		</div>
 	</div>
+    <div class="mt-3 bg-neutral-100 dark:bg-neutral-800 rounded-lg p-3 flex items-center justify-between gap-2">
+        <div class="text-neutral-500 dark:text-neutral-400 text-xs font-medium">最后更新</div>
+        <div class="text-sm font-bold text-neutral-700 dark:text-neutral-300">{lastUpdatedText}</div>
+    </div>
 </WidgetLayout>
 
 <style is:global>
@@ -79,15 +79,11 @@ const totalPageviewsText = "-";
 	function formatUptime(ms) {
 		const totalSeconds = Math.max(0, Math.floor(ms / 1000));
 		const days = Math.floor(totalSeconds / 86400);
-		const hours = Math.floor((totalSeconds % 86400) / 3600);
-		const minutes = Math.floor((totalSeconds % 3600) / 60);
-		if (days > 0) return `${days} 天 ${hours} 小时`;
-		if (hours > 0) return `${hours} 小时 ${minutes} 分钟`;
-		return `${minutes} 分钟`;
+        return `${days} 天`;
 	}
 
 	function renderUptime() {
-		const el = document.getElementById("site-running-time");
+		const el = document.getElementById("site-running-days");
 		if (!el) return;
 		el.textContent = formatUptime(Date.now() - siteStartMs);
 	}
