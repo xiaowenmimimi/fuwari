@@ -226,6 +226,21 @@ const bannerOffset =
 }
 </style>
 
+<style is:global>
+#toc-inner-wrapper {
+	top: 5.5rem;
+	bottom: 14rem;
+}
+.enable-banner #toc-inner-wrapper {
+	top: calc(var(--banner-height) + 5.5rem);
+	bottom: 14rem;
+}
+.enable-banner.is-home #toc-inner-wrapper {
+	top: calc(var(--banner-height-home) + 5.5rem);
+	bottom: 14rem;
+}
+</style>
+
 <script>
 import 'overlayscrollbars/overlayscrollbars.css';
 import {
@@ -549,6 +564,7 @@ const setup = () => {
             if (toc) {
                 toc.classList.remove('toc-not-ready')
             }
+            scrollFunction();
         }, 200)
 	});
 }
@@ -560,9 +576,16 @@ if (window?.swup?.hooks) {
 
 let backToTopBtn = document.getElementById('back-to-top-btn');
 let toc = document.getElementById('toc-wrapper');
+let tocInner = document.getElementById('toc-inner-wrapper');
 let navbar = document.getElementById('navbar-wrapper')
 function scrollFunction() {
 	let bannerHeight = window.innerHeight * (BANNER_HEIGHT / 100)
+
+    // 在 Swup 内容替换的情况下更新元素引用
+    backToTopBtn = document.getElementById('back-to-top-btn');
+    toc = document.getElementById('toc-wrapper');
+    tocInner = document.getElementById('toc-inner-wrapper');
+    navbar = document.getElementById('navbar-wrapper');
 
 	if (backToTopBtn) {
 		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
@@ -572,12 +595,12 @@ function scrollFunction() {
 		}
 	}
 
-	if (bannerEnabled && toc) {
-		if (document.body.scrollTop > bannerHeight || document.documentElement.scrollTop > bannerHeight) {
-			toc.classList.remove('toc-hide')
-		} else {
-			toc.classList.add('toc-hide')
-		}
+	if (bannerEnabled && toc && tocInner) {
+		let scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
+		// 5.5rem = 88px
+		let targetTop = Math.max(56, bannerHeight - scrollTop + 88);
+		tocInner.style.top = `${targetTop}px`;
+		toc.classList.remove('toc-hide');
 	}
 
 	if (!bannerEnabled) return
@@ -605,6 +628,9 @@ window.onresize = () => {
 	offset = offset - offset % 4;
 	document.documentElement.style.setProperty('--banner-height-extend', `${offset}px`);
 }
+
+// 初始化滚动位置
+scrollFunction();
 
 </script>
 
