@@ -116,7 +116,6 @@ onMount(async () => {
                             {#if (post.data.pin ?? 0) > 0}
                                 <span class="flex items-center gap-1 text-[var(--primary)] font-medium">
                                     <Icon icon="material-symbols:keep" class="text-[1.05rem] shrink-0" aria-label="置顶" />
-                                    <span>置顶</span>
                                 </span>
                             {/if}
                             <span>{formatDate(post.data.published)}</span>
