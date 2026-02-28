@@ -1,85 +1,89 @@
-# 🍥Fuwari
+# 🍥 Fuwari (Customized Version)
 
-[Astro](https://astro.build) で構築された静的ブログテンプレート
+![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-[**🖥️ライブデモ (Vercel)**](https://fuwari.vercel.app)
+📖 README: [English](./README.en.md) | [简体中文](../README.md) | [日本語](./README.ja.md) | [Español](./README.es.md) | [Indonesia](./README.id.md) | [한국어](./README.ko.md) | [ภาษาไทย](./README.th.md) | [Tiếng Việt](./README.vi.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+[Astro](https://astro.build) で構築された静的ブログテンプレート [Fuwari](https://github.com/saicaca/fuwari) のカスタマイズバージョンです。
 
-## ✨ 特徴
+オリジナルの滑らかなアニメーションとシンプルなデザインを維持しつつ、**Bangumi 追番**、**Waline コメント**、**Umami アナリティクス** などの実用的な機能を統合しました。同時に、**UI の詳細** も大幅に最適化されています。
 
-- [x] [Astro](https://astro.build) 及び [Tailwind CSS](https://tailwindcss.com) で構築
-- [x] スムーズなアニメーションとページ遷移
-- [x] ライト/ダークテーマ対応
-- [x] カスタマイズ可能なテーマカラーとバナー
-- [x] レスポンシブデザイン
-- [ ] コメント機能
-- [x] 検索機能
-- [x] 目次
+[**🖥️ ブログのプレビュー**](https://blog.xhwen.cn)
 
-## 👀 以下が必要
+## ✨ 新機能
 
-- Node.js <= 22
-- pnpm <= 9
+オリジナルの Fuwari と比較して、このプロジェクトでは主に以下の機能が追加されています：
 
-## 🚀 使用方法 1
+- 📺 **Bangumi 追番ページ**
+  - Bangumi API を統合し、視聴進捗を自動的に表示します。
+  - アニメのフィルタリングやページネーション表示をサポート。
+  - 詳細ページでは、アニメのカバー画像、評価、概要などの情報を表示します。
 
-[create-fuwari](https://github.com/L4Ph/create-fuwari)を使用して、ローカルにプロジェクトを初期化します。
+- 💬 **Waline コメントシステム**
+  - Waline コメントコンポーネントを内蔵し、記事ページでのコメントインタラクションをサポートします。
+  - ダークモードの自動適応をサポート。
+  - `src/config.ts` でサーバーアドレスを柔軟に設定できます。
 
-```sh
-# npm
-npm create fuwari@latest
+- 📊 **Umami アナリティクス統合**
+  - Umami 統計スクリプトを内蔵しており、HTML を手動で変更する必要はありません。
+  - ページの PV/UV 統計表示をサポート。
+  - ルーティング切り替え時の統計レポートを自動的に処理します（Swup 互換）。
 
-# yarn
-yarn create fuwari
+## 🛠️ 設定ガイド
 
-# pnpm
-pnpm create fuwari@latest
+このプロジェクトのすべての設定項目は `src/config.ts` ファイルにあり、詳細なコメント説明が含まれています。
 
-# bun
-bun create fuwari@latest
+## 📝 Markdown 拡張構文
 
-# deno
-deno run -A npm:create-fuwari@latest
+Astro がデフォルトでサポートしている Markdown 構文に加えて、このプロジェクトではリンクカード `::link-card` コンポーネントを拡張しました。
+
+**構文：**
+
+```markdown
+::link-card{title="タイトル" url="リンクURL" desc="説明(オプション)" image="画像リンク(オプション)" badge="バッジ(オプション)" target="開き方 (`_blank`, `_self`, デフォルトは `_blank`)(オプション)"}
 ```
 
-1. `src/config.ts` ファイルを編集する事でブログを自分好みにカスタマイズ出来ます。
-2. `pnpm new-post <filename>` で新しい記事を作成し、`src/content/posts/`.フォルダ内で編集します。
-3. 作成したブログをVercel、Netlify、GitHub Pagesなどにデプロイするには[ガイド](https://docs.astro.build/ja/guides/deploy/)に従って下さい。加えて、別途デプロイを行う前に `astro.config.mjs` を編集してサイト構成を変更する必要があります。
+## 🚀 ローカルでの実行
 
-## 🚀 使用方法 2
+1. リポジトリをクローン：
+   ```bash
+   git clone https://github.com/xiaowenmimimi/fuwari.git
+   cd fuwari
+   ```
 
-1. [テンプレート](https://github.com/saicaca/fuwari/generate)から新しいリポジトリを作成するかCloneをします。
-2. ブログをローカルで編集するには、リポジトリをクローンした後、`pnpm install` と `pnpm add sharp` を実行して依存関係をインストールします。  
-   - [pnpm](https://pnpm.io) がインストールされていない場合は `npm install -g pnpm` で導入可能です。
-3. `src/config.ts` ファイルを編集する事でブログを自分好みにカスタマイズ出来ます。
-4. `pnpm new-post <filename>` で新しい記事を作成し、`src/content/posts/`.フォルダ内で編集します。
-5. 作成したブログをVercel、Netlify、GitHub Pagesなどにデプロイするには[ガイド](https://docs.astro.build/ja/guides/deploy/)に従って下さい。加えて、別途デプロイを行う前に `astro.config.mjs` を編集してサイト構成を変更する必要があります。
+2. 依存関係をインストール：
+   ```bash
+   pnpm install
+   ```
 
-## ⚙️ 記事のフロントマター
+3. 開発サーバーを起動：
+   ```bash
+   pnpm dev
+   ```
 
-```yaml
----
-title: My First Blog Post
-published: 2023-09-09
-description: This is the first post of my new Astro blog.
-image: /images/cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
----
-```
+4. 本番バージョンをビルド：
+   ```bash
+   pnpm build
+   ```
 
-## 🧞 コマンド
+## ⚡ よく使うコマンド
 
-すべてのコマンドは、ターミナルでプロジェクトのルートから実行する必要があります:
+| コマンド | 説明 |
+|:---|:---|
+| `pnpm install` | 依存関係をインストール |
+| `pnpm dev` | ローカル開発サーバーを起動 (`localhost:4321`) |
+| `pnpm build` | 本番サイトを `./dist/` にビルド |
+| `pnpm preview` | ビルド成果物をプレビュー |
+| `pnpm new-post <filename>` | 新しい記事を作成 |
 
-| Command                             | Action                                      |
-|:------------------------------------|:--------------------------------------------|
-| `pnpm install` AND `pnpm add sharp` | 依存関係のインストール                                 |
-| `pnpm dev`                          | `localhost:4321` で開発用ローカルサーバーを起動            |
-| `pnpm build`                        | `./dist/` にビルド内容を出力                         |
-| `pnpm preview`                      | デプロイ前の内容をローカルでプレビュー                         |
-| `pnpm new-post <filename>`          | 新しい投稿を作成                                    |
-| `pnpm astro ...`                    | `astro add`, `astro check` の様なコマンドを実行する際に使用 |
-| `pnpm astro --help`                 | Astro CLIのヘルプを表示                            |
+## 🤝 謝辞
+
+- オリジナルテーマ作者：[Saicaca/fuwari](https://github.com/saicaca/fuwari)
+- Bangumi 機能参考：[Kasuha](https://kasuha.com/posts/fuwari-enhance-ep2/)
+
+## 📄 ライセンス
+
+このプロジェクトは [MIT License](./LICENSE) オープンソースプロトコルに従っています。詳細は LICENSE ファイルをご覧ください。
+
+[saicaca/fuwari](https://github.com/saicaca/fuwari) からフォークされました。原作者に感謝します。

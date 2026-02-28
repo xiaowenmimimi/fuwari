@@ -1,85 +1,89 @@
-# 🍥Fuwari
+# 🍥 Fuwari (Customized Version)
 
-Un tema estático para blogs construido con [Astro](https://astro.build).
+![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-[**🖥️ Demostración en Vivo (Vercel)**](https://fuwari.vercel.app)
+📖 README: [English](./README.en.md) | [简体中文](../README.md) | [日本語](./README.ja.md) | [Español](./README.es.md) | [Indonesia](./README.id.md) | [한국어](./README.ko.md) | [ภาษาไทย](./README.th.md) | [Tiếng Việt](./README.vi.md)
 
-![Imagen de Vista Previa](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+Una versión personalizada de la plantilla de blog estático [Fuwari](https://github.com/saicaca/fuwari) construida con [Astro](https://astro.build).
 
-## ✨ Características
+Manteniendo las animaciones fluidas y el diseño limpio del original, integra funciones prácticas como **Seguimiento de Bangumi**, **Comentarios Waline**, **Estadísticas Umami**, etc. Al mismo tiempo, los **detalles de la UI** han sido profundamente optimizados.
 
-- [x] Construido con [Astro](https://astro.build) y [Tailwind CSS](https://tailwindcss.com)
-- [x] Animaciones suaves y transiciones de página
-- [x] Modo claro / oscuro
-- [x] Colores del tema y banner personalizables
-- [x] Diseño responsivo
-- [ ] Comentarios
-- [x] Buscador
-- [x] TOC (Tabla de Contenidos)
+[**🖥️ Vista previa de mi blog**](https://blog.xhwen.cn)
 
-## 👀 requiere
+## ✨ Nuevas Funcionalidades
 
-- Node.js <= 22
-- pnpm <= 9
+En comparación con el Fuwari original, este proyecto añade principalmente las siguientes características:
 
-## 🚀 Cómo Usar 1
+- 📺 **Página de Seguimiento Bangumi**
+  - Integración con la API de Bangumi para mostrar automáticamente el progreso de visualización.
+  - Soporte para filtrado y paginación de animes.
+  - La página de detalles muestra la portada, calificación, resumen y otra información del anime.
 
-Inicializa el proyecto localmente usando [create-fuwari](https://github.com/L4Ph/create-fuwari).
+- 💬 **Sistema de Comentarios Waline**
+  - Componente de comentarios Waline incorporado, soportando interacción en las páginas de artículos.
+  - Soporte para adaptación automática al modo oscuro.
+  - Configuración flexible de la dirección del servidor en `src/config.ts`.
 
-```sh
-# npm
-npm create fuwari@latest.
+- 📊 **Integración de Estadísticas Umami**
+  - Script de estadísticas Umami incorporado, sin necesidad de modificar el HTML manualmente.
+  - Soporte para mostrar estadísticas de PV/UV de la página.
+  - Manejo automático del reporte de estadísticas al cambiar de ruta (compatible con Swup).
 
-# yarn
-yarn create fuwari.
+## 🛠️ Guía de Configuración
 
-# pnpm
-pnpm create fuwari@latest
+Todas las opciones de configuración de este proyecto se encuentran en el archivo `src/config.ts` e incluyen comentarios detallados.
 
-# bun
-bun create fuwari@latest
+## 📝 Sintaxis Extendida de Markdown
 
-# deno
-deno run -A npm:create-fuwari@latest
+Además de la sintaxis Markdown soportada por defecto en Astro, este proyecto extiende el componente de tarjeta de enlace `::link-card`.
+
+**Sintaxis:**
+
+```markdown
+::link-card{title="Título" url="URL del enlace" desc="Descripción(Opcional)" image="URL de la imagen(Opcional)" badge="Insignia(Opcional)" target="Destino (`_blank`, `_self`, por defecto `_blank`)(Opcional)"}
 ```
 
-1. Edita el archivo de configuración `src/config.ts` para personalizar tu blog.
-2. Ejecuta `pnpm new-post <nombre-de-archivo>` para crear una nueva entrada y edítala en `src/content/posts/`.
-3. Despliega tu blog en Vercel, Netlify, GitHub Pages, etc., siguiendo [las guías](https://docs.astro.build/en/guides/deploy/). Necesitas editar la configuración del sitio en `astro.config.mjs` antes del despliegue.
+## 🚀 Ejecución Local
 
-## 🚀 Cómo Usar 2
+1. Clonar el repositorio:
+   ```bash
+   git clone https://github.com/xiaowenmimimi/fuwari.git
+   cd fuwari
+   ```
 
-1. [Genera un nuevo repositorio](https://github.com/saicaca/fuwari/generate) desde esta plantilla o haz un fork de este repositorio.
-2. Para editar tu blog localmente, clona tu repositorio, ejecuta `pnpm install` y `pnpm add sharp` para instalar las dependencias.
-   - Instala [pnpm](https://pnpm.io) `npm install -g pnpm` si aún no lo tienes.
-3. Edita el archivo de configuración `src/config.ts` para personalizar tu blog.
-4. Ejecuta `pnpm new-post <nombre-de-archivo>` para crear una nueva entrada y edítala en `src/content/posts/`.
-5. Despliega tu blog en Vercel, Netlify, GitHub Pages, etc., siguiendo [las guías](https://docs.astro.build/en/guides/deploy/). Necesitas editar la configuración del sitio en `astro.config.mjs` antes del despliegue.
+2. Instalar dependencias:
+   ```bash
+   pnpm install
+   ```
 
-## ⚙️ Cabecera de las Entradas
+3. Iniciar el servidor de desarrollo:
+   ```bash
+   pnpm dev
+   ```
 
-```yaml
----
-title: Mi Primer Post en el Blog
-published: 2023-09-09
-description: Esta es la primera entrada de mi nuevo blog con Astro.
-image: /images/cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
----
-```
+4. Construir la versión de producción:
+   ```bash
+   pnpm build
+   ```
 
-## 🧞 Comandos
+## ⚡ Comandos Comunes
 
-Todos los comandos se ejecutan desde la raíz del proyecto, desde una terminal:
+| Comando | Descripción |
+|:---|:---|
+| `pnpm install` | Instalar dependencias |
+| `pnpm dev` | Iniciar servidor de desarrollo local (`localhost:4321`) |
+| `pnpm build` | Construir sitio de producción en `./dist/` |
+| `pnpm preview` | Previsualizar la construcción |
+| `pnpm new-post <filename>` | Crear un nuevo post |
 
-| Comando                             | Acción                                            |
-|:------------------------------------|:--------------------------------------------------|
-| `pnpm install` y `pnpm add sharp`   | Instala las dependencias                          |
-| `pnpm dev`                          | Inicia el servidor de desarrollo local en `localhost:4321` |
-| `pnpm build`                        | Compila tu web para producción en `./dist/`     |
-| `pnpm preview`                      | Previsualiza la web localmente, antes del despliegue |
-| `pnpm new-post <nombre-de-archivo>` | Crea una nueva entrada                            |
-| `pnpm astro ...`                    | Ejecuta comandos CLI como `astro add`, `astro check` |
-| `pnpm astro --help`                 | Obtén ayuda para usar el CLI de Astro             |
+## 🤝 Agradecimientos
+
+- Autor del tema original: [Saicaca/fuwari](https://github.com/saicaca/fuwari)
+- Referencia de la función Bangumi: [Kasuha](https://kasuha.com/posts/fuwari-enhance-ep2/)
+
+## 📄 Licencia
+
+Este proyecto sigue el protocolo de código abierto [MIT License](./LICENSE), ver el archivo LICENSE para más detalles.
+
+Originalmente bifurcado de [saicaca/fuwari](https://github.com/saicaca/fuwari), gracias al autor original.

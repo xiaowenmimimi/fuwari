@@ -1,84 +1,89 @@
-# 🍥Fuwari
+# 🍥 Fuwari (Customized Version)
 
-แม่แบบสำหรับเว็บบล็อกแบบ static สร้างด้วย [Astro](https://astro.build)
+![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-[**🖥️ ตัวอย่างการใช้งานจริง (Vercel)**](https://fuwari.vercel.app)
+📖 README: [English](./README.en.md) | [简体中文](../README.md) | [日本語](./README.ja.md) | [Español](./README.es.md) | [Indonesia](./README.id.md) | [한국어](./README.ko.md) | [ภาษาไทย](./README.th.md) | [Tiếng Việt](./README.vi.md)
 
-![ภาพตัวอย่าง](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+เวอร์ชันปรับแต่งของเทมเพลตบล็อกแบบคงที่ [Fuwari](https://github.com/saicaca/fuwari) ที่สร้างด้วย [Astro](https://astro.build)
 
-## ✨ คุณสมบัติ
+ในขณะที่ยังคงรักษาภาพเคลื่อนไหวที่ลื่นไหลและการออกแบบที่เรียบง่ายของต้นฉบับไว้ ได้มีการรวมฟังก์ชันที่ใช้งานได้จริง เช่น **การติดตาม Bangumi**, **ความคิดเห็น Waline**, **สถิติ Umami** เป็นต้น ในขณะเดียวกัน **รายละเอียด UI** ก็ได้รับการปรับให้เหมาะสมอย่างลึกซึ้ง
 
-- [x] สร้างด้วย [Astro](https://astro.build) และ [Tailwind CSS](https://tailwindcss.com)
-- [x] มีอนิเมชั่นและการเปลี่ยนหน้าอย่างลื่นไหล
-- [x] โหมดสว่าง / โหมดมืด
-- [x] ปรับแต่งสีธีมและแบนเนอร์ได้
-- [x] Responsive design (หน้าตาเว็บปรับเปลี่ยนตามขนาดจอ)
-- [x] ฟังก์ชันการค้นหา ขับเคลื่อนด้วย [Pagefind](https://pagefind.app/)
-- [x] [คุณสมบัติเพิ่มเติมสำหรับมาร์กดาวน์](https://github.com/saicaca/fuwari/blob/main/docs/README.th.md#-markdown-extended-syntax)
-- [x] สารบัญ
-- [x] RSS feed
+[**🖥️ ดูตัวอย่างบล็อกของฉัน**](https://blog.xhwen.cn)
 
-## 🚀 เริ่มต้นใช้งาน
+## ✨ คุณสมบัติใหม่
 
-1. สร้าง repository ใหม่สำหรับบล็อกของคุณ:
-    - [Generate repository ใหม่](https://github.com/saicaca/fuwari/generate) ขึ้นมาจากแม่แบบนี้ หรือจะ fork repository นี้ก็ได้
-    - หรือจะสร้างโดยการเลือกรันคำสั่งต่อไปนี้ คำสั่งใดคำสั่งหนึ่ง:
-       ```sh
-       npm create fuwari@latest
-       yarn create fuwari
-       pnpm create fuwari@latest
-       bun create fuwari@latest
-       deno run -A npm:create-fuwari@latest
-       ```
-2. เริ่มแก้ไขบล็อกของคุณแบบ local โดยการ clone repository ของคุณ (จากข้อ 1) ไว้ในเครื่องของคุณ แล้วรันคำสั่ง `pnpm install` เพื่อติดตั้ง dependencies ที่จำเป็น
-    - ติดตั้ง [pnpm](https://pnpm.io) ด้วยคำสั่ง `npm install -g pnpm` ก่อน ถ้ายังไม่เคยติดตั้ง
-3. แก้ไขไฟล์การตั้งค่า `src/config.ts` เพื่อปรับแต่งบล็อกของคุณ
-4. รันคำสั่ง `pnpm new-post <filename>` เพื่อสร้างโพสต์ใหม่ใน `src/content/posts/` และแก้ไขไฟล์โพสต์นั้น ๆ ให้สมบูรณ์
-5. Deploy เว็บบล็อกของคุณไปยัง Vercel, Netlify, GitHub Pages หรือบริการอื่น ๆ โดยอ้างอิงวิธีการจาก[คู่มือนี้](https://docs.astro.build/en/guides/deploy/) อย่าลืมแก้ไขการตั้งค่าเว็บไซต์ในไฟล์ `astro.config.mjs` ก่อนที่คุณจะ deploy เว็บ
+เมื่อเทียบกับ Fuwari ต้นฉบับ โปรเจ็กต์นี้ได้เพิ่มคุณสมบัติต่อไปนี้เป็นหลัก:
 
-## 📝 Frontmatter (ส่วนหัวไฟล์) ของโพสต์
+- 📺 **หน้าติดตาม Bangumi**
+  - รวม Bangumi API แสดงความคืบหน้าในการรับชมโดยอัตโนมัติ
+  - รองรับการกรองอนิเมะและการแบ่งหน้า
+  - หน้ารายละเอียดแสดงปกอนิเมะ คะแนน เรื่องย่อ และข้อมูลอื่นๆ
 
-```yaml
----
-title: โพสต์แรกของฉัน
-published: 2023-09-09
-description: นี่คือโพสต์แรกของเว็บบล็อก Astro อันใหม่ของฉัน
-image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
-lang: jp      # เขียนค่านี้เมื่อภาษาของโพสต์นั้น ๆ แตกต่างจากภาษาของเว็บไซต์ที่ตั้งค่าไว้ใน `config.ts` เท่านั้น
----
+- 💬 **ระบบความคิดเห็น Waline**
+  - คอมโพเนนต์ความคิดเห็น Waline ในตัว รองรับการโต้ตอบความคิดเห็นในหน้าบทความ
+  - รองรับการปรับโหมดมืดอัตโนมัติ
+  - กำหนดค่าที่อยู่เซิร์ฟเวอร์ได้อย่างยืดหยุ่นใน `src/config.ts`
+
+- 📊 **การรวมสถิติ Umami**
+  - สคริปต์สถิติ Umami ในตัว ไม่จำเป็นต้องแก้ไข HTML ด้วยตนเอง
+  - รองรับการแสดงสถิติ PV/UV ของหน้า
+  - จัดการรายงานสถิติโดยอัตโนมัติเมื่อเปลี่ยนเส้นทาง (เข้ากันได้กับ Swup)
+
+## 🛠️ คู่มือการกำหนดค่า
+
+รายการกำหนดค่าทั้งหมดของโปรเจ็กต์นี้อยู่ในไฟล์ `src/config.ts` และมีคำอธิบายประกอบโดยละเอียด
+
+## 📝 ไวยากรณ์ส่วนขยาย Markdown
+
+นอกเหนือจากไวยากรณ์ Markdown ที่ Astro รองรับโดยค่าเริ่มต้นแล้ว โปรเจ็กต์นี้ยังขยายคอมโพเนนต์การ์ดลิงก์ `::link-card`
+
+**ไวยากรณ์:**
+
+```markdown
+::link-card{title="หัวข้อ" url="ที่อยู่ลิงก์" desc="คำอธิบาย(ไม่บังคับ)" image="ลิงก์รูปภาพ(ไม่บังคับ)" badge="ป้าย(ไม่บังคับ)" target="วิธีการเปิด (`_blank`, `_self`, ค่าเริ่มต้น `_blank`)(ไม่บังคับ)"}
 ```
 
-## 🧩 Markdown Extended Syntax
+## 🚀 การรันในเครื่อง
 
-เดิมที Astro มีการสนับสนุน[ภาษามาร์กดาวน์แบบของ GitHub](https://github.github.com/gfm/) ไว้อยู่แล้ว แต่ Fuwari ได้เพิ่มเติมคุณสมบัติพิเศษอื่น ๆ เข้าไปอีก:
+1. โคลนที่เก็บ:
+   ```bash
+   git clone https://github.com/xiaowenmimimi/fuwari.git
+   cd fuwari
+   ```
 
-- Admonitions หรือ กล่องข้อมูลพิเศษ ([ดูตัวอย่างและการใช้งาน](https://fuwari.vercel.app/posts/markdown-extended/#admonitions))
-- การ์ด GitHub Repository ([ดูตัวอย่างและการใช้งาน](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
-- บล็อกโค้ดขั้นสูง ด้วย Expressive Code ([ดูตัวอย่าง](https://fuwari.vercel.app/posts/expressive-code/) / [เอกสารประกอบ](https://expressive-code.com/))
+2. ติดตั้งการพึ่งพา:
+   ```bash
+   pnpm install
+   ```
 
-## ⚡ คำสั่ง
+3. เริ่มเซิร์ฟเวอร์การพัฒนา:
+   ```bash
+   pnpm dev
+   ```
 
-คำสั่งที่รันได้ใน terminal จาก root ของโปรเจกต์:
+4. สร้างเวอร์ชันการผลิต:
+   ```bash
+   pnpm build
+   ```
 
-| คำสั่ง                       | การทำงาน                                               |
-|:---------------------------|:-------------------------------------------------------|
-| `pnpm install`             | ติดตั้ง dependencies                                      |
-| `pnpm dev`                 | เปิดเซิร์ฟเวอร์สำหรับการพัฒนาแบบ local ที่ `localhost:4321`    |
-| `pnpm build`               | Build เว็บไซต์สำหรับใช้งานจริงไปยังโฟลเดอร์ `./dist/`         |
-| `pnpm preview`             | ดูตัวอย่าง build ของคุณแบบ local ก่อนที่จะ deploy จริง         |
-| `pnpm check`               | ดำเนินการตรวจสอบหาข้อผิดพลาดในโค้ดของคุณ                    |
-| `pnpm format`              | จัดรูปแบบโค้ดของคุณด้วย Biome                               |
-| `pnpm new-post <filename>` | สร้างโพสต์ใหม่                                            |
-| `pnpm astro ...`           | รันคำสั่ง CLI เช่น `astro add`, `astro check`              |
-| `pnpm astro --help`        | แสดงวิธีใช้งาน Astro CLI                                  |
+## ⚡ คำสั่งทั่วไป
 
-## ✏️ การมีส่วนร่วม
+| คำสั่ง | คำอธิบาย |
+|:---|:---|
+| `pnpm install` | ติดตั้งการพึ่งพา |
+| `pnpm dev` | เริ่มเซิร์ฟเวอร์การพัฒนาในเครื่อง (`localhost:4321`) |
+| `pnpm build` | สร้างไซต์การผลิตไปที่ `./dist/` |
+| `pnpm preview` | ดูตัวอย่างผลงานที่สร้าง |
+| `pnpm new-post <filename>` | สร้างโพสต์ใหม่ |
 
-กรุณาอ่าน [แนวทางการมีส่วนร่วม](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md) สำหรับรายละเอียดวิธีการมีส่วนร่วมในโปรเจกต์นี้
+## 🤝 ขอขอบคุณ
 
-## 📄 สัญญาอนุญาต
+- ผู้เขียนธีมต้นฉบับ: [Saicaca/fuwari](https://github.com/saicaca/fuwari)
+- อ้างอิงฟังก์ชัน Bangumi: [Kasuha](https://kasuha.com/posts/fuwari-enhance-ep2/)
 
-โปรเจกต์นี้เผยแพร่ภายใต้สัญญาอนุญาตแบบ MIT License
+## 📄 ใบอนุญาต
+
+โปรเจ็กต์นี้ปฏิบัติตามโปรโตคอลโอเพ่นซอร์ส [MIT License](./LICENSE) ดูรายละเอียดในไฟล์ LICENSE
+
+Fork มาจาก [saicaca/fuwari](https://github.com/saicaca/fuwari) ขอขอบคุณผู้เขียนต้นฉบับ

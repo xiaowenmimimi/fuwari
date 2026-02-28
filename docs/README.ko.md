@@ -1,82 +1,89 @@
-# 🍥Fuwari
+# 🍥 Fuwari (Customized Version)
 
-[Astro](https://astro.build)로 구축된 정적 블로그 템플릿입니다.
+![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
+![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-[**🖥️미리보기 (Vercel)**](https://fuwari.vercel.app)
+📖 README:[English](./README.en.md) | [简体中文](../README.md) | [日本語](./README.ja.md) | [Español](./README.es.md) | [Indonesia](./README.id.md) | [한국어](./README.ko.md) | [ภาษาไทย](./README.th.md) | [Tiếng Việt](./README.vi.md)
 
-![Preview Image](https://raw.githubusercontent.com/saicaca/resource/main/fuwari/home.png)
+[Astro](https://astro.build)로 구축된 정적 블로그 템플릿 [Fuwari](https://github.com/saicaca/fuwari)의 커스터마이즈 버전입니다.
 
-## ✨ 특징
+원본의 부드러운 애니메이션과 깔끔한 디자인을 유지하면서, **Bangumi 애니메이션 추적**, **Waline 댓글**, **Umami 통계** 등 실용적인 기능을 통합했습니다. 동시에 **UI 디테일**도 깊이 있게 최적화되었습니다.
 
-- [x] [Astro](https://astro.build) 및 [Tailwind CSS](https://tailwindcss.com)로 구축됨
-- [x] 부드러운 애니메이션 및 페이지 전환
-- [x] 라이트 모드 / 다크 모드
-- [x] 사용자 정의 가능한 테마 색상 및 배너
-- [x] 반응형 디자인
-- [x] [Pagefind](https://pagefind.app/)를 이용한 검색 기능
-- [x] [Markdown 확장 기능](https://github.com/saicaca/fuwari?tab=readme-ov-file#-markdown-extended-syntax)
-- [x] 목차
-- [x] RSS 피드
+[**🖥️ 내 블로그 미리보기**](https://blog.xhwen.cn)
 
-## 🚀 시작하기
-1. 블로그 저장소를 생성하세요:
-   - 이 템플릿에서 [새 저장소를 생성](https://github.com/saicaca/fuwari/generate)하거나 이 저장소를 포크하세요.
-   - 또는 다음 명령어 중 하나를 실행하세요:
-   ```sh
-       npm create fuwari@latest
-       yarn create fuwari
-       pnpm create fuwari@latest
-       bun create fuwari@latest
-       deno run -A npm:create-fuwari@latest
-   ```
-2. 로컬에서 블로그를 수정하려면, 저장소를 복제하고 `pnpm install`을 실행하여 종속성을 설치하세요.
-   - [pnpm](https://pnpm.io)이 설치되어 있지 않다면 `npm install -g pnpm`을 실행하여 설치하세요.
-3. `src/config.ts`설정 파일을 수정하여 블로그를 커스터마이징하세요.
-4. `pnpm new-post <filename>`을 실행하여 새 게시물을 만들고 `src/content/posts/`에서 수정하세요.
-5. [가이드](https://docs.astro.build/en/guides/deploy/)에 따라 블로그를 Vercel, Netlify, Github Pages 등에 배포하세요. 배포하기 전에 `astro.config.mjs`에서 사이트 구성을 수정해야 합니다.
+## ✨ 새로운 기능
 
-## ⚙️ 게시물의 머리말 설정
+원본 Fuwari와 비교하여, 이 프로젝트는 주로 다음 기능들을 추가했습니다:
 
-```yaml
----
-title: 내 첫 블로그 게시물
-published: 2023-09-09
-description: 내 새로운 Astro 블로그의 첫 번째 게시물입니다!
-image: ./cover.jpg
-tags: [Foo, Bar]
-category: Front-end
-draft: false
-lang: jp      # 게시물의 언어가 `config.ts`의 사이트 언어와 다른 경우에만 설정합니다.
----
+- 📺 **Bangumi 애니메이션 추적 페이지**
+  - Bangumi API 통합, 시청 진행 상황 자동 표시.
+  - 애니메이션 필터링 및 페이지네이션 지원.
+  - 상세 페이지에서 애니메이션 커버, 평점, 요약 등의 정보 표시.
+
+- 💬 **Waline 댓글 시스템**
+  - Waline 댓글 컴포넌트 내장, 게시물 페이지에서의 댓글 상호작용 지원.
+  - 다크 모드 자동 적응 지원.
+  - `src/config.ts`에서 서버 주소를 유연하게 구성 가능.
+
+- 📊 **Umami 통계 통합**
+  - Umami 통계 스크립트 내장, HTML을 수동으로 수정할 필요 없음.
+  - 페이지 PV/UV 통계 표시 지원.
+  - 라우팅 전환 시 통계 보고 자동 처리 (Swup 호환).
+
+## 🛠️ 구성 가이드
+
+이 프로젝트의 모든 구성 항목은 `src/config.ts` 파일에 위치하며 상세한 주석 설명이 포함되어 있습니다.
+
+## 📝 Markdown 확장 구문
+
+Astro가 기본적으로 지원하는 Markdown 구문 외에도, 이 프로젝트는 링크 카드 `::link-card` 컴포넌트를 확장했습니다.
+
+**구문:**
+
+```markdown
+::link-card{title="제목" url="링크 주소" desc="설명(선택)" image="이미지 링크(선택)" badge="배지(선택)" target="여는 방식 (`_blank`, `_self`, 기본값 `_blank`)(선택)"}
 ```
-## 🧩 마크다운 확장 구문
-Astro의 기본 [GitHub Flavored Markdown](https://github.github.com/gfm/) 지원 외에도 몇 가지 추가적인 마크다운 기능이 포함되어 있습니다.
-- Admonitions ([미리보기 및 사용법](https://fuwari.vercel.app/posts/markdown-extended/#admonitions))
-- GitHub 저장소 카드 ([미리보기 및 사용법](https://fuwari.vercel.app/posts/markdown-extended/#github-repository-cards))
-- Expressive Code를 사용한 향상된 코드 블록 ([미리보기](https://fuwari.vercel.app/posts/expressive-code/) / [문서](https://expressive-code.com/))
 
+## 🚀 로컬 실행
 
+1. 저장소 복제:
+   ```bash
+   git clone https://github.com/xiaowenmimimi/fuwari.git
+   cd fuwari
+   ```
 
-## ⚡ 명령어
+2. 의존성 설치:
+   ```bash
+   pnpm install
+   ```
 
-모든 명령어는 프로젝트 최상단, 터미널에서 실행됩니다:
+3. 개발 서버 시작:
+   ```bash
+   pnpm dev
+   ```
 
-| Command                             | Action                                           |
-|:------------------------------------|:-------------------------------------------------|
-| `pnpm install` | 종속성을 설치합니다.                            |
-| `pnpm dev`                          | `localhost:4321`에서 로컬 개발 서버를 시작합니다.      |
-| `pnpm build`                        | `./dist/`에 프로덕션 사이트를 구축합니다.         |
-| `pnpm check`                        | 코드에서 오류를 확인합니다.         |
-| `pnpm format`                        | Biome을 사용하여 코드를 포멧합니다.         |
-| `pnpm preview`                      | 배포하기 전에 로컬에서 빌드 미리보기     |
-| `pnpm new-post <filename>`          | 새 게시물 작성                                |
-| `pnpm astro ...`                    | `astro add`, `astro check`와 같은 CLI 명령어 실행 |
-| `pnpm astro --help`                 | Astro CLI를 사용하여 도움 받기                     |
+4. 프로덕션 버전 빌드:
+   ```bash
+   pnpm build
+   ```
 
-## ✏️ 기여
-이 프로젝트에 기여하는 방법에 대한 자세한 내용은 [기여 가이드](https://github.com/saicaca/fuwari/blob/main/CONTRIBUTING.md)를 확인하세요.
+## ⚡ 일반적인 명령어
+
+| 명령어 | 설명 |
+|:---|:---|
+| `pnpm install` | 의존성 설치 |
+| `pnpm dev` | 로컬 개발 서버 시작 (`localhost:4321`) |
+| `pnpm build` | 프로덕션 사이트를 `./dist/`로 빌드 |
+| `pnpm preview` | 빌드 결과물 미리보기 |
+| `pnpm new-post <filename>` | 새 게시물 작성 |
+
+## 🤝 감사의 말
+
+- 원본 테마 작성자: [Saicaca/fuwari](https://github.com/saicaca/fuwari)
+- Bangumi 기능 참조: [Kasuha](https://kasuha.com/posts/fuwari-enhance-ep2/)
 
 ## 📄 라이선스
-이 프로젝트는 MIT 라이선스에 따라 라이선스가 부여됩니다.
 
-[![FOSSA Status](https://app.fossa.com/api/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari.svg?type=large&issueType=license)](https://app.fossa.com/projects/git%2Bgithub.com%2Fsaicaca%2Ffuwari?ref=badge_large&issueType=license)
+이 프로젝트는 [MIT License](./LICENSE) 오픈 소스 프로토콜을 따릅니다. 자세한 내용은 LICENSE 파일을 참조하세요.
+
+[saicaca/fuwari](https://github.com/saicaca/fuwari)에서 포크되었습니다. 원작자에게 감사드립니다.
