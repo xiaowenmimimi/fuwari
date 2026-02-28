@@ -243,3 +243,83 @@ a.card-github.fetch-error
   transition-property: all
   transition-timing-function: cubic-bezier(0.4, 0, 0.2, 1)
   transition-duration: 0.15s
+
+a.card-link
+  display: flex
+  background: var(--license-block-bg)
+  border-radius: var(--radius-large)
+  padding: 1rem 1.2rem
+  text-decoration: none
+  transition: all 0.15s cubic-bezier(0.4, 0, 0.2, 1)
+  position: relative
+  overflow: hidden
+  margin: 0.5rem 0
+  border: 1px solid transparent
+
+  &:hover
+    background-color: var(--btn-regular-bg-hover)
+    border-color: var(--primary)
+    transform: translateY(-2px)
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05)
+
+    .cl-title
+      color: var(--primary)
+
+  &:active
+    transform: scale(0.98)
+
+  .cl-content
+    flex: 1
+    display: flex
+    flex-direction: column
+    justify-content: center
+    overflow: hidden
+
+  .cl-title
+    font-size: 1.1rem
+    font-weight: 700
+    color: var(--tw-prose-headings)
+    margin-bottom: 0.25rem
+    line-height: 1.4
+    transition: color 0.15s
+
+  .cl-desc
+    font-size: 0.9rem
+    color: var(--tw-prose-body)
+    opacity: 0.8
+    margin-bottom: 0.5rem
+    line-height: 1.5
+    display: -webkit-box
+    -webkit-line-clamp: 2
+    -webkit-box-orient: vertical
+    overflow: hidden
+
+  .cl-domain
+    font-size: 0.8rem
+    color: var(--tw-prose-body)
+    opacity: 0.6
+    font-family: var(--font-mono)
+    display: flex
+    align-items: center
+    gap: 0.25rem
+
+  .cl-cover
+    width: 6rem
+    height: 6rem
+    flex-shrink: 0
+    margin-left: 1.5rem
+    border-radius: 0.5rem
+    background-size: cover
+    background-position: center
+    background-color: var(--card-bg)
+
+  .cl-badge
+    position: absolute
+    top: 0
+    right: 0
+    background: var(--primary)
+    color: white
+    font-size: 0.75rem
+    padding: 0.1rem 0.5rem
+    border-bottom-left-radius: 0.5rem
+    font-weight: bold
