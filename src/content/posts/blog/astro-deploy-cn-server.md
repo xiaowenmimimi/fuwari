@@ -36,7 +36,7 @@ draft: false
 > **并通过自动化部署保证两端内容一致。**
 
 :::important[DNS 国内 / 海外分流方案]
-[**阿里云 DNS + Cloudflare Pages 实现国内 / 海外分流**](/posts/blog/dns-geo-split-aliyun-cloudflare/)
+> ::link-card{title="阿里云 DNS + Cloudflare Pages 实现国内 / 海外分流" url="/posts/blog/dns-geo-split-aliyun-cloudflare/" desc="在使用 Cloudflare Pages 的前提下，为国内提供更稳定、更快的访问入口，并保持整套方案长期可维护。" badge="Blog" target="_self"}
 :::
 
 :::tip[未采用的方案]

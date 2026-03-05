@@ -16,12 +16,11 @@ draft: false
 - 数据可控，可长期维护
 - 能在低配置服务器上稳定运行
 
-
 ### 2.最终方案选择
 
 > **Docker 部署 Waline + PostgreSQL 数据库 + 独立评论域名**
 
-[Waline 官方文档](https://waline.js.org/guide/)
+::link-card{title="Waline 官方文档" url="https://waline.js.org/guide/" image="图片链接(可选)" badge="Waline"}
 
 :::note[为什么选择 Waline + PostgreSQL（而不是 Twikoo / Mongo）]
 **1. 为什么选择 Waline**
@@ -177,7 +176,7 @@ COMMENT_SERVER_URL=https://comment.example.com
 > - `docker-compose.yml` 不用写明文密码
 > - 换密码、换域名直接改 `.env`
 
-### docker-compose.yml（PostgreSQL + Waline Server）
+### docker-compose.yml
 
 在 `/opt/waline` 目录下创建 `docker-compose.yml`：
 
@@ -308,7 +307,7 @@ docker compose up -d
 > 使用 PostgreSQL作为 Waline 存储时，**需要手动初始化表结构**。  
 
 :::note[]
-[Waline 文档 PostgreSQL 数据库说明](https://waline.js.org/guide/database.html#postgresql)
+> ::link-card{title="Waline 文档 PostgreSQL 数据库说明" url="https://waline.js.org/guide/database.html#postgresql" image="图片链接(可选)" badge="Waline"}
 :::
 
 1. 进入 PostgreSQL 容器

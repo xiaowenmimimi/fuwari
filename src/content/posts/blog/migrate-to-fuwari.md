@@ -13,8 +13,8 @@ pin: 100
 # Fuwari —— 我的新博客旅程 ✨
 
 :::note[旧站信息]
-这是我在 2021 年创建的旧站（Hexo + Butterfly）：  
-[https://xiaowenmimimi.github.io/](https://xiaowenmimimi.github.io/)  
+这是我在 2021 年创建的旧站（Hexo + Butterfly）：
+::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io/" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" badge="Blog"}
 最后一次更新停在了 **2021-12-16**。
 :::
 

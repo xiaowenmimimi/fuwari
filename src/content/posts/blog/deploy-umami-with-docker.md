@@ -7,6 +7,10 @@ category: 技术教程
 draft: false
 ---
 
+:::important[Umami API 文章相关文档]
+> ::link-card{title="Umami API 获取访客数 / 浏览量 / 访问次数 / 在线人数" url="/posts/blog/umami-server-api-analytics-guide/" desc="使用 Umami Server API 在自部署环境下获取博客的 PV、UV、Visits 以及在线人数，并安全地展示到前端页面。" badge="Blog" target="_self"}
+:::
+
 ## 方案说明
 
 为了给博客增加 **文章浏览量与访客统计功能**，同时保持对数据的可控性，我选择在自己的服务器上部署 **Umami** 作为统计方案。
@@ -63,7 +67,7 @@ Docker 容器（PostgreSQL）
 
 ---
 
-## 使用 Docker 部署 Umami 统计服务（Nginx + HTTPS）
+## 使用 Docker 部署 Umami 统计服务
 
 ### 服务器环境
 

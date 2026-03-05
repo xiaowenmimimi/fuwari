@@ -9,7 +9,9 @@ draft: false
 
 ## 背景说明
 
-之前的博客是部署在 `https://xiaowenmimimi.github.io`（GitHub Pages）上。
+之前的博客是部署在 GitHub Pages 上。
+
+::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io" desc="mimimi" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" badge="Blog"}
 
 在重新搭建 Astro 博客时，我希望：
 
@@ -18,6 +20,8 @@ draft: false
 * 获得更现代的 **自动构建 + 预览部署** 体验
 
 最终选择了 [**Cloudflare Pages**](https://dash.cloudflare.com/) 作为新的部署平台。
+
+::link-card{title="Cloudflare Pages" url="https://dash.cloudflare.com/" image="图片链接(可选)" badge="Cloudflare"}
 
 ---
 
@@ -53,9 +57,9 @@ draft: false
 * 一个 Cloudflare 账号
 
 :::tip[]
-[Cloudflare Pages Functions 官网](https://www.cloudflare.com/zh-cn/)
+> ::link-card{title="Cloudflare Pages Functions 官网" url="https://www.cloudflare.com/zh-cn/" image="图片链接(可选)" badge="Cloudflare"}
 
-[Cloudflare Pages 官方文档](https://developers.cloudflare.com/pages/)
+> ::link-card{title="Cloudflare Pages 官方文档" url="https://developers.cloudflare.com/pages/" image="图片链接(可选)" badge="Cloudflare"}
 :::
 
 ---
