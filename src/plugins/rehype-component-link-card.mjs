@@ -18,79 +18,79 @@ import { h } from "hastscript";
  * @returns {import('mdast').Parent} 生成的 HAST 节点树
  */
 export function LinkCardComponent(properties, children) {
-  // 校验: link-card 必须是叶子节点，不能包裹其他内容
-  if (Array.isArray(children) && children.length !== 0)
-    return h("div", { class: "hidden" }, [
-      'Invalid directive. ("link-card" directive must be leaf type "::link-card{title="..." url="..."}")',
-    ]);
+	// 校验: link-card 必须是叶子节点，不能包裹其他内容
+	if (Array.isArray(children) && children.length !== 0)
+		return h("div", { class: "hidden" }, [
+			'Invalid directive. ("link-card" directive must be leaf type "::link-card{title="..." url="..."}")',
+		]);
 
-  // 校验: title 和 url 是必填项
-  if (!properties.title || !properties.url)
-    return h(
-      "div",
-      { class: "hidden" },
-      'Invalid link card. ("title" and "url" attributes are required)',
-    );
+	// 校验: title 和 url 是必填项
+	if (!properties.title || !properties.url)
+		return h(
+			"div",
+			{ class: "hidden" },
+			'Invalid link card. ("title" and "url" attributes are required)',
+		);
 
-  const { title, url, desc, image, badge, target } = properties;
-  
-  // 判断是否为站内链接 (以 / 或 # 开头)
-  const isInternal = url.startsWith("/") || url.startsWith("#");
+	const { title, url, desc, image, badge, target } = properties;
 
-  // 智能设置 target:
-  // 1. 如果用户显式指定了 target，则使用用户的设置
-  // 2. 如果是站内链接，默认在当前页打开 (_self)
-  // 3. 如果是外部链接，默认在新标签页打开 (_blank)
-  const finalTarget = target ? target : isInternal ? "_self" : "_blank";
+	// 判断是否为站内链接 (以 / 或 # 开头)
+	const isInternal = url.startsWith("/") || url.startsWith("#");
 
-  // 提取域名用于显示 (例如: google.com)
-  let domain = "";
-  try {
-    const urlObj = new URL(url, "http://n");
-    domain = urlObj.hostname === "n" ? url : urlObj.hostname;
-  } catch (_e) {
-    domain = url;
-  }
+	// 智能设置 target:
+	// 1. 如果用户显式指定了 target，则使用用户的设置
+	// 2. 如果是站内链接，默认在当前页打开 (_self)
+	// 3. 如果是外部链接，默认在新标签页打开 (_blank)
+	const finalTarget = target ? target : isInternal ? "_self" : "_blank";
 
-  // 构建内容容器 (左侧/上方区域)
-  const nTitle = h("div", { class: "cl-title" }, title);
-  const nDesc = desc ? h("div", { class: "cl-desc" }, desc) : null;
-  const nDomain = h("div", { class: "cl-domain" }, [
-    h("span", { class: "cl-icon-prefix" }, "🔗"),
-    domain,
-  ]);
+	// 提取域名用于显示 (例如: google.com)
+	let domain = "";
+	try {
+		const urlObj = new URL(url, "http://n");
+		domain = urlObj.hostname === "n" ? url : urlObj.hostname;
+	} catch (_e) {
+		domain = url;
+	}
 
-  const nContent = h(
-    "div",
-    { class: "cl-content" },
-    [nTitle, nDesc, nDomain].filter(Boolean),
-  );
+	// 构建内容容器 (左侧/上方区域)
+	const nTitle = h("div", { class: "cl-title" }, title);
+	const nDesc = desc ? h("div", { class: "cl-desc" }, desc) : null;
+	const nDomain = h("div", { class: "cl-domain" }, [
+		h("span", { class: "cl-icon-prefix" }, "🔗"),
+		domain,
+	]);
 
-  // 构建封面图 (右侧区域)
-  let nCover = null;
-  if (image) {
-    nCover = h("div", {
-      class: "cl-cover",
-      style: `background-image: url('${image}')`,
-    });
-  }
+	const nContent = h(
+		"div",
+		{ class: "cl-content" },
+		[nTitle, nDesc, nDomain].filter(Boolean),
+	);
 
-  // 构建角标 (右上角)
-  let nBadge = null;
-  if (badge) {
-    nBadge = h("div", { class: "cl-badge" }, badge);
-  }
+	// 构建封面图 (右侧区域)
+	let nCover = null;
+	if (image) {
+		nCover = h("div", {
+			class: "cl-cover",
+			style: `background-image: url('${image}')`,
+		});
+	}
 
-  // 返回最终的 <a> 标签结构
-  return h(
-    "a",
-    {
-      class: "card-link no-styling",
-      href: url,
-      target: finalTarget,
-      // 安全性: 外部链接添加 noopener noreferrer
-      rel: finalTarget === "_blank" ? "noopener noreferrer" : undefined,
-    },
-    [nContent, nCover, nBadge].filter(Boolean),
-  );
+	// 构建角标 (右上角)
+	let nBadge = null;
+	if (badge) {
+		nBadge = h("div", { class: "cl-badge" }, badge);
+	}
+
+	// 返回最终的 <a> 标签结构
+	return h(
+		"a",
+		{
+			class: "card-link no-styling",
+			href: url,
+			target: finalTarget,
+			// 安全性: 外部链接添加 noopener noreferrer
+			rel: finalTarget === "_blank" ? "noopener noreferrer" : undefined,
+		},
+		[nContent, nCover, nBadge].filter(Boolean),
+	);
 }
