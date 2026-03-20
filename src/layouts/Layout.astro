@@ -502,7 +502,12 @@ const setup = () => {
 			navbar.classList.add('navbar-hidden')
 		}
 	})
-	window.swup.hooks.on('content:replace', initCustomScrollbar)
+	window.swup.hooks.on('content:replace', (visit: any) => {
+		if (visit.scroll.reset && !visit.history.popstate) {
+			window.scrollTo(0, 0);
+		}
+		initCustomScrollbar();
+	})
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
 		nextUmamiUrl = visit.to.url;
 		// change banner height immediately when a link is clicked
@@ -542,11 +547,12 @@ const setup = () => {
 			toc.classList.add('toc-not-ready')
 		}
 	});
+
 	window.swup.hooks.on('page:view', () => {
 		// hide the temp high element when the transition is done
 		const heightExtend = document.getElementById('page-height-extend')
 		if (heightExtend) {
-			heightExtend.classList.remove('hidden')
+			heightExtend.classList.add('hidden')
 		}
 		const u = nextUmamiUrl;
 		nextUmamiUrl = null;
@@ -567,6 +573,16 @@ const setup = () => {
             scrollFunction();
         }, 200)
 	});
+
+	// Disable smooth scrolling between pages so it doesn't jump to the middle then scroll up
+	const scrollPlugin = window.swup.findPlugin?.('SwupScrollPlugin') || window.swup.plugins?.find((p: { name: string }) => p.name === 'SwupScrollPlugin');
+	if (scrollPlugin) {
+		scrollPlugin.options.animateScroll = {
+			betweenPages: false,
+			samePageWithHash: true,
+			samePage: true
+		};
+	}
 }
 if (window?.swup?.hooks) {
 	setup()
