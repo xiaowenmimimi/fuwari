@@ -16,7 +16,7 @@ const {
 } = Astro.props;
 ---
 <link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
-<div class="card-base z-10 relative w-full mb-4 pb-4">
+<div class="card-base !overflow-visible z-10 relative w-full mb-4 pb-4">
 	<div
 		class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8 mt-4 mb-2
 			before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
@@ -65,9 +65,20 @@ const {
 	}
 
 	#waline [data-waline] .wl-panel {
+		position: relative;
+		z-index: 2;
 		border: 1px solid var(--line-divider);
 		box-shadow: var(--waline-box-shadow);
 		transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease, background 180ms ease;
+	}
+
+	#waline [data-waline] .wl-comments {
+		position: relative;
+		z-index: 1;
+	}
+
+	#waline [data-waline] .wl-tab-wrapper {
+		z-index: 10;
 	}
 
 	@supports (background: color-mix(in srgb, #000 0%, transparent)) {
@@ -179,6 +190,19 @@ const {
 		color: white;
 		border-color: transparent;
 		background: var(--primary);
+	}
+
+	#waline [data-waline] .wl-content .wl-reply-to {
+		display: inline-flex;
+		align-items: baseline;
+		margin: 0 0.35em 0 0;
+		vertical-align: baseline;
+	}
+
+	#waline [data-waline] .wl-content .wl-reply-to a,
+	#waline [data-waline] .wl-content .wl-reply-to span {
+		line-height: inherit;
+		vertical-align: baseline;
 	}
 
 	#wln-toast-root {
