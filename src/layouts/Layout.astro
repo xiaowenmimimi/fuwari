@@ -180,7 +180,7 @@ const bannerOffset =
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>
-	<body class=" min-h-screen transition " class:list={[{"is-home": isHomePage, "is-post": isPostPage, "is-bangumi": isBangumiPage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen " class:list={[{"is-home": isHomePage, "is-post": isPostPage, "is-bangumi": isBangumiPage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>
@@ -587,7 +587,7 @@ const setup = () => {
                 toc.classList.remove('toc-not-ready')
             }
             scrollFunction();
-        }, 200)
+        }, 120)
 	});
 
 	// Disable smooth scrolling between pages so it doesn't jump to the middle then scroll up
@@ -595,8 +595,8 @@ const setup = () => {
 	if (scrollPlugin) {
 		scrollPlugin.options.animateScroll = {
 			betweenPages: false,
-			samePageWithHash: true,
-			samePage: true
+			samePageWithHash: false,
+			samePage: false
 		};
 	}
 }

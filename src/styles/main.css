@@ -18,8 +18,8 @@
         box-shadow:
             0 10px 30px rgba(0, 0, 0, 0.35);
     }
-    h1, h2, h3, h4, h5, h6, p, a, span, li, ul, ol, blockquote, code, pre, table, th, td, strong {
-        @apply transition;
+    a, button, input, textarea, select {
+        @apply transition-colors duration-150;
     }
     .card-shadow {
         @apply drop-shadow-[0_2px_4px_rgba(0,0,0,0.005)]
