@@ -15,7 +15,6 @@ const {
 	pageview = false,
 } = Astro.props;
 ---
-<link rel="stylesheet" href="https://unpkg.com/@waline/client@v3/dist/waline.css" />
 <div class="card-base !overflow-visible z-10 relative w-full mb-4 pt-4 pb-4">
 	<div
 		class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8
@@ -25,10 +24,23 @@ const {
 		评论
 	</div>
 	<div class="px-4">
-		<div id="waline"></div>
+		<div id="waline">
+			<div class="waline-placeholder">评论加载中…</div>
+		</div>
 	</div>
 </div>
 <style is:global>
+	#waline .waline-placeholder {
+		min-height: 8rem;
+		display: flex;
+		align-items: center;
+		justify-content: center;
+		color: color-mix(in srgb, var(--btn-content) 60%, transparent);
+		background: color-mix(in srgb, var(--btn-regular-bg) 70%, transparent);
+		border: 1px dashed var(--line-divider);
+		border-radius: var(--radius-large);
+	}
+
 	[data-waline] {
 		font-family: var(--font-body);
 
@@ -253,6 +265,9 @@ const {
 	const REQUIRED_META_RE = /(NickName.*(cannot|required)|E-?Mail.*(error|required)|Please.*email|昵称.*(必填|不能为空)|邮箱.*(必填|不能为空))/i;
 	const REQUIRED_META_TEXT = "昵称和邮箱为必填项，请填写后再提交。";
 	const INVALID_EMAIL_TEXT = "邮箱格式不正确，请检查后再提交。";
+	const WALINE_STYLE_ID = "waline-client-style";
+	const WALINE_STYLE_URL = "https://unpkg.com/@waline/client@v3/dist/waline.css";
+	const WALINE_ROOT_MARGIN = "600px 0px";
 
 	const normalizePathname = (pathname) => {
 		if (!pathname) return "/";
@@ -265,10 +280,46 @@ const {
 	const getEnhanceState = () => {
 		window.__walineEnhance ??= {
 			toast: { lastAt: 0, lastText: "", lastSubmitAt: 0 },
-			patch: { alertPatched: false, observer: null, requiredMetaGuard: false },
-			waline: { client: null, clientPromise: null }
+			patch: { alertPatched: false, observer: null, requiredMetaGuardRoot: null },
+			waline: { client: null, clientPromise: null, styleLoaded: false, initPromise: null, initedPath: "" },
+			lazy: { observer: null, observedEl: null }
 		};
 		return window.__walineEnhance;
+	};
+
+	const ensureWalineStyle = async () => {
+		const state = getEnhanceState();
+		if (state.waline.styleLoaded) return;
+
+		let link = document.getElementById(WALINE_STYLE_ID);
+		if (!(link instanceof HTMLLinkElement)) {
+			link = document.createElement("link");
+			link.id = WALINE_STYLE_ID;
+			link.rel = "stylesheet";
+			link.href = WALINE_STYLE_URL;
+			document.head.appendChild(link);
+		}
+		if (link.dataset.loaded === "true" || link.sheet) {
+			link.dataset.loaded = "true";
+			state.waline.styleLoaded = true;
+			return;
+		}
+		await new Promise((resolve, reject) => {
+			const onLoad = () => {
+				link.dataset.loaded = "true";
+				state.waline.styleLoaded = true;
+				link.removeEventListener("load", onLoad);
+				link.removeEventListener("error", onError);
+				resolve();
+			};
+			const onError = () => {
+				link.removeEventListener("load", onLoad);
+				link.removeEventListener("error", onError);
+				reject(new Error("failed to load waline style"));
+			};
+			link.addEventListener("load", onLoad, { once: true });
+			link.addEventListener("error", onError, { once: true });
+		});
 	};
 
 	const loadWaline = async () => {
@@ -390,10 +441,12 @@ const {
 		state.patch.observer = observer;
 	};
 
-	const setupRequiredMetaGuardOnce = () => {
+	const setupRequiredMetaGuard = () => {
 		const state = getEnhanceState();
-		if (state.patch.requiredMetaGuard) return;
-		state.patch.requiredMetaGuard = true;
+		const root = document.querySelector("#waline");
+		if (!(root instanceof HTMLElement)) return;
+		if (state.patch.requiredMetaGuardRoot === root) return;
+		state.patch.requiredMetaGuardRoot = root;
 
 		const findMetaInput = (keys) => {
 			const header = document.querySelector("#waline .wl-header");
@@ -451,35 +504,80 @@ const {
 			}
 		};
 
-		const root = document.querySelector("#waline");
-		if (root) root.addEventListener("click", onClickCapture, true);
+		root.addEventListener("click", onClickCapture, true);
 	};
 
 	const initWaline = async () => {
-		patchAlertOnce();
-		setupAlertObserverOnce();
-		setupRequiredMetaGuardOnce();
+		const state = getEnhanceState();
+		if (state.waline.initPromise) return state.waline.initPromise;
 
-		const waline = await loadWaline();
-		const el = document.querySelector("#waline");
-		if (!el) return;
-		el.innerHTML = "";
 		const pageKey = normalizePathname(window.location.pathname);
-		const options = {
-			el: "#waline",
-			serverURL,
-			path: pageKey,
-			dark,
-			requiredMeta: ["nick", "mail"]
-		};
-		if (typeof lang !== "undefined") options.lang = lang;
-		if (typeof login !== "undefined") options.login = login;
-		if (typeof pageview !== "undefined") options.pageview = pageview;
-		waline?.init?.(options);
+		const el = document.querySelector("#waline");
+		if (!(el instanceof HTMLElement)) return;
+		if (state.waline.initedPath === pageKey && el.dataset.walineInited === "true") return;
+
+		state.waline.initPromise = (async () => {
+			await ensureWalineStyle();
+			const waline = await loadWaline();
+
+			patchAlertOnce();
+			setupAlertObserverOnce();
+			setupRequiredMetaGuard();
+
+			el.innerHTML = "";
+			const options = {
+				el: "#waline",
+				serverURL,
+				path: pageKey,
+				dark,
+				requiredMeta: ["nick", "mail"]
+			};
+			if (typeof lang !== "undefined") options.lang = lang;
+			if (typeof login !== "undefined") options.login = login;
+			if (typeof pageview !== "undefined") options.pageview = pageview;
+			waline?.init?.(options);
+			el.dataset.walineInited = "true";
+			state.waline.initedPath = pageKey;
+		})().finally(() => {
+			state.waline.initPromise = null;
+		});
+
+		return state.waline.initPromise;
+	};
+
+	const observeWaline = () => {
+		const state = getEnhanceState();
+		const el = document.querySelector("#waline");
+		if (!(el instanceof HTMLElement)) return;
+		if (el.dataset.walineInited === "true") return;
+		if (state.lazy.observer && state.lazy.observedEl === el) return;
+
+		if (state.lazy.observer) {
+			state.lazy.observer.disconnect();
+			state.lazy.observer = null;
+		}
+		state.lazy.observedEl = el;
+
+		if (!("IntersectionObserver" in window)) {
+			initWaline();
+			return;
+		}
+
+		const observer = new IntersectionObserver((entries) => {
+			for (const entry of entries) {
+				if (!entry.isIntersecting) continue;
+				observer.disconnect();
+				if (state.lazy.observer === observer) state.lazy.observer = null;
+				initWaline();
+				break;
+			}
+		}, { rootMargin: WALINE_ROOT_MARGIN });
+		state.lazy.observer = observer;
+		observer.observe(el);
 	};
 
 	const onReady = () => {
-		initWaline();
+		observeWaline();
 	};
 
 	document.addEventListener("astro:page-load", onReady);
