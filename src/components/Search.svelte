@@ -32,6 +32,9 @@ const fakeResult: SearchResult[] = [
 ];
 
 const togglePanel = () => {
+	if (import.meta.env.PROD) {
+		window.ensurePagefindLoaded?.();
+	}
 	const panel = document.getElementById("search-panel");
 	panel?.classList.toggle("float-panel-closed");
 };
@@ -142,9 +145,11 @@ $: if (initialized && keywordMobile) {
 <div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
       bg-black/[0.04] hover:bg-black/[0.06] focus-within:bg-black/[0.06]
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
-">
+"
+	on:click={() => import.meta.env.PROD && window.ensurePagefindLoaded?.()}
+>
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => search(keywordDesktop, true)}
+    <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => { if (import.meta.env.PROD) window.ensurePagefindLoaded?.(); search(keywordDesktop, true); }}
            class="transition-all pl-10 text-sm bg-transparent outline-0
          h-full w-40 active:w-60 focus:w-60 text-black/50 dark:text-white/50"
     >
@@ -166,7 +171,7 @@ top-20 left-4 md:left-[unset] right-4 shadow-2xl rounded-2xl p-2">
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
   ">
         <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
-        <input placeholder="Search" bind:value={keywordMobile}
+        <input placeholder="Search" bind:value={keywordMobile} on:focus={() => import.meta.env.PROD && window.ensurePagefindLoaded?.()}
                class="pl-10 absolute inset-0 text-sm bg-transparent outline-0
                focus:w-60 text-black/50 dark:text-white/50"
         >

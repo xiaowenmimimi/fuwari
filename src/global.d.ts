@@ -5,12 +5,14 @@ declare global {
 		// type from '@swup/astro' is incorrect
 		swup: AstroIntegration;
 		pagefind: {
+			options: (options: { excerptLength?: number }) => Promise<void>;
 			search: (query: string) => Promise<{
 				results: Array<{
 					data: () => Promise<SearchResult>;
 				}>;
 			}>;
 		};
+		ensurePagefindLoaded?: () => Promise<unknown>;
 	}
 }
 

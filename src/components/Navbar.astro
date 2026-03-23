@@ -126,6 +126,10 @@ setTransparentNav(); // Initial check
 
 {import.meta.env.PROD && <script is:inline define:vars={{scriptUrl: url('/pagefind/pagefind.js')}}>
 async function loadPagefind() {
+    if (window.pagefind && typeof window.pagefind.search === 'function') {
+        document.dispatchEvent(new CustomEvent('pagefindready'));
+        return window.pagefind;
+    }
     try {
         const response = await fetch(scriptUrl, { method: 'HEAD' });
         if (!response.ok) {
@@ -153,9 +157,13 @@ async function loadPagefind() {
     }
 }
 
-if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', loadPagefind);
-} else {
-    loadPagefind();
+if (!window.ensurePagefindLoaded) {
+    let loadingPromise = null;
+    window.ensurePagefindLoaded = () => {
+        if (!loadingPromise) {
+            loadingPromise = loadPagefind();
+        }
+        return loadingPromise;
+    };
 }
 </script>}
