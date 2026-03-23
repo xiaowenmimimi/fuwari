@@ -440,6 +440,11 @@ init();
 let lastTrackedPath: string | null = null;
 let pendingTrackPath: string | null = null;
 let nextUmamiUrl: string | null = null;
+const resetScrollPosition = () => {
+	window.scrollTo(0, 0);
+	document.documentElement.scrollTop = 0;
+	document.body.scrollTop = 0;
+};
 function trackUmamiPageview(tries = 0, urlOverride: string | null = null) {
 	const desiredUrl = urlOverride ?? window.location.href;
 	const currentPath = (() => {
@@ -473,6 +478,7 @@ function trackUmamiPageview(tries = 0, urlOverride: string | null = null) {
 trackUmamiPageview();
 
 const setup = () => {
+	window.history.scrollRestoration = 'manual';
 	// TODO: temp solution to change the height of the banner
 /*
 	window.swup.hooks.on('animation:out:start', () => {
@@ -504,12 +510,22 @@ const setup = () => {
 	})
 	window.swup.hooks.on('content:replace', (visit: any) => {
 		if (visit.scroll.reset && !visit.history.popstate) {
-			window.scrollTo(0, 0);
+			resetScrollPosition();
 		}
 		initCustomScrollbar();
 	})
-	window.swup.hooks.on('visit:start', (visit: {to: {url: string}}) => {
+	window.swup.hooks.on('visit:start', (visit: {to: {url: string}, scroll?: {reset?: boolean}, history?: {popstate?: boolean}}) => {
 		nextUmamiUrl = visit.to.url;
+		const toHash = (() => {
+			try {
+				return new URL(visit.to.url, window.location.origin).hash;
+			} catch {
+				return '';
+			}
+		})();
+		if (visit.scroll?.reset !== false && !visit.history?.popstate && !toHash) {
+			resetScrollPosition();
+		}
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
 		if (pathsEqual(visit.to.url, url('/'))) {
@@ -575,7 +591,7 @@ const setup = () => {
 	});
 
 	// Disable smooth scrolling between pages so it doesn't jump to the middle then scroll up
-	const scrollPlugin = window.swup.findPlugin?.('SwupScrollPlugin') || window.swup.plugins?.find((p: { name: string }) => p.name === 'SwupScrollPlugin');
+	const scrollPlugin = window.swup.findPlugin?.('SwupScrollPlugin') || window.swup.plugins?.find((p: any) => p.name === 'SwupScrollPlugin');
 	if (scrollPlugin) {
 		scrollPlugin.options.animateScroll = {
 			betweenPages: false,
