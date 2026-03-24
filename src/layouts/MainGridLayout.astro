@@ -105,7 +105,7 @@ const bannerUrl = bannerCreditUrl as string;
 	.enable-banner.is-post #banner-wrapper .wave-divider {
 		opacity: 0;
 		transform: translateY(8px);
-		transition: opacity 0.3s ease, transform 0.3s ease;
+		transition: opacity 0.6s ease-out, transform 0.6s ease-out;
 	}
 	html.post-wave-divider-ready .enable-banner.is-post #banner-wrapper .wave-divider {
 		opacity: 1;
@@ -172,7 +172,7 @@ const bannerUrl = bannerCreditUrl as string;
             if (document.body.classList.contains("is-post")) {
                 root.classList.add("post-wave-divider-ready");
             }
-        }, 500);
+        }, 120);
     }
 
     document.addEventListener('astro:page-load', startTypewriter);
