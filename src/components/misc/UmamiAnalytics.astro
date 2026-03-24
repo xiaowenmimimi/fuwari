@@ -115,30 +115,10 @@ const UMAMI_API_KEY = import.meta.env.UMAMI_API_KEY ?? siteConfig.umami.apiKey;
         if (document.readyState === 'loading') {
             document.addEventListener('DOMContentLoaded', () => {
                 requestAnimationFrame(updateElements);
-                if (document.body) {
-                    observer.observe(document.body, { childList: true, subtree: true });
-                }
             });
         } else {
             requestAnimationFrame(updateElements);
-            if (document.body) {
-                observer.observe(document.body, { childList: true, subtree: true });
-            }
         }
-
-        // Observer for dynamic content changes (Swup, etc.)
-        const observer = new MutationObserver((mutations) => {
-            let shouldUpdate = false;
-            for (const mutation of mutations) {
-                if (mutation.type === 'childList' && mutation.addedNodes.length > 0) {
-                    shouldUpdate = true;
-                    break;
-                }
-            }
-            if (shouldUpdate) {
-                updateElements();
-            }
-        });
 
         // Also listen for Swup events if available as a backup or for specific triggers
         document.addEventListener('swup:page:view', () => {
