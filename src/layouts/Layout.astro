@@ -629,8 +629,8 @@ function scrollFunction() {
 
 	if (bannerEnabled && toc && tocInner) {
 		let scrollTop = document.body.scrollTop || document.documentElement.scrollTop;
-		// 5.5rem = 88px
-		let targetTop = Math.max(56, bannerHeight - scrollTop + 88);
+		let viewportAdaptiveOffset = 88 + Math.max(0, (window.innerHeight - 1080) * 0.2);
+		let targetTop = Math.max(56, bannerHeight - scrollTop + viewportAdaptiveOffset);
 		tocInner.style.top = `${targetTop}px`;
 		toc.classList.remove('toc-hide');
 	}
