@@ -102,6 +102,15 @@ const bannerUrl = bannerCreditUrl as string;
 	.enable-banner:not(.is-post):not(.is-bangumi) #banner-wrapper .wave-divider {
 		display: none;
 	}
+	.enable-banner.is-post #banner-wrapper .wave-divider {
+		opacity: 0;
+		transform: translateY(8px);
+		transition: opacity 0.3s ease, transform 0.3s ease;
+	}
+	html.post-wave-divider-ready .enable-banner.is-post #banner-wrapper .wave-divider {
+		opacity: 1;
+		transform: translateY(0);
+	}
 	@media (max-width: 767px) {
 		.enable-banner #banner-wrapper .wave-divider {
 			display: none;
@@ -155,12 +164,26 @@ const bannerUrl = bannerCreditUrl as string;
         }, 500); // delay before starting
     }
 
+    function startPostWaveDivider() {
+        const root = document.documentElement;
+        root.classList.remove("post-wave-divider-ready");
+        if (!document.body.classList.contains("is-post")) return;
+        setTimeout(function() {
+            if (document.body.classList.contains("is-post")) {
+                root.classList.add("post-wave-divider-ready");
+            }
+        }, 500);
+    }
+
     document.addEventListener('astro:page-load', startTypewriter);
+    document.addEventListener('astro:page-load', startPostWaveDivider);
     // Initial load
     if (document.readyState === 'complete') {
         startTypewriter();
+        startPostWaveDivider();
     } else {
         document.addEventListener('DOMContentLoaded', startTypewriter);
+        document.addEventListener('DOMContentLoaded', startPostWaveDivider);
     }
 </script>
 
