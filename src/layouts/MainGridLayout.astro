@@ -5,6 +5,7 @@ import Navbar from "@components/Navbar.astro";
 import SideBar from "@components/widget/SideBar.astro";
 import type { MarkdownHeading } from "astro";
 import { Icon } from "astro-icon/components";
+import lxgwWenKaiScreenCssUrl from "lxgw-wenkai-screen-webfont/lxgwwenkaiscreen.css?url";
 import ImageWrapper from "../components/misc/ImageWrapper.astro";
 import WaveDivider from "../components/misc/WaveDivider.astro";
 import TOC from "../components/widget/TOC.astro";
@@ -14,6 +15,7 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
+import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -61,12 +63,14 @@ const bannerImage = (
 ) as string;
 const bannerText = bannerCreditText as string;
 const bannerUrl = bannerCreditUrl as string;
+const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
 
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
+{isHomePage && <link slot="head" rel="stylesheet" href={lxgwWenKaiScreenCssUrl} />}
 <div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
     <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
         <Navbar></Navbar>
@@ -80,22 +84,21 @@ const bannerUrl = bannerCreditUrl as string;
     >
     </ImageWrapper>
 	<WaveDivider class="z-20"></WaveDivider>
-    <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
-        <!-- <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: var(--font-heading);">{siteConfig.title}</div>
-        <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: var(--font-heading);"> -->
-        <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">{siteConfig.title}</div>
-        <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">
-            <span id="subtitle-typewriter"></span>
-        </div>
-    </div>
-    <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
-        <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
-            <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
-        </div>
-    </div>
-    <!-- 预加载字体字符 -->
-    <div style="visibility: hidden; position: absolute; pointer-events: none; font-family: 'LXGW WenKai Screen', 'LXGW WenKai', serif;">{siteConfig.homeSubtitle}</div>
-    <!-- <div style="visibility: hidden; position: absolute; pointer-events: none; font-family: var(--font-heading);">{siteConfig.homeSubtitle}</div> -->
+    {isHomePage && (
+        <>
+            <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
+                <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">{siteConfig.title}</div>
+                <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">
+                    <span id="subtitle-typewriter"></span>
+                </div>
+            </div>
+            <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
+                <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
+                    <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
+                </div>
+            </div>
+        </>
+    )}
 </div>}
 
 <style is:global>
