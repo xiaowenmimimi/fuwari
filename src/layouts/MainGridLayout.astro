@@ -84,21 +84,17 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
     >
     </ImageWrapper>
 	<WaveDivider class="z-20"></WaveDivider>
-    {isHomePage && (
-        <>
-            <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
-                <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">{siteConfig.title}</div>
-                <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">
-                    <span id="subtitle-typewriter"></span>
-                </div>
-            </div>
-            <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
-                <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
-                    <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
-                </div>
-            </div>
-        </>
-    )}
+    <div class="hero-content absolute inset-0 flex flex-col items-center justify-center z-20 text-white pointer-events-none px-4">
+        <div class="text-4xl md:text-6xl font-bold tracking-widest mb-4 md:mb-6 drop-shadow-lg text-center" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">{siteConfig.title}</div>
+        <div class="text-xl md:text-2xl opacity-90 tracking-wide drop-shadow-md text-center px-4 py-2 rounded-lg font-medium" style="font-family: 'LXGW WenKai Screen', 'PingFang SC', 'Hiragino Sans GB', 'Microsoft YaHei', 'Noto Serif SC', serif;">
+            <span id="subtitle-typewriter"></span>
+        </div>
+    </div>
+    <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
+        <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
+            <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
+        </div>
+    </div>
 </div>}
 
 <style is:global>
@@ -142,9 +138,16 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 </style>
 
 <script is:inline define:vars={{ subtitle: siteConfig.homeSubtitle }}>
+    function shouldRunHomeTypewriter() {
+        return document.body.classList.contains("is-home") || window.location.pathname === "/";
+    }
+
     function typeWriter(text, i, fnCallback) {
+        if (!shouldRunHomeTypewriter()) return;
+        const subtitleElement = document.getElementById("subtitle-typewriter");
+        if (!subtitleElement) return;
         if (i < (text.length)) {
-            document.getElementById("subtitle-typewriter").innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
+            subtitleElement.innerHTML = text.substring(0, i+1) +'<span aria-hidden="true"></span>';
 
             setTimeout(function() {
                 typeWriter(text, i + 1, fnCallback)
@@ -155,6 +158,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
     }
 
     function startTypewriter() {
+        if (!shouldRunHomeTypewriter()) return;
         const subtitleElement = document.getElementById("subtitle-typewriter");
         if (!subtitleElement) return;
         
