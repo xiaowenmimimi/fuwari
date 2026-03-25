@@ -23,8 +23,8 @@ export const siteConfig: SiteConfig = {
 		// 支持多张图片轮播的数组配置
 		src: [
 			"assets/images/Cinnabar 2.png",
-			"assets/images/20260109.png",
-			"assets/images/wallhaven-13mrg3.jpg",
+			"assets/images/20260109-mini.png",
+			"assets/images/wallhaven-13mrg3-mini.jpg",
 		], // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
