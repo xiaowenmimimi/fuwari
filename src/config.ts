@@ -22,9 +22,9 @@ export const siteConfig: SiteConfig = {
 		enable: true,
 		// 支持多张图片轮播的数组配置
 		src: [
-			"assets/images/Cinnabar 2.png",
-			"assets/images/20260109.png",
-			"assets/images/wallhaven-13mrg3.jpg",
+			"assets/images/Cinnabar 2.webp",
+			"assets/images/20260109.webp",
+			"assets/images/wallhaven-13mrg3.webp",
 		], // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
@@ -76,7 +76,7 @@ export const navBarConfig: NavBarConfig = {
 };
 
 export const profileConfig: ProfileConfig = {
-	avatar: "assets/images/head_portrait.png", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+	avatar: "assets/images/head_portrait.webp", // Relative to the /src directory. Relative to the /public directory if it starts with '/'
 	name: "朗姆提子冰淇淋",
 	bio: "因为喜欢所以创建了博客\nCiallo～(∠・ω< )⌒☆",
 	links: [
