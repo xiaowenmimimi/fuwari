@@ -65,7 +65,7 @@ services:
 ### 3. 启动容器
 
 ```bash showLineNumbers=false
-docker-compose up -d
+docker compose up -d
 ```
 
 ### 4. 访问控制台
