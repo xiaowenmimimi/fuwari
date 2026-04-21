@@ -3,7 +3,7 @@
 ![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
 ![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-📖 README: [English](./README.en.md) | [简体中文](../README.md) | [日本語](./README.ja.md) | [Español](./README.es.md) | [Indonesia](./README.id.md) | [한국어](./README.ko.md) | [ภาษาไทย](./README.th.md) | [Tiếng Việt](./README.vi.md)
+📖 README: [English](./README.en.md) | [简体中文](../README.md)
 
 A customized version of the static blog template [Fuwari](https://github.com/saicaca/fuwari) built with [Astro](https://astro.build).
 

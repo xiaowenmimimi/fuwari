@@ -3,7 +3,7 @@
 ![Node.js >= 20](https://img.shields.io/badge/node.js-%3E%3D20-brightgreen)
 ![pnpm >= 9](https://img.shields.io/badge/pnpm-%3E%3D9-blue)
 
-📖 README: [English](./docs/README.en.md) | [简体中文](./README.md) | [日本語](./docs/README.ja.md) | [Español](./docs/README.es.md) | [Indonesia](./docs/README.id.md) | [한국어](./docs/README.ko.md) | [ภาษาไทย](./docs/README.th.md) | [Tiếng Việt](./docs/README.vi.md)
+📖 README: [English](./docs/README.en.md) | [简体中文](./README.md)
 
 基于 [Astro](https://astro.build) 构建的静态博客模板 [Fuwari](https://github.com/saicaca/fuwari) 的二次开发版本。
 
