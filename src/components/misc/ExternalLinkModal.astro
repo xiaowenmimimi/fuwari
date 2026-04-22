@@ -1,0 +1,153 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<div id="external-link-modal" class="fixed inset-0 z-[100] flex items-center justify-center opacity-0 pointer-events-none transition-opacity duration-300 bg-black/40 backdrop-blur-sm"
+     role="dialog" aria-modal="true" aria-labelledby="external-link-title" aria-describedby="external-link-desc">
+    <div class="bg-[var(--card-bg)] text-90 rounded-2xl shadow-2xl p-6 max-w-md w-11/12 transform scale-95 transition-transform duration-300 flex flex-col gap-4">
+        <div class="flex items-center gap-2 text-xl font-bold text-[var(--primary)]" id="external-link-title">
+            <Icon name="material-symbols:warning-outline-rounded" class="text-2xl" />
+            <span>即将离开本站</span>
+        </div>
+        
+        <div class="text-75 text-sm" id="external-link-desc">
+            您即将离开本站，访问以下第三方网站。
+        </div>
+        
+        <div id="external-link-url" class="p-3 bg-black/5 dark:bg-white/5 text-90 rounded-xl break-all text-sm font-mono border border-[var(--primary)] border-opacity-20 max-h-32 overflow-y-auto">
+            <!-- URL will be inserted here -->
+        </div>
+
+        <div class="flex justify-end gap-3 mt-2">
+            <button id="external-link-cancel" class="btn-regular px-5 py-2.5 rounded-xl font-medium">
+                取消
+            </button>
+            <button id="external-link-confirm" class="px-5 py-2.5 rounded-xl bg-[var(--primary)] text-white hover:brightness-110 transition-all font-medium flex items-center gap-1">
+                <span>继续访问</span>
+                <Icon name="material-symbols:arrow-forward-rounded" />
+            </button>
+        </div>
+    </div>
+</div>
+
+<script>
+    let pendingUrl = '';
+    let triggerElement: HTMLAnchorElement | null = null; // 记录触发弹窗的元素，以便弹窗关闭后还原焦点
+
+    const modal = document.getElementById('external-link-modal');
+    const urlDisplay = document.getElementById('external-link-url');
+    const cancelBtn = document.getElementById('external-link-cancel');
+    const confirmBtn = document.getElementById('external-link-confirm');
+
+    function showModal(url: string, triggerNode: HTMLAnchorElement) {
+        pendingUrl = url;
+        triggerElement = triggerNode;
+        if (urlDisplay) urlDisplay.textContent = url;
+        if (modal) {
+            modal.classList.remove('opacity-0', 'pointer-events-none');
+            modal.classList.add('opacity-100', 'pointer-events-auto');
+            const inner = modal.querySelector('div');
+            if (inner) {
+                inner.classList.remove('scale-95');
+                inner.classList.add('scale-100');
+            }
+            
+            // 弹窗出现后自动聚焦到“继续访问”按钮
+            if (confirmBtn) {
+                setTimeout(() => confirmBtn.focus(), 50); // 稍微延迟等待弹窗动画开始
+            }
+        }
+    }
+
+    function hideModal() {
+        if (modal) {
+            modal.classList.remove('opacity-100', 'pointer-events-auto');
+            modal.classList.add('opacity-0', 'pointer-events-none');
+            const inner = modal.querySelector('div');
+            if (inner) {
+                inner.classList.remove('scale-100');
+                inner.classList.add('scale-95');
+            }
+        }
+        pendingUrl = '';
+        
+        // 弹窗关闭后还原焦点
+        if (triggerElement) {
+            triggerElement.focus();
+            triggerElement = null;
+        }
+    }
+
+    if (cancelBtn) {
+        cancelBtn.addEventListener('click', hideModal);
+    }
+
+    if (confirmBtn) {
+        confirmBtn.addEventListener('click', () => {
+            if (pendingUrl) {
+                window.open(pendingUrl, '_blank', 'noopener,noreferrer');
+            }
+            hideModal();
+        });
+    }
+
+    // 点击背景关闭
+    if (modal) {
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) hideModal();
+        });
+    }
+
+    // 键盘事件：按 Esc 关闭弹窗，按 Tab 时把焦点限制在弹窗按钮内
+    document.addEventListener('keydown', (e) => {
+        if (e.key === 'Escape' && modal && !modal.classList.contains('opacity-0')) {
+            hideModal();
+            return;
+        }
+
+        if (e.key !== 'Tab' || !modal || modal.classList.contains('opacity-0')) {
+            return;
+        }
+
+        const focusableButtons = [cancelBtn, confirmBtn].filter(
+            (button): button is HTMLButtonElement => button instanceof HTMLButtonElement,
+        );
+        if (focusableButtons.length === 0) return;
+
+        const firstButton = focusableButtons[0];
+        const lastButton = focusableButtons[focusableButtons.length - 1];
+        if (e.shiftKey && document.activeElement === firstButton) {
+            e.preventDefault();
+            lastButton.focus();
+        } else if (!e.shiftKey && document.activeElement === lastButton) {
+            e.preventDefault();
+            firstButton.focus();
+        }
+    });
+
+    // 拦截所有 a 标签点击
+    document.addEventListener('click', (e) => {
+        if (!(e.target instanceof Element)) return;
+
+        const target = e.target.closest<HTMLAnchorElement>('a');
+        if (!target) return;
+        
+        const href = target.getAttribute('href');
+        if (!href) return;
+
+        // 检查是否为外部链接
+        try {
+            const url = new URL(href, window.location.origin);
+            // 判断是否跨域，且为 http/https 协议
+            if (url.origin !== window.location.origin && (url.protocol === 'http:' || url.protocol === 'https:')) {
+                // 如果 a 标签本身有特定的 class 需要排除，可以在这里加，例如：
+                // if (target.classList.contains('no-modal')) return;
+                
+                e.preventDefault();
+                showModal(url.href, target);
+            }
+        } catch (err) {
+            // 解析失败（比如 mailto: javascript: 等），不处理
+        }
+    });
+</script>
