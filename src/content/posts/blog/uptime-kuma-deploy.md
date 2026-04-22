@@ -199,7 +199,7 @@ Uptime Kuma 通过 **SMTP 协议** 发送邮件。
 
 流程如下：
 
-``` showLineNumbers=false
+```text showLineNumbers=false
 服务异常
     ↓
 Uptime Kuma 触发告警
