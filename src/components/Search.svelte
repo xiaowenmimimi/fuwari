@@ -142,11 +142,15 @@ $: if (initialized && keywordMobile) {
 </script>
 
 <!-- search bar for desktop view -->
+<!-- svelte-ignore a11y_no_noninteractive_element_interactions -->
 <div id="search-bar" class="hidden lg:flex transition-all items-center h-11 mr-2 rounded-lg
       bg-black/[0.04] hover:bg-black/[0.06] focus-within:bg-black/[0.06]
       dark:bg-white/5 dark:hover:bg-white/10 dark:focus-within:bg-white/10
 "
+	role="search"
+	tabindex="-1"
 	on:click={() => import.meta.env.PROD && window.ensurePagefindLoaded?.()}
+	on:keydown={(e) => { if (e.key === 'Enter' || e.key === ' ') { import.meta.env.PROD && window.ensurePagefindLoaded?.(); } }}
 >
     <Icon icon="material-symbols:search" class="absolute text-[1.25rem] pointer-events-none ml-3 transition my-auto text-black/30 dark:text-white/30"></Icon>
     <input placeholder="{i18n(I18nKey.search)}" bind:value={keywordDesktop} on:focus={() => { if (import.meta.env.PROD) window.ensurePagefindLoaded?.(); search(keywordDesktop, true); }}
