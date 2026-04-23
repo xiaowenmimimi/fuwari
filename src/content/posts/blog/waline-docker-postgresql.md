@@ -20,7 +20,7 @@ draft: false
 
 > **Docker 部署 Waline + PostgreSQL 数据库 + 独立评论域名**
 
-::link-card{title="Waline 官方文档" url="https://waline.js.org/guide/" image="https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/waline-docker-postgresql-3.png" badge="Waline"}
+::link-card{title="Waline 官方文档" url="https://waline.js.org/guide/" image="https://image.xhwen.cn/blog/waline_logo.webp" badge="Waline"}
 
 :::note[为什么选择 Waline + PostgreSQL（而不是 Twikoo / Mongo）]
 **1. 为什么选择 Waline**
@@ -307,7 +307,7 @@ docker compose up -d
 > 使用 PostgreSQL作为 Waline 存储时，**需要手动初始化表结构**。  
 
 :::note[]
-> ::link-card{title="Waline 文档 PostgreSQL 数据库说明" url="https://waline.js.org/guide/database.html#postgresql" image="https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/waline-docker-postgresql-3.png" badge="Waline"}
+> ::link-card{title="Waline 文档 PostgreSQL 数据库说明" url="https://waline.js.org/guide/database.html#postgresql" image="https://image.xhwen.cn/blog/waline_logo.webp" badge="Waline"}
 :::
 
 1. 进入 PostgreSQL 容器

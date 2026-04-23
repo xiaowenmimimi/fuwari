@@ -21,7 +21,7 @@ draft: false
 
 最终选择了 [**Cloudflare Pages**](https://dash.cloudflare.com/) 作为新的部署平台。
 
-::link-card{title="Cloudflare Pages" url="https://dash.cloudflare.com/" image="https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/astro-deploy-cloudflare-pages-5.png" badge="Cloudflare"}
+::link-card{title="Cloudflare Pages" url="https://dash.cloudflare.com/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
 
 ---
 
@@ -57,9 +57,9 @@ draft: false
 * 一个 Cloudflare 账号
 
 :::tip[]
-> ::link-card{title="Cloudflare Pages Functions 官网" url="https://www.cloudflare.com/zh-cn/" image="https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/astro-deploy-cloudflare-pages-5.png" badge="Cloudflare"}
+> ::link-card{title="Cloudflare Pages Functions 官网" url="https://www.cloudflare.com/zh-cn/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
 
-> ::link-card{title="Cloudflare Pages 官方文档" url="https://developers.cloudflare.com/pages/" image="https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/astro-deploy-cloudflare-pages-5.png" badge="Cloudflare"}
+> ::link-card{title="Cloudflare Pages 官方文档" url="https://developers.cloudflare.com/pages/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
 :::
 
 ---
