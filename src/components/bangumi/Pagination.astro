@@ -198,11 +198,22 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
       });
     }
 
+    let isInitialLoad = true;
+
     function updatePage() {
       const items = document.querySelectorAll(`[data-item-section="${sectionId}"]:not(.hidden)`);
       const totalPages = Math.ceil(items.length / itemsPerPage);
 
       updateMobileTotalPages(totalPages);
+
+      // Add fade-in animation trigger
+      const gridContainer = items.length > 0 ? items[0].closest('.grid') : null;
+      if (gridContainer && !isInitialLoad) {
+        gridContainer.classList.remove('fade-in-up');
+        // trigger reflow
+        void gridContainer.offsetWidth;
+        gridContainer.classList.add('fade-in-up');
+      }
 
       // Hide all items first
       for (const item of items) {
@@ -218,6 +229,17 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
 
       // Update pagination buttons
       updatePaginationButtons(totalPages);
+
+      // Scroll to top of section
+      if (!isInitialLoad) {
+        const section = document.querySelector(`[data-section="${sectionId}"]`);
+        if (section) {
+          const yOffset = -80; // 调整偏移量以适应固定的导航栏
+          const y = section.getBoundingClientRect().top + window.pageYOffset + yOffset;
+          window.scrollTo({ top: y, behavior: 'smooth' });
+        }
+      }
+      isInitialLoad = false;
     }
 
     // 生成智能分页页码数组的JavaScript版本
@@ -264,17 +286,18 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     }
 
     function updatePaginationButtons(totalPages) {
-      const prevButton = pagination.querySelector('[data-page="prev"]');
-      const nextButton = pagination.querySelector('[data-page="next"]');
+      // 获取桌面端和移动端所有的 prev 和 next 按钮
+      const prevButtons = pagination.querySelectorAll('[data-page="prev"]');
+      const nextButtons = pagination.querySelectorAll('[data-page="next"]');
       const pageNumbersContainer = pagination.querySelector(`[data-page-numbers="${sectionId}"]`);
 
-      if (prevButton) {
-        prevButton.disabled = currentPage === 1;
-      }
+      prevButtons.forEach(btn => {
+        btn.disabled = currentPage === 1;
+      });
 
-      if (nextButton) {
-        nextButton.disabled = currentPage === totalPages;
-      }
+      nextButtons.forEach(btn => {
+        btn.disabled = currentPage === totalPages;
+      });
 
       if (pageNumbersContainer) {
         pageNumbersContainer.innerHTML = '';

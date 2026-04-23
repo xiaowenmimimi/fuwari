@@ -57,6 +57,17 @@ const { filters, activeFilter, sectionId } = Astro.props;
 
         // Filter items
         const items = document.querySelectorAll(`[data-item-section="${currentSectionId}"]`);
+        
+        // Add fade-in animation to the grid
+        if (items.length > 0) {
+          const gridContainer = items[0].closest('.grid');
+          if (gridContainer) {
+            gridContainer.classList.remove('fade-in-up');
+            void gridContainer.offsetWidth;
+            gridContainer.classList.add('fade-in-up');
+          }
+        }
+
         items.forEach(item => {
           const itemStatus = item.dataset.itemStatus;
 

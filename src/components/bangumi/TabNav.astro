@@ -67,6 +67,14 @@ const { tabs, activeTab } = Astro.props;
           const htmlSection = section as HTMLElement;
           if (htmlSection.dataset.section === targetTab) {
             htmlSection.classList.remove('hidden');
+            
+            // 添加渐显动画
+            const grid = htmlSection.querySelector('.grid');
+            if (grid) {
+              grid.classList.remove('fade-in-up');
+              void (grid as HTMLElement).offsetWidth;
+              grid.classList.add('fade-in-up');
+            }
           } else {
             htmlSection.classList.add('hidden');
           }

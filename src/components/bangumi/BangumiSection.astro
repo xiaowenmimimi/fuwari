@@ -78,7 +78,7 @@ const defaultFilter = "all"; // 默认显示全部，用户可以通过筛选器
         sectionId={sectionId}
       />
 
-      <div class="grid grid-cols-2 md:grid-cols-3 gap-6 md:gap-8">
+      <div class="grid grid-cols-3 md:grid-cols-4 gap-3 sm:gap-6 md:gap-8">
         {sortedItems.map((item) => (
           <div
             class="bangumi-item"
@@ -104,3 +104,19 @@ const defaultFilter = "all"; // 默认显示全部，用户可以通过筛选器
     </div>
   )}
 </div>
+
+<style is:global>
+  @keyframes fadeInUp {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  .fade-in-up {
+    animation: fadeInUp 0.4s ease-out forwards;
+  }
+</style>

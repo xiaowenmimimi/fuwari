@@ -61,7 +61,6 @@ export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
-		LinkPreset.About,
 		{
 			// Bangumi 功能参考：https://kasuha.com/posts/fuwari-enhance-ep2/
 			name: "Bangumi",
@@ -72,6 +71,7 @@ export const navBarConfig: NavBarConfig = {
 		// 	url: "https://github.com/saicaca/fuwari", // Internal links should not include the base path, as it is automatically added
 		// 	external: true, // Show an external link icon and will open in a new tab
 		// },
+		LinkPreset.About,
 	],
 };
 
