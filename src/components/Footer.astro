@@ -1,26 +1,72 @@
 ---
 
-import beianIcon from "../assets/beian.png";
 import { profileConfig } from "../config";
 import { url } from "../utils/url-utils";
 
 const currentYear = new Date().getFullYear();
 ---
 
-<!--<div class="border-t border-[var(&#45;&#45;primary)] mx-16 border-dashed py-8 max-w-[var(&#45;&#45;page-width)] flex flex-col items-center justify-center px-6">-->
-<div class="transition border-t border-black/10 dark:border-white/15 my-10 border-dashed mx-32"></div>
-<!--<div class="transition bg-[oklch(92%_0.01_var(&#45;&#45;hue))] dark:bg-black rounded-2xl py-8 mt-4 mb-8 flex flex-col items-center justify-center px-6">-->
-<div class="transition border-dashed border-[oklch(85%_0.01_var(--hue))] dark:border-white/15 rounded-2xl mb-12 flex flex-col items-center justify-center px-6">
-    <div class="transition text-50 text-sm text-center">
-        &copy; <span id="copyright-year">{currentYear}</span> {profileConfig.name}. All Rights Reserved. /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('rss.xml')}>RSS</a> /
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href={url('sitemap-index.xml')}>Sitemap</a><br>
-        基于
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://astro.build">Astro</a> &
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://github.com/saicaca/fuwari">Fuwari</a><br>
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://beian.miit.gov.cn/">粤ICP备2025505978号</a><br>
-        <img src={beianIcon.src} class="w-4 h-4 inline-block align-middle">
-        <span class="mx-2">|</span>
-        <a class="transition link text-[var(--primary)] font-medium" target="_blank" href="https://beian.mps.gov.cn/#/query/webSearch?recordcode=44195202000257">粤公网安备44195202000257号</a>
-    </div>
-</div>
+<footer class="mt-14 mb-14 px-4">
+	<div class="mx-auto max-w-3xl text-50">
+		<div class="h-px w-full bg-[linear-gradient(90deg,transparent,oklch(0.78_0.07_calc(var(--hue)_-_45)),oklch(0.78_0.07_var(--hue)),oklch(0.78_0.07_calc(var(--hue)_+_50)),transparent)] opacity-65"></div>
+
+		<div class="transition mt-6 flex flex-col items-center gap-5 px-1 md:flex-row md:items-end md:justify-between md:px-0">
+			<div class="space-y-2.5 text-center md:text-left">
+				<div class="text-sm font-semibold text-[var(--deep-text)] dark:text-white/85">
+					{profileConfig.name}
+				</div>
+
+				<p class="text-xs leading-relaxed opacity-75">
+					&copy; <span id="copyright-year">{currentYear}</span> All Rights Reserved.
+					<span class="mx-1.5 inline-block h-1 w-1 rounded-full bg-current align-middle opacity-60"></span>
+					基于
+					<a class="transition link font-medium text-[var(--primary)]" target="_blank" rel="noopener noreferrer" href="https://astro.build">Astro</a>
+					与
+					<a class="transition link font-medium text-[var(--primary)]" target="_blank" rel="noopener noreferrer" href="https://github.com/saicaca/fuwari">Fuwari</a>
+				</p>
+
+				<p class="flex flex-wrap items-center justify-center gap-x-2 gap-y-1 text-xs opacity-72 md:justify-start">
+					<a class="transition hover:text-[var(--primary)] hover:opacity-100" target="_blank" rel="noopener noreferrer" href="https://beian.miit.gov.cn/">
+						粤ICP备2025505978号
+					</a>
+					<span class="hidden h-1 w-1 rounded-full bg-current opacity-60 sm:inline-block"></span>
+					<a class="transition hover:text-[var(--primary)] hover:opacity-100" target="_blank" rel="noopener noreferrer" href="https://beian.mps.gov.cn/#/query/webSearch?recordcode=44195202000257">
+						粤公网安备44195202000257号
+					</a>
+				</p>
+			</div>
+
+			<nav class="footer-nav flex flex-wrap items-center justify-center gap-4 text-xs md:justify-end" aria-label="Footer links">
+				<a class="transition relative py-1 font-medium text-[var(--primary)] opacity-80 hover:opacity-100 active:scale-95" target="_blank" rel="noopener noreferrer" href={url("rss.xml")}>
+					RSS
+				</a>
+				<a class="transition relative py-1 font-medium text-[var(--primary)] opacity-80 hover:opacity-100 active:scale-95" target="_blank" rel="noopener noreferrer" href={url("sitemap-index.xml")}>
+					Sitemap
+				</a>
+			</nav>
+		</div>
+	</div>
+</footer>
+
+<style>
+	.footer-nav a::after {
+		position: absolute;
+		right: 0;
+		bottom: 0;
+		left: 0;
+		height: 1px;
+		content: "";
+		background: currentColor;
+		opacity: 0;
+		transform: scaleX(0.5);
+		transform-origin: center;
+		transition:
+			opacity 0.2s ease,
+			transform 0.2s ease;
+	}
+
+	.footer-nav a:hover::after {
+		opacity: 0.45;
+		transform: scaleX(1);
+	}
+</style>
