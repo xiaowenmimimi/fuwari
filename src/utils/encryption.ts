@@ -1,4 +1,4 @@
-import { webcrypto } from "node:crypto";
+import { getRandomValues, subtle } from "node:crypto";
 import { existsSync, readFileSync } from "node:fs";
 
 const LOCAL_PASSWORD_FILE = "encrypted-posts.local.json";
@@ -76,7 +76,7 @@ function toBase64(bytes: ArrayBuffer | Uint8Array): string {
 }
 
 async function deriveAesKey(password: string, salt: Uint8Array) {
-	const passwordKey = await webcrypto.subtle.importKey(
+	const passwordKey = await subtle.importKey(
 		"raw",
 		new TextEncoder().encode(password),
 		"PBKDF2",
@@ -84,7 +84,7 @@ async function deriveAesKey(password: string, salt: Uint8Array) {
 		["deriveKey"],
 	);
 
-	return webcrypto.subtle.deriveKey(
+	return subtle.deriveKey(
 		{
 			name: "PBKDF2",
 			hash: "SHA-256",
@@ -102,10 +102,10 @@ export async function encryptPostHtml(
 	html: string,
 	password: string,
 ): Promise<EncryptedPostPayload> {
-	const salt = webcrypto.getRandomValues(new Uint8Array(16));
-	const iv = webcrypto.getRandomValues(new Uint8Array(12));
+	const salt = getRandomValues(new Uint8Array(16));
+	const iv = getRandomValues(new Uint8Array(12));
 	const key = await deriveAesKey(password, salt);
-	const ciphertext = await webcrypto.subtle.encrypt(
+	const ciphertext = await subtle.encrypt(
 		{ name: "AES-GCM", iv: iv.buffer as ArrayBuffer },
 		key,
 		new TextEncoder().encode(html),
