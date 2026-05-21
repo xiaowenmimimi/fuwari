@@ -65,3 +65,5 @@ jobs:
 
       - name: Run Astro Build
         run: pnpm astro build
+        env:
+          ENCRYPTED_POST_PASSWORDS: ${{ secrets.ENCRYPTED_POST_PASSWORDS }}
