@@ -245,7 +245,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 <div class="absolute w-full z-0 hidden 2xl:block">
     <div class="relative max-w-[var(--page-width)] mx-auto">
         <!-- TOC component -->
-        {siteConfig.toc.enable && (headings.length > 0 || dynamicToc) && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center", {"toc-empty": headings.length === 0}]}
+        {siteConfig.toc.enable && <div id="toc-wrapper" class:list={["hidden lg:block transition absolute top-0 -right-[var(--toc-width)] w-[var(--toc-width)] items-center", {"toc-empty": headings.length === 0}]}
         >
             <div id="toc-inner-wrapper" class="fixed w-[var(--toc-width)] overflow-y-scroll overflow-x-hidden hide-scrollbar">
                 <div id="toc" class="w-full h-full transition-swup-fade ">
@@ -257,7 +257,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
         </div>}
 
         <!-- #toc needs to exist for Swup to work normally -->
-        {(!siteConfig.toc.enable || (headings.length === 0 && !dynamicToc)) && <div id="toc"></div>}
+        {!siteConfig.toc.enable && <div id="toc"></div>}
     </div>
 </div>
 </Layout>
