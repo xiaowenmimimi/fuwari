@@ -114,11 +114,6 @@ onMount(async () => {
                     <div class="flex flex-row justify-start items-center h-full">
                         <!-- date -->
                         <div class="w-[15%] md:w-[10%] transition text-sm text-right text-50 flex justify-end items-center gap-2">
-                            {#if (post.data.pin ?? 0) > 0}
-                                <span class="flex items-center gap-1 text-[var(--primary)] font-medium">
-                                    <Icon icon="material-symbols:keep" class="text-[1.05rem] shrink-0" aria-label="置顶" />
-                                </span>
-                            {/if}
                             <span>{formatDate(post.data.published)}</span>
                         </div>
 
@@ -142,6 +137,16 @@ onMount(async () => {
                         >
                             <span class="flex min-w-0 items-center gap-2">
                                 <span class="min-w-0 whitespace-nowrap overflow-ellipsis overflow-hidden">{post.data.title}</span>
+                                {#if (post.data.pin ?? 0) > 0}
+                                    <span
+                                        class="inline-flex h-5 shrink-0 items-center gap-1 rounded-md border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-1.5 text-xs font-medium text-[var(--primary)]"
+                                        title="置顶文章"
+                                        aria-label="置顶文章"
+                                    >
+                                        <Icon icon="material-symbols:keep" class="text-sm" />
+                                        置顶
+                                    </span>
+                                {/if}
                                 {#if post.data.encrypted}
                                     <span
                                         class="inline-flex h-5 shrink-0 items-center gap-1 rounded-md border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-1.5 text-xs font-medium text-[var(--primary)]"
