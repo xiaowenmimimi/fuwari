@@ -36,7 +36,9 @@ function parsePasswordMap(source: string, label: string): PasswordMap {
 	const result: PasswordMap = {};
 	for (const [slug, password] of Object.entries(parsed)) {
 		if (typeof password !== "string" || password.length === 0) {
-			throw new Error(`${label} has an empty or non-string password for "${slug}".`);
+			throw new Error(
+				`${label} has an empty or non-string password for "${slug}".`,
+			);
 		}
 		result[slug] = password;
 	}

@@ -1,6 +1,5 @@
 ---
 import path from "node:path";
-import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import EncryptedPost from "@components/EncryptedPost.svelte";
 import GithubCardInitializer from "@components/misc/GithubCardInitializer.astro";
 import License from "@components/misc/License.astro";
@@ -16,6 +15,7 @@ import {
 	loadEncryptedPostPasswords,
 } from "@utils/encryption";
 import { getDir, getPostUrlBySlug } from "@utils/url-utils";
+import { experimental_AstroContainer as AstroContainer } from "astro/container";
 import { Icon } from "astro-icon/components";
 import { licenseConfig } from "src/config";
 import ImageWrapper from "../../components/misc/ImageWrapper.astro";
