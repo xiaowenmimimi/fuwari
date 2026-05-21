@@ -25,10 +25,7 @@ export async function GET(context: APIContext) {
 		site: context.site ?? "https://fuwari.vercel.app",
 		items: blog.map((post) => {
 			const content = post.data.encrypted
-				? [
-						post.data.description,
-						"此文章正文已加密，请访问原文解锁阅读。",
-					]
+				? [post.data.description, "此文章正文已加密，请访问原文解锁阅读。"]
 						.filter(Boolean)
 						.join("\n\n")
 				: typeof post.body === "string"
