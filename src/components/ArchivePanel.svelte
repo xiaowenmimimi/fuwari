@@ -22,6 +22,7 @@ interface Post {
 		category?: string;
 		published: Date;
 		pin?: number;
+		encrypted?: boolean;
 	};
 }
 
@@ -137,9 +138,21 @@ onMount(async () => {
                         <div
                                 class="w-[70%] md:max-w-[65%] md:w-[65%] text-left font-bold
                      group-hover:translate-x-1 transition-all group-hover:text-[var(--primary)]
-                     text-75 pr-8 whitespace-nowrap overflow-ellipsis overflow-hidden"
+                     text-75 pr-4 overflow-hidden"
                         >
-                            {post.data.title}
+                            <span class="flex min-w-0 items-center gap-2">
+                                <span class="min-w-0 whitespace-nowrap overflow-ellipsis overflow-hidden">{post.data.title}</span>
+                                {#if post.data.encrypted}
+                                    <span
+                                        class="inline-flex h-5 shrink-0 items-center gap-1 rounded-md border border-[var(--primary)]/20 bg-[var(--primary)]/10 px-1.5 text-xs font-medium text-[var(--primary)]"
+                                        title="加密文章"
+                                        aria-label="加密文章"
+                                    >
+                                        <Icon icon="material-symbols:key-outline-rounded" class="text-sm" />
+                                        加密
+                                    </span>
+                                {/if}
+                            </span>
                         </div>
 
                         <!-- tag list -->

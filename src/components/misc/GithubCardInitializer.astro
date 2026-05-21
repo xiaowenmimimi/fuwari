@@ -1,0 +1,82 @@
+<script is:inline>
+(() => {
+	if (window.initGithubCards) return;
+
+	const formatCompact = (value) =>
+		Intl.NumberFormat("en-us", {
+			notation: "compact",
+			maximumFractionDigits: 1,
+		})
+			.format(value ?? 0)
+			.replaceAll("\u202f", "");
+
+	window.initGithubCards = (root = document) => {
+		const cards = root.querySelectorAll(
+			".card-github[repo]:not([data-github-card-loaded='true']):not([data-github-card-loading='true'])",
+		);
+
+		cards.forEach((card) => {
+			const repo = card.getAttribute("repo");
+			if (!repo) return;
+
+			card.dataset.githubCardLoading = "true";
+			card.classList.remove("fetch-error");
+
+			fetch(`https://api.github.com/repos/${repo}`, {
+				referrerPolicy: "no-referrer",
+			})
+				.then((response) => {
+					if (!response.ok) {
+						throw new Error(`GitHub API responded with ${response.status}`);
+					}
+					return response.json();
+				})
+				.then((data) => {
+					const description = card.querySelector(".gc-description");
+					const language = card.querySelector(".gc-language");
+					const forks = card.querySelector(".gc-forks");
+					const stars = card.querySelector(".gc-stars");
+					const avatar = card.querySelector(".gc-avatar");
+					const license = card.querySelector(".gc-license");
+
+					if (description) {
+						description.innerText =
+							data.description?.replace(/:[a-zA-Z0-9_]+:/g, "") ||
+							"Description not set";
+					}
+					if (language) language.innerText = data.language || "Unknown";
+					if (forks) forks.innerText = formatCompact(data.forks);
+					if (stars) stars.innerText = formatCompact(data.stargazers_count);
+					if (avatar && data.owner?.avatar_url) {
+						avatar.style.backgroundImage = `url(${data.owner.avatar_url})`;
+						avatar.style.backgroundColor = "transparent";
+					}
+					if (license) license.innerText = data.license?.spdx_id || "no-license";
+
+					card.classList.remove("fetch-waiting");
+					card.dataset.githubCardLoaded = "true";
+					console.log(`[GITHUB-CARD] Loaded card for ${repo}.`);
+				})
+				.catch(() => {
+					card.classList.add("fetch-error");
+					console.warn(`[GITHUB-CARD] (Error) Loading card for ${repo}.`);
+				})
+				.finally(() => {
+					delete card.dataset.githubCardLoading;
+				});
+		});
+	};
+
+	const initPageGithubCards = () => window.initGithubCards(document);
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initPageGithubCards, {
+			once: true,
+		});
+	} else {
+		initPageGithubCards();
+	}
+
+	document.addEventListener("astro:page-load", initPageGithubCards);
+})();
+</script>

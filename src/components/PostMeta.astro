@@ -15,6 +15,7 @@ interface Props {
 	hideTagsForMobile?: boolean;
 	hideUpdateDate?: boolean;
 	pageviewPath?: string;
+	encrypted?: boolean;
 }
 const {
 	published,
@@ -25,12 +26,22 @@ const {
 	hideTagsForMobile = false,
 	hideUpdateDate = false,
 	pageviewPath,
+	encrypted = false,
 } = Astro.props;
 const className = Astro.props.class;
 const resolvedPageviewPath = pageviewPath ?? Astro.url.pathname;
 ---
 
 <div class:list={["flex flex-wrap text-neutral-500 dark:text-neutral-400 items-center gap-4 gap-x-4 gap-y-2", className]}>
+    {encrypted && (
+        <div class="flex items-center" title="加密文章">
+            <div class="meta-icon">
+                <Icon name="material-symbols:key-outline-rounded" class="text-xl"></Icon>
+            </div>
+            <span class="text-50 text-sm font-medium">加密</span>
+        </div>
+    )}
+
     <!-- publish date -->
     <div class="flex items-center">
 		{pinned && (

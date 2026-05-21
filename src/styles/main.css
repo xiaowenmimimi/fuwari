@@ -75,6 +75,7 @@
     }
 
     .toc-hide,
+    .toc-empty,
     .toc-not-ready {
         @apply opacity-0 pointer-events-none
     }

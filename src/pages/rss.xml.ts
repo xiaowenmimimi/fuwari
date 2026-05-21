@@ -24,8 +24,16 @@ export async function GET(context: APIContext) {
 		description: siteConfig.subtitle || "No description",
 		site: context.site ?? "https://fuwari.vercel.app",
 		items: blog.map((post) => {
-			const content =
-				typeof post.body === "string" ? post.body : String(post.body || "");
+			const content = post.data.encrypted
+				? [
+						post.data.description,
+						"此文章正文已加密，请访问原文解锁阅读。",
+					]
+						.filter(Boolean)
+						.join("\n\n")
+				: typeof post.body === "string"
+					? post.body
+					: String(post.body || "");
 			const cleanedContent = stripInvalidXmlChars(content);
 			return {
 				title: post.data.title,
