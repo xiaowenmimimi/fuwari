@@ -1,7 +1,7 @@
 <script lang="ts">
 import Icon from "@iconify/svelte";
 import type { EncryptedPostPayload } from "@utils/encryption";
-import { tick } from "svelte";
+import { onMount, tick } from "svelte";
 
 declare global {
 	interface Window {
@@ -120,6 +120,16 @@ function copyCode(event: MouseEvent) {
 	}, 1000);
 	target.setAttribute("data-timeout-id", newTimeoutId.toString());
 }
+
+onMount(() => {
+	const element = contentElement;
+	if (!element) return;
+
+	element.addEventListener("click", copyCode);
+	return () => {
+		element.removeEventListener("click", copyCode);
+	};
+});
 </script>
 
 {#if !unlocked}
@@ -251,5 +261,4 @@ function copyCode(event: MouseEvent) {
 	data-encrypted-post-content
 	class:hidden={!unlocked}
 	class="prose dark:prose-invert prose-base !max-w-none custom-md mb-6 markdown-content onload-animation"
-	onclick={copyCode}
 ></div>
