@@ -661,8 +661,10 @@ scrollFunction();
 import PhotoSwipeLightbox from "photoswipe/lightbox"
 import "photoswipe/style.css"
 
-let lightbox: PhotoSwipeLightbox
+let lightbox: PhotoSwipeLightbox | undefined
 let pswp = import("photoswipe")
+let documentPhotoSwipeHooksBound = false
+let swupPhotoSwipeHooksBound = false
 
 function createPhotoSwipe() {
 	lightbox = new PhotoSwipeLightbox({
@@ -695,26 +697,47 @@ function createPhotoSwipe() {
 	lightbox.init()
 }
 
-const setup = () => {
-	if (!lightbox) {
-		createPhotoSwipe()
-	}
-	window.swup.hooks.on("page:view", () => {
-		createPhotoSwipe()
+function recreatePhotoSwipe() {
+	lightbox?.destroy?.()
+	createPhotoSwipe()
+}
+
+function bindDocumentPhotoSwipeHooks() {
+	if (documentPhotoSwipeHooksBound) return
+	documentPhotoSwipeHooksBound = true
+
+	document.addEventListener("encrypted-post-unlocked", () => {
+		requestAnimationFrame(recreatePhotoSwipe)
 	})
+	document.addEventListener("astro:page-load", () => {
+		requestAnimationFrame(() => {
+			recreatePhotoSwipe()
+			bindSwupPhotoSwipeHooks()
+		})
+	})
+}
+
+function bindSwupPhotoSwipeHooks() {
+	if (swupPhotoSwipeHooksBound || !window.swup?.hooks) return
+	swupPhotoSwipeHooksBound = true
 
 	window.swup.hooks.on(
 		"content:replace",
 		() => {
 			lightbox?.destroy?.()
+			lightbox = undefined
 		},
 		{ before: true },
 	)
 }
 
-if (window.swup) {
-	setup()
-} else {
-	document.addEventListener("swup:enable", setup)
+function setup() {
+	if (!lightbox) {
+		createPhotoSwipe()
+	}
+	bindDocumentPhotoSwipeHooks()
+	bindSwupPhotoSwipeHooks()
 }
+
+setup()
 </script>
