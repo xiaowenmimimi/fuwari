@@ -211,14 +211,23 @@ class TableOfContents extends HTMLElement {
             return;
         }
 
+        let initialized = false;
+        const initOnce = () => {
+            if (initialized || !this.isConnected) return;
+            initialized = true;
+            this.init();
+        };
+
         // wait for the onload animation to finish, which makes the `getBoundingClientRect` return correct values
         const element = document.querySelector('.prose');
         if (element) {
             element.addEventListener('animationend', () => {
-                this.init();
+                initOnce();
             }, { once: true });
+            window.setTimeout(initOnce, 900);
         } else {
             console.debug('Animation element not found');
+            requestAnimationFrame(initOnce);
         }
     };
 
@@ -348,7 +357,11 @@ class TableOfContents extends HTMLElement {
             document.querySelectorAll<HTMLAnchorElement>("#toc a[href^='#']")
         );
 
-        if (this.tocEntries.length === 0) return;
+        if (this.tocEntries.length === 0) {
+            this.setWrapperVisible(false);
+            return;
+        }
+        this.setWrapperVisible(true);
 
         this.sections = new Array(this.tocEntries.length);
         this.headings = new Array(this.tocEntries.length);
