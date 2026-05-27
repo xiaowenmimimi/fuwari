@@ -1,6 +1,7 @@
 ---
 title: 记录 3x-ui 面板部署与网络协议学习笔记
 published: 2026-05-18
+updated: 2026-05-26
 description: 记录 3x-ui 面板部署与网络协议学习笔记的过程，包括面板安装、配置思路。
 tags: [3x-ui, 代理节点]
 category: 技术备忘录
@@ -36,7 +37,7 @@ passwordHint: "门何以开，在初生之日。年为首，月为腰，日为�
 ::github{repo="MHSanaei/3x-ui"}
 
 :::note[版本说明]
-3x-ui 近期更新了 v3 版本，本文使用的版本是 v3.0.2。
+3x-ui 近期更新了 v3 版本，本文使用的版本是 v3.1.0。
 :::
 
 ### VPS 配置
@@ -72,36 +73,36 @@ apt update && apt upgrade -y
 apt install -y curl wget socat ufw
 ```
 
-执行 3x-ui 安装脚本(v3.0.2)：
+执行 3x-ui 安装脚本：
 
 ```bash showLineNumbers=false
 bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.sh)
 ```
 
-**1. 设置面板端口, 例如 8443。**
+> 说明：该命令通常会安装当前最新版本。本文配置思路按照 v3.1.0 版本进行。
 
-![3x-ui-node-guide-1.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-1.webp)
+**1. 数据库选择，如果只是个人自建节点，直接选择 `1) SQLite` 即可，也可以直接按回车使用默认值。**
 
-**2. SSL 证书设置方式, 默认根据 IP 设置证书, 生产环境建议使用域名证书。**
+**2. 设置面板端口, 例如 8443。**
 
-![3x-ui-node-guide-2.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-2.webp)
+**3. SSL 证书设置方式, 默认根据 IP 设置证书, 生产环境建议使用域名证书。**
 
 > 生产环境建议使用域名证书，以确保面板登录安全，可使用 Cloudflare 橙云代理服务。
 
-**3. 安装成功后，会提示面板登录信息及地址。**
-
-![3x-ui-node-guide-3.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-3.webp)
+**4. 安装成功后，会提示面板登录信息及地址。**
 
 例如:
 
-- 用户名: OkJRcpSKyJ
-- 密码: JS9CtKQGXJ
+![3x-ui-node-guide-1.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-1.webp)
+
+- 用户名: 1UMnC4ozbg
+- 密码: 9JiA2kSIen
 - 面板端口: 8443
-- 登陆地址: https://172.236.235.31:8443/wWozzDkCU1cjqDqlxL
+- 登陆地址: https://172.233.150.81:8443/1d7Kkv1KReS81Tuzyd
 
-**4. 登陆面板后，建议配置面板安全设置。**
+**5. 登陆面板后，建议配置面板安全设置。**
 
-![3x-ui-node-guide-4.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-4.webp)
+![3x-ui-node-guide-2.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-2.webp)
 
 > 如果访问失败，优先检查：
 > - VPS 防火墙是否放行面板端口
@@ -135,11 +136,9 @@ VLESS + Reality 是一种不依赖传统 TLS 证书、不强制需要域名的�
 
 > 如果 VPS 线路不好，Reality 也不能从根本上解决速度问题。
 
-### 3x-ui 添加入站
+### 3x-ui 添加入站与基础配置
 
 进入 3x-ui 面板，**入站列表** → **添加入站**。
-
-**基础配置：**
 
 | 配置项                | 推荐值             |
 | ------------------ | --------------- |
@@ -149,33 +148,42 @@ VLESS + Reality 是一种不依赖传统 TLS 证书、不强制需要域名的�
 | 地址  | 留空              |
 | 端口         | `443`   |
 
-![3x-ui-node-guide-5.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-5.webp)
+![3x-ui-node-guide-3.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-3.webp)
 
-**协议配置：**
+### 协议配置
 
-在客户端区域，一般会有一个默认用户。
+一般默认即可。
 
 | 配置项         | 推荐值                |
 | ----------- | ------------------ |
-| Enable      | 开启                 |
-| Email       | 随便写，默认即可     |
-| ID   | 默认自动生成即可           |
-| Decryption    | `none`             |
-| Encryption    | `none`            |
+| 加密    | `none`             |
+| 解密    | `none`            |
 
-![3x-ui-node-guide-6.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-6.webp)
+![3x-ui-node-guide-4.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-4.webp)
 
-### Stream 配置
+### 流(Stream)配置
 
 | 配置项         | 推荐值                |
 | ----------- | ------------------ |
 | Transmission      | `TCP(RAW)`                 |
-| Target       | `www.microsoft.com:443`    |
-| SNI   | `www.microsoft.com`           |
+| HTTP 伪装       | 关闭    |
+| External Proxy   | 关闭           |
+| Sockopt        | 关闭           |
+| TCP Masks        | 不添加           |
+
+![3x-ui-node-guide-5.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-5.webp)
+
+### 安全(Security)配置
+
+| 配置项                      | 推荐值                     |
+| ------------------------ | ----------------------- |
+| Security                 | `reality`               |
+| Target            | `www.microsoft.com:443` |
+| SNI       | `www.microsoft.com`     |
 | 公钥        | 点击`Get New Cert`自动生成 / 自动带出 |
 | 私钥        | 点击`Get New Cert`自动生成 / 自动带出 |
 
-![3x-ui-node-guide-7.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-7.webp)
+![3x-ui-node-guide-6.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-6.webp)
 
 推荐伪装目标域名 `Target / SNI` 组合：
 
@@ -194,19 +202,41 @@ Target: www.amazon.com:443
 SNI: www.amazon.com
 ```
 
-### Sniffing 配置
+### 嗅探(Sniffing)配置
 
-推荐开启：
+推荐**启用**：
+
+![3x-ui-node-guide-7.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-7.webp)
+
+配置好后，点击保存。
+
+### 客户端配置
+
+| 项目            | 怎么填                                  |
+| ------------- | ------------------------------------ |
+| 邮箱            | 随便写，随机生成即可 |
+| 订阅 ID         | 默认生成即可，不用改                           |
+| Hysteria Auth | 默认生成即可             |
+| 密码            | 默认生成即可             |
+| UUID          | 默认生成即可，是 VLESS 主要用的 ID              |
+| 总上传/下载 GB     | `0`，表示不限制流量                          |
+| 过期时间          | 留空，表示不过期                             |
+| 首次使用后开始       | 自用建议关闭                               |
+| 备注            | 可留空                        |
+| 关联入站          | **选择你刚创建的 VLESS Reality 入站**       |
+| 启用            | 开启                                   |
 
 ![3x-ui-node-guide-8.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-8.webp)
 
 ### Flow 配置
 
-创建后，在入站列表中找到该入站，点击编辑，配置 Flow 参数为 `xtls-rprx-vision`
+客户端创建后，点击编辑，配置 Flow 参数为 `xtls-rprx-vision`
 
 ![3x-ui-node-guide-9.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-9.webp)
 
 ### v2rayN 客户端配置
+
+点击复制订阅信息。
 
 ![3x-ui-node-guide-10.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-10.webp)
 
@@ -222,7 +252,7 @@ SNI: www.amazon.com
 
 ::github{repo="2dust/v2rayNG"}
 
-手机 `v2rayNG` 扫描二维码即可。
+手机 `v2rayNG` 扫描二维码更新订阅即可。
 
 ---
 
@@ -289,11 +319,9 @@ x-ui
 /root/cert/vless.xhwen.top/privkey.pem
 ```
 
-### 3x-ui 添加入站
+### 3x-ui 添加入站与基础配置
 
 进入 3x-ui 面板，**入站列表** → **添加入站**。
-
-**基础配置：**
 
 | 配置项                | 推荐值             |
 | ------------------ | --------------- |
@@ -305,42 +333,70 @@ x-ui
 
 ![3x-ui-node-guide-14.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-14.webp)
 
-**协议配置：**
+### 协议配置
 
 在客户端区域，一般会有一个默认用户。
 
 | 配置项         | 推荐值                |
 | ----------- | ------------------ |
-| Enable      | 开启                 |
-| Email       | 随便写，默认即可     |
-| ID   | 默认自动生成即可           |
-| Decryption    | `none`             |
-| Encryption    | `none`            |
+| 加密    | `none`             |
+| 解密    | `none`            |
+
+![3x-ui-node-guide-4.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-4.webp)
+
+### 流(Stream)配置
+
+| 配置项              | 推荐值               |
+| ---------------- | ----------------- |
+| Transmission     | `WebSocket`       |
+| Proxy Protocol   | 关闭                |
+| 主机               | `vless.xhwen.top` |
+| 路径               | 随便写，例如 `/vless`          |
+| Heartbeat Period | `0`               |
+| 请求头              | 不用添加              |
+| External Proxy   | 关闭                |
+| Sockopt          | 关闭                |
+| TCP Masks        | 不添加               |
 
 ![3x-ui-node-guide-15.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-15.webp)
 
-### Stream 配置
+### 安全(Security)配置
 
-| 配置项         | 推荐值                |
-| ----------- | ------------------ |
-| Transmission      | `WebSocket`                 |
-| 主机   | `vless.xhwen.top`           |
-| 路径        | 随便写，例如 `/vless` |
-| Security       | `tls`    |
-| SNI            | `vless.xhwen.top` |
-| ALPN            | 可留空，或 `http/1.1` |
-| 公钥            | `fullchain.pem` 路径 |
-| 私钥            | `privkey.pem` 路径 |
+| 配置项                  | 填法                                         |
+| -------------------- | ------------------------------------------ |
+| 安全                   | `tls`                                      |
+| SNI                  | `vless.xhwen.top`                          |
+| ALPN                 | 建议只保留 `http/1.1`                           |
+| 公钥                   | `fullchain.pem` 路径，例如 `/root/cert/vless.xhwen.top/fullchain.pem` |
+| 私钥                   | `privkey.pem` 路径，例如 `/root/cert/vless.xhwen.top/privkey.pem`   |
 
 ![3x-ui-node-guide-16.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-16.webp)
 
-### Sniffing 配置
+### 嗅探(Sniffing)配置
 
-推荐开启：
+推荐**启用**：
 
-![3x-ui-node-guide-8.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-8.webp)
+![3x-ui-node-guide-7.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-7.webp)
 
-配置好后，点击保存即可。
+配置好后，点击保存。
+
+### 客户端配置
+
+| 项目            | 怎么填                                  |
+| ------------- | ------------------------------------ |
+| 邮箱            | 随便写，随机生成即可 |
+| 订阅 ID         | 默认生成即可，不用改                           |
+| Hysteria Auth | 默认生成即可             |
+| 密码            | 默认生成即可             |
+| UUID          | 默认生成即可，是 VLESS 主要用的 ID              |
+| 总上传/下载 GB     | `0`，表示不限制流量                          |
+| 过期时间          | 留空，表示不过期                             |
+| 首次使用后开始       | 自用建议关闭                               |
+| 备注            | 可留空                        |
+| 关联入站          | **选择你刚创建的 VLESS WebSocket 入站**       |
+| 启用            | 开启                                   |
+
+![3x-ui-node-guide-16-2.webp](https://image.xhwen.cn/blog/3x-ui-node-guide/3x-ui-node-guide-16-2.webp)
 
 ### 优选 IP
 
@@ -352,7 +408,7 @@ x-ui
 
 进入 3x-ui 面板，**面板设置** → **订阅设置**。
 
-修改反向代理 URI 为 `https://域名:监听端口/URI路径`，例如：`https://vless.xhwen.top:443/vless`，
+修改反向代理 URI 为 `https://域名:监听端口/URI路径`，例如：`https://vless.xhwen.top:2096/sub/`，
 
 或者是使用优选IP 为反向代理 URI `https://优选 IP:监听端口/URI 路径`，保存后再点击重启面板。
 
@@ -382,7 +438,7 @@ x-ui
 
 ::github{repo="2dust/v2rayNG"}
 
-手机 `v2rayNG` 扫描二维码即可。
+手机 `v2rayNG` 扫描二维码更新订阅即可。
 
 :::tip[使用优选 IP]
 在 `v2rayNG` 选中节点`导出配置至剪切板`，然后再`从剪切板导入`以此复制多个节点，
