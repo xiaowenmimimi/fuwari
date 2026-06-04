@@ -20,11 +20,10 @@ let links: NavBarLink[] = navBarConfig.links.map(
 	},
 );
 ---
-<div id="navbar" class="z-50 onload-animation">
-    <div class="absolute h-8 left-0 right-0 -top-8 bg-[var(--card-bg)] transition"></div> <!-- used for onload animation -->
+<div id="navbar" class="navbar-shell relative z-50 max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto">
     <div id="navbar-bg" class:list={[
         className,
-        "card-base !overflow-visible max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto flex items-center justify-between px-4"]}>
+        "!overflow-visible h-full w-full flex items-center justify-between px-4"]}>
         <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
             <div class="flex flex-row text-[var(--primary)] items-center text-md">
                 <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
@@ -112,9 +111,8 @@ document.addEventListener('astro:after-swap', () => {
 <script is:inline>
 
 function setTransparentNav() {
-    const navbar = document.getElementById('navbar-bg');
+    const navbar = document.getElementById('navbar');
 	const isTop = document.body.scrollTop === 0 && document.documentElement.scrollTop === 0;
-	navbar.classList.toggle('!bg-transparent', isTop);
 	navbar.classList.toggle('navbar-glass', !isTop);
 }
 

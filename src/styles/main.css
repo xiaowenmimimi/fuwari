@@ -4,17 +4,49 @@
     .card-base {
         @apply rounded-[var(--radius-large)] overflow-hidden bg-[var(--card-bg)] transition;
     }
-    .navbar-glass {
-        background-color: rgba(255, 255, 255, 0.42);
-        backdrop-filter: blur(14px) saturate(1.25);
-        -webkit-backdrop-filter: blur(14px) saturate(1.25);
-        border: 1px solid rgba(255, 255, 255, 0.25);
+    .navbar-shell {
+        /* 导航栏毛玻璃模糊强度：数值越大背景越模糊，推荐 6px-28px。 */
+        --navbar-glass-blur: 6px;
+        --navbar-light-bg: rgba(255, 255, 255, 0.42);
+        --navbar-dark-bg: rgba(0, 0, 0, 0.42);
+        --navbar-light-border: rgba(255, 255, 255, 0.34);
+        --navbar-dark-border: rgba(255, 255, 255, 0.1);
+
+        @apply rounded-[var(--radius-large)];
+        isolation: isolate;
+        overflow: visible;
+    }
+    .navbar-shell::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        z-index: 0;
+        pointer-events: none;
+        border-radius: inherit;
+        background-color: transparent;
+        border: 1px solid transparent;
+        box-shadow: none;
+        backdrop-filter: blur(0) saturate(1);
+        -webkit-backdrop-filter: blur(0) saturate(1);
+        transition-property: background-color, border-color, box-shadow, backdrop-filter, -webkit-backdrop-filter;
+        transition-duration: 360ms;
+        transition-timing-function: cubic-bezier(0.22, 1, 0.36, 1);
+    }
+    .navbar-shell > #navbar-bg {
+        position: relative;
+        z-index: 1;
+    }
+    .navbar-shell.navbar-glass::before {
+        background-color: var(--navbar-light-bg);
+        backdrop-filter: blur(var(--navbar-glass-blur)) saturate(1.45);
+        -webkit-backdrop-filter: blur(var(--navbar-glass-blur)) saturate(1.45);
+        border-color: var(--navbar-light-border);
         box-shadow:
             0 10px 30px rgba(0, 0, 0, 0.08);
     }
-    .dark .navbar-glass {
-        background-color: rgba(10, 10, 10, 0.38);
-        border: 1px solid rgba(255, 255, 255, 0.08);
+    .dark .navbar-shell.navbar-glass::before {
+        background-color: var(--navbar-dark-bg);
+        border-color: var(--navbar-dark-border);
         box-shadow:
             0 10px 30px rgba(0, 0, 0, 0.35);
     }

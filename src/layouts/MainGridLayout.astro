@@ -73,8 +73,8 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 <!-- Navbar -->
 <slot slot="head" name="head"></slot>
 {isHomePage && <link slot="head" rel="stylesheet" href={lxgwWenKaiScreenCssUrl} />}
-<div id="top-row" class="z-50 pointer-events-none relative transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
-    <div id="navbar-wrapper" class="pointer-events-auto sticky top-0 transition-all">
+<div id="top-row" class="z-50 pointer-events-none relative h-[4.5rem] transition-all duration-700 max-w-[var(--page-width)] px-0 md:px-4 mx-auto" class:list={[""]}>
+    <div id="navbar-wrapper" class="pointer-events-auto fixed left-0 right-0 top-0 z-50 mx-auto max-w-[var(--page-width)] px-0 md:px-4 transition-all">
         <Navbar></Navbar>
     </div>
 </div>
