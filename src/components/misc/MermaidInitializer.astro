@@ -41,6 +41,28 @@ declare global {
 		window.setTimeout(callback, 0);
 	};
 
+	const showDiagramError = (diagram: HTMLElement, error: unknown) => {
+		console.error("[MERMAID] Failed to render diagram.", error);
+
+		diagram.querySelector(".mermaid-render")?.remove();
+
+		const placeholder =
+			diagram.querySelector<HTMLElement>(".mermaid-placeholder") ??
+			document.createElement("div");
+		placeholder.className = "mermaid-placeholder";
+		placeholder.textContent = "图表渲染失败，请检查 Mermaid 语法。";
+
+		if (!placeholder.parentElement) {
+			diagram.prepend(placeholder);
+		}
+
+		const source = diagram.querySelector<HTMLElement>(".mermaid-source");
+		source?.removeAttribute("aria-hidden");
+
+		diagram.dataset.mermaidPending = "false";
+		diagram.dataset.mermaidError = "true";
+	};
+
 	window.initMermaidDiagrams = async (root = document) => {
 		const diagrams = Array.from(
 			root.querySelectorAll<HTMLElement>(
@@ -59,38 +81,41 @@ declare global {
 
 			await Promise.all(
 				diagrams.map(async (diagram, index) => {
-					const source = diagram.querySelector<HTMLElement>(".mermaid-source");
-					const placeholder =
-						diagram.querySelector<HTMLElement>(".mermaid-placeholder");
-					const definition = source?.textContent?.trim();
+					try {
+						const source = diagram.querySelector<HTMLElement>(".mermaid-source");
+						const placeholder =
+							diagram.querySelector<HTMLElement>(".mermaid-placeholder");
+						const definition = source?.textContent?.trim();
 
-					if (!definition) {
-						throw new Error("Mermaid definition is empty.");
+						if (!definition) {
+							throw new Error("Mermaid definition is empty.");
+						}
+
+						const parseResult = await mermaid.parse(definition, {
+							suppressErrors: true,
+						});
+						if (parseResult === false) {
+							throw new Error("Mermaid definition is invalid.");
+						}
+
+						const id = `mermaid-${Date.now()}-${index}`;
+						const { svg, bindFunctions } = await mermaid.render(id, definition);
+						const renderTarget = document.createElement("div");
+						renderTarget.className = "mermaid-render";
+						renderTarget.innerHTML = svg;
+
+						placeholder?.replaceWith(renderTarget);
+						bindFunctions?.(renderTarget);
+						diagram.dataset.mermaidPending = "false";
+						diagram.dataset.mermaidLoaded = "true";
+					} catch (error) {
+						showDiagramError(diagram, error);
 					}
-
-					const id = `mermaid-${Date.now()}-${index}`;
-					const { svg, bindFunctions } = await mermaid.render(id, definition);
-					const renderTarget = document.createElement("div");
-					renderTarget.className = "mermaid-render";
-					renderTarget.innerHTML = svg;
-
-					placeholder?.replaceWith(renderTarget);
-					bindFunctions?.(renderTarget);
-					diagram.dataset.mermaidPending = "false";
-					diagram.dataset.mermaidLoaded = "true";
 				}),
 			);
 		} catch (error) {
-			console.error("[MERMAID] Failed to render diagram.", error);
 			diagrams.forEach((diagram) => {
-				const placeholder = diagram.querySelector<HTMLElement>(
-					".mermaid-placeholder",
-				);
-				if (placeholder) {
-					placeholder.textContent = "图表渲染失败，请检查 Mermaid 语法。";
-				}
-				diagram.dataset.mermaidPending = "false";
-				diagram.dataset.mermaidError = "true";
+				showDiagramError(diagram, error);
 			});
 		} finally {
 			diagrams.forEach((diagram) => {
