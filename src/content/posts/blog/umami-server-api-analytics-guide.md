@@ -31,12 +31,10 @@ draft: false
 
 ## 安全架构
 
-```text showLineNumbers=false
-浏览器
-   ↓
-你自己的后端接口（如 /api/analytics）
-   ↓
-Umami Server API（携带 token）
+```mermaid
+flowchart TD
+    A[浏览器] --> B[你自己的后端接口<br/>（如 /api/analytics）]
+    B --> C[Umami Server API<br/>（携带 token）]
 ```
 
 - Umami 只对内网或后端可见

@@ -7,47 +7,11 @@ category: 技术教程
 draft: false
 ---
 
-## 前言
+## 背景
 
-在搭建个人博客或网站时，HTTPS 已经是必不可少的基础配置。如果网站未来可能使用多个子域名，那么申请通配符证书（如 `*.xhwen.cn`）将是一个更方便的选择。
+根域名 DNS 在阿里云，用 Let’s Encrypt 申请通配符 SSL 证书（`*.xhwen.cn`），Nginx 部署，acme.sh 管理，cron 自动续期。
 
-通配符证书可以为所有子域名提供加密保护，而无需为每个子域名单独申请证书。这在管理多个域名或子域名时尤为重要。
-
-本文记录一次完整实践：
-
-- 根域名 DNS 在 **阿里云**
-- 使用 **Let’s Encrypt**
-- 申请 **通配符 SSL 证书**
-- 通过 **Nginx** 部署
-- 实现 **全自动续期**
-
-证书方案：
-
-- CA：Let’s Encrypt（免费）
-- 验证方式：DNS-01（阿里云 DNS）
-- 证书管理工具：acme.sh
-- 自动续期：cron 自动完成
-
-### 为什么选择 Let’s Encrypt？
-
-选择 **Let’s Encrypt** 的原因很简单：
-
-- **浏览器全面信任**  
-  主流浏览器（Chrome / Firefox / Safari / Edge）均内置根证书，不会出现安全警告。
-
-- **支持自动续期**  
-  基于 ACME 协议，可实现证书自动申请、自动续期、自动部署，一次配置后几乎无需维护。
-
-- **支持通配符证书**  
-  可申请 `*.xhwen.cn`，覆盖所有子域名，适合长期维护的网站和博客。
-
-- **与 Linux / Nginx 生态契合**  
-  工具成熟（如 acme.sh、certbot），文档完善，配置透明可控。
-
-- **免费但不低质**  
-  由非营利组织运营，安全性与常见 DV 付费证书等价，已被大量网站采用。
-
-对于个人博客和非商业网站来说，Let’s Encrypt 是一个稳定、省心、长期可用的 HTTPS 方案。
+选择 Let’s Encrypt 的理由：免费、浏览器信任、支持通配符、acme.sh 工具成熟。个人博客够用了。
 
 ---
 
@@ -70,7 +34,7 @@ ss -ltnp | grep -E ':80|:443'
 ## 二、安装 acme.sh
 
 `acme.sh` 是一个用 Shell 编写的 ACME 客户端，用于与 Let’s Encrypt 交互。  
-相比 certbot，它**更轻量、更灵活**，对通配符证书（DNS-01 验证）支持也更好，非常适合自建服务器和长期维护的博客。
+相比 certbot，它对 DNS-01 验证支持更好，不依赖 Python，纯 Shell 脚本。
 
 ### 安装前说明
 
@@ -186,7 +150,7 @@ acme.sh --set-default-ca --server letsencrypt
 
 ![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/lets-encrypt-wildcard-nginx-auto-renew-2.png)
 
-对个人博客来说，这是最省事、最稳定的策略，完全满足 acme.sh 的 DNS-01 验证。  
+个人博客用这个策略就够了。
 
 ### 在服务器上配置环境变量（关键步骤）
 
@@ -242,14 +206,7 @@ acme.sh --issue \
 - `-d xhwen.cn`：主域名
 - `-d '*.xhwen.cn'`：通配符子域名
 
-执行过程中，acme.sh 会自动：
-
-1.调用阿里云 DNS API
-2.创建 _acme-challenge.xhwen.cn 的 TXT 记录
-3.等待 Let’s Encrypt 验证
-4.验证完成后自动删除 TXT 记录
-
-**整个过程无需手动干预。**
+执行过程中，acme.sh 会自动调用阿里云 DNS API、创建 TXT 记录、等 Let’s Encrypt 验证、验证完删除 TXT 记录。
 
 ### 申请成功的标志
 
@@ -313,11 +270,7 @@ acme.sh --install-cert \
   --reloadcmd     "nginx -s reload"
 ```
 
-注册自动续期回调：
-
-- 证书续期成功后
-- 自动执行 `nginx -s reload` 重启 Nginx 生效
-- **HTTPS 全程无感知更新**
+注册自动续期回调：证书续期成功后自动执行 `nginx -s reload`，更新过程 Nginx 不会中断服务。
 
 执行一次模拟续期：
 

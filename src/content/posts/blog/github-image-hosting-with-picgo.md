@@ -19,7 +19,7 @@ lang: zh_CN
 - **Cloudflare CDN（通过 Cloudflare Pages Functions 实现加速）**  
 
 :::note[搭建图床的作用]
-从零搭建这套系统，让博客 Markdown 能直接插入 CDN 外链图片，提高写作效率与站点加载速度。
+博客 Markdown 直接插入 CDN 外链图片，不用每次手动上传、管理本地文件。
 :::
 
 ---
@@ -36,11 +36,15 @@ lang: zh_CN
 
 ## 二、图床整体架构说明
 
-本图床采用 GitHub 作为存储源，PicGo 作为上传工具，并通过 Cloudflare 为图片提供 CDN 加速。
+使用 GitHub 存图片，PicGo 上传，Cloudflare 跑 CDN 加速。
 
-:::note[流程示意：]
-本地图片 → PicGo 上传 → GitHub 仓库 → Cloudflare CDN → 博客外链
-:::
+```mermaid
+flowchart TD
+    A[本地图片] --> B[PicGo 上传]
+    B --> C[GitHub 仓库]
+    C --> D[Cloudflare CDN]
+    D --> E[博客外链]
+```
 
 最终 Markdown 图片链接示例：
 
@@ -95,7 +99,7 @@ lang: zh_CN
 
 ![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/github-image-hosting-with-picgo-3.png)
 
-### 3. 配置权限（最关键）
+### 3. 配置权限
 
 :::important[关键]
 找到 Permissions 区域，在 Repository permissions 中 **只启用两个权限**：
@@ -141,18 +145,10 @@ GitHub 会生成一段以 `github_pat_` 开头的 Token（生成后复制，只�
 ## 六、配置 Cloudflare CDN 加速
 
 :::note[]
-在使用 Cloudflare 实现对 GitHub 图床的 CDN 加速之前，需要了解 Cloudflare 提供的 Pages Functions —— 这是 Cloudflare Pages 内置的无服务器（Serverless）函数，用于编写 API、反向代理、重写请求等逻辑，非常适合作为 GitHub 文件的中转加速层。
+使用 Cloudflare Pages Functions 做 GitHub 文件的代理加速。Pages 内置的 Serverless 函数，可以写反向代理、重写请求，跑在边缘节点上。免费额度每天 100,000 次请求，对于个人图床够用了。
 
-> [Cloudflare Pages Functions 官网](https://www.cloudflare.com/zh-cn/)
->
 > [Cloudflare Pages 官方文档](https://developers.cloudflare.com/pages/)
 :::
-
-**Cloudflare Pages Functions 特点**：
-1. 支持边缘节点执行（比传统服务器更快）
-2. 免费额度充足（每日 100,000 次请求）
-3. 适合 GitHub 静态文件的代理加速
-4. 无需自己的服务器、无需备案
 
 ### 1. 新建 Cloudflare Pages 项目
 
@@ -232,7 +228,7 @@ Cloudflare 会自动缓存资源。
 
 > https://img.xhwen.cn
 
-只需添加 CNAME 解析到 Cloudflare Pages。
+添加一条 CNAME 解析到 Cloudflare Pages 就行。
 
 ![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/cloudflare-pages-8.png)
 :::
@@ -278,5 +274,5 @@ PicGo 上传后生成的 URL 自动使用 Cloudflare CDN 链接。
 
 ![示例图片](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/sample_pictures.jpg)
 :::tip[]
-Fuwari 本身支持响应式图片布局，因此无需额外适配。
+Fuwari 自带响应式图片布局，不用额外调。
 :::

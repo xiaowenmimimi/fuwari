@@ -1,7 +1,7 @@
 ---
 title: Uptime Kuma 部署与使用指南
 published: 2026-02-11
-description: Uptime Kuma 是一款轻量、开源的可用性监控工具，支持 HTTP(s)、TCP、Ping、Push 等多种监控方式，并内置告警通知系统。
+description: 使用 Uptime Kuma 自建服务可用性监控，支持 HTTP(s)、TCP、Ping、Push 等检测方式，搭配邮件告警和状态页展示。
 tags: [Uptime Kuma]
 category: 技术教程
 draft: false
@@ -10,19 +10,11 @@ draft: false
 ## Uptime Kuma 的核心作用
 
 :::note[]
-**Uptime Kuma** 是一款开源、自托管的服务可用性监控工具，用于监控，本质上是一个 **“持续自动检测 + 失败通知”系统**。
+**Uptime Kuma** 是一个开源、自托管的**持续自动检测 + 失败通知**系统。
 ::github{repo="louislam/uptime-kuma"}
 :::
 
-1. 可用性监控（Uptime Monitoring）
-
-2. 延迟与稳定性监控
-
-3. 故障自动通知
-
-4. 状态页展示（Status Page）
-
-> 适合博客、SaaS、小型服务对外展示稳定性。
+核心功能覆盖四个方面：可用性监控（Uptime Monitoring）、延迟与稳定性监控、故障自动通知、状态页展示（Status Page）。适合博客、SaaS、小型服务对外展示稳定性。
 
 ---
 
@@ -197,18 +189,6 @@ server {
 
 Uptime Kuma 通过 **SMTP 协议** 发送邮件。
 
-流程如下：
-
-```text showLineNumbers=false
-服务异常
-    ↓
-Uptime Kuma 触发告警
-    ↓
-连接 SMTP 服务器
-    ↓
-发送邮件到指定收件人
-```
-
 前期准备：
 
 * 一个可用的邮箱账号（推荐使用专门的告警邮箱）
@@ -278,32 +258,17 @@ Uptime Kuma 触发告警
 
 ## Uptime Kuma 状态页
 
-状态页是 Uptime Kuma 内置的一项功能，用于：
-
-> 将指定监控项的运行状态以公开页面的形式展示出来。
+状态页将指定监控项的运行状态公开显示。
 
 典型用途：
 
 - 对外展示博客 / API 是否在线
 - 向用户说明服务状态
 - 公布历史宕机记录
-- 增强服务透明度
 
 例如官方示例：[https://status.kuma.pet/](https://status.kuma.pet/)
 
-### 工作原理
-
-```
-监控项运行状态
-        ↓
-Uptime Kuma 记录状态
-        ↓
-状态页读取监控数据
-        ↓
-公开展示当前状态与历史记录
-```
-
-> 状态页不会直接执行检测，而是展示现有监控数据。
+状态页读取的是已有监控数据，不独立执行检测。
 
 ### 如何创建一个状态页
 

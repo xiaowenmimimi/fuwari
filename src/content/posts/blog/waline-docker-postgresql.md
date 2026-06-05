@@ -22,53 +22,38 @@ draft: false
 
 ::link-card{title="Waline 官方文档" url="https://waline.js.org/guide/" image="https://image.xhwen.cn/blog/waline_logo.webp" badge="Waline"}
 
-:::note[为什么选择 Waline + PostgreSQL（而不是 Twikoo / Mongo）]
-**1. 为什么选择 Waline**
+:::note[为什么选 Waline + PostgreSQL]
 
-Waline 的定位非常明确：**为自建博客服务的轻量评论系统**。
-
-它的关键特性正好命中需求：
+选 Waline 的原因：
 
 - 官方支持自建
-- 前后端完全解耦
-- 原生支持匿名评论
-- Node.js 架构，资源占用可控
-- 社区成熟、长期维护
+- 前后端分离
+- 支持匿名评论
+- Node.js 架构，资源占用不高
+- 社区活跃，长期维护
 
-**2. 为什么数据库选 PostgreSQL**
+数据库对比（同机部署、低配置服务器）：
 
-在低配置服务器上，数据库选择尤为重要：
+| 数据库 | 说明 |
+|----|----|
+| PostgreSQL | 内存可控、稳定、并发友好 |
+| MySQL | 同样稳定，复杂查询略弱于 PG |
+| SQLite | 仅适合低流量，并发写能力有限 |
+| MongoDB | 常驻内存大，低配机器不建议同机部署 |
 
-| 数据库 | 是否推荐 | 原因 |
-|----|----|----|
-| PostgreSQL | 强烈推荐 | 内存可控、稳定、并发友好 |
-| MySQL | 可选 | 同样稳定，但 PG 在复杂查询上更强 |
-| SQLite | 仅低流量 | 并发写入能力有限 |
-| MongoDB | 不推荐同机 | 常驻内存大，低配置机器容易吃紧 |
-
-**结论**：  
-如果数据库和 Waline 在同一台服务器上 —— PostgreSQL 是最稳妥的选择。
 :::
 
 ---
 
 ## 二、整体系统架构
 
-```text  showLineNumbers=false
-浏览器用户 ────▶  example.com
-                Astro / Fuwari
-                      │
-                      ▼
-              comment.example.com
-                      │
-                      ▼
-                Nginx (HTTPS)
-                      │
-                      ▼
-             Docker: Waline Server
-                      │
-                      ▼
-              Docker: PostgreSQL
+```mermaid
+flowchart TD
+    A[浏览器用户] --> B[example.com<br/>Astro / Fuwari]
+    B --> C[comment.example.com]
+    C --> D[Nginx<br/>(HTTPS)]
+    D --> E[Docker: Waline Server]
+    E --> F[Docker: PostgreSQL]
 ```
 
 ---

@@ -10,92 +10,63 @@ draft: false
 
 # 背景说明
 
-记录一下准备搭建图床时的选型思路，以及为什么选择 **Chevereto + Cloudflare R2** 这套方案。
+之前用的 **PicGo + GitHub + Cloudflare** 搭图床，写过一篇记录：
 
-## 为什么不是继续用 PicGo + GitHub
+::link-card{title=”PicGo + GitHub + Cloudflare 搭建图床” url=”/posts/blog/github-image-hosting-with-picgo/” desc=”搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速。” badge=”Blog” target=”_self”}
 
-之前用过 **PicGo + GitHub + Cloudflare** 的方案，这种方式在早期很省事，但越往后越容易遇到问题：
+使用下来发现的几个问题：
 
-::link-card{title="PicGo + GitHub + Cloudflare 搭建图床" url="/posts/blog/github-image-hosting-with-picgo/" desc="搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速。" badge="Blog" target="_self"}
+- GitHub 仓库不适合长期堆大量图片
+- 管理能力弱，只能上传，没法分类整理
+- 图片多了迁移和维护都麻烦
 
-- GitHub 仓库并不适合长期堆大量图片资源
-- 图片管理能力很弱，更像“上传文件”而不是“管理图片”
-- 后续想做图库、随机图、分类整理时会比较别扭
-- 一旦图片越来越多，迁移和维护都会变麻烦
-
-所以这次我更希望直接把图床搭成一个“能长期用的图片管理系统”。
+这次想搭一个能长期用的图片管理系统。
 
 ## 选择 Chevereto + Cloudflare R2 的原因
 
-**Chevereto** 更接近一个完整的图片托管系统，而不是单纯的上传工具：
+**Chevereto** 有后台、有相册、支持公开访问，比单纯传图工具完整：
 
-::github{repo="chevereto/chevereto"}
+::github{repo=”chevereto/chevereto”}
 
-- 支持图片托管和管理
-- 支持相册、分类、公开访问
-- 更适合后续给博客做图库数据源
-- 支持 API 和更完整的后台思路
-- 官方支持 S3 兼容存储
+后续想拿来做图库或内容源也顺手。
 
-**Cloudflare R2** 的优势主要在于：
-
-- 兼容 S3 API
-- 和对象存储生态兼容性好
-- 适合作为图片底层存储
-- 后续要切换展示层时，存储层可以尽量保持不变
-
-**Chevereto** 官方支持 **S3 Compatible** 存储，而 R2 本身也提供 **S3-compatible API**，所以两者组合起来是成立的。
+**Cloudflare R2** 兼容 S3，和对象存储生态对接方便。图片管理和底层存储拆开，后面调整展示层不会把整个链路绑死。
 
 ## 实际使用后的补充说明
 
-这套方案在**图片管理、相册组织、存储解耦**这些方面，确实比之前的 **PicGo + GitHub + Cloudflare** 更完整，也更像一套正式的图床系统。
+这套方案比 PicGo + GitHub 更完整，但不是全面升级，各有取舍。
 
-不过在实际使用一段时间后，我也发现一个很现实的问题：
+如果只给博客配图、最在意速度和简单，PicGo + GitHub + Cloudflare 的纯静态路线更直接。
 
-**Chevereto + Cloudflare R2 并不一定在访问速度上优于 PicGo + GitHub + Cloudflare。**
-
-在部分使用场景里，虽然图片请求已经可以命中 Cloudflare 缓存，但整体体感速度仍然未必比原先方案更快。  
-
-所以如果核心诉求是：
-
-- 博客配图尽量快
-- 更在意访问速度而不是后台管理
-- 希望方案越简单越好
-
-那么 **PicGo + GitHub + Cloudflare** 这类纯静态资源方案，可能依然是更适合的选择。
-
-而 **Chevereto + Cloudflare R2** 更适合这些场景：
-
-- 想要完整的图片管理后台
-- 需要相册、分类、公开访问能力
-- 希望把图片存储和博客系统彻底分离
-- 后续可能把图床作为图库或内容源继续扩展
+我继续用 Chevereto，是因为需要的不只是传图，是一个能扩展的图片系统。
 
 ## 整体架构
 
-```txt showLineNumbers=false
-上传链路：
-浏览器 / Chevereto 后台
-   ↓
-Chevereto
-   ↓
-R2
+上传管理和图片访问拆成两条链路——上传走 Chevereto 后台，外部访问走独立图片域名和缓存，后台域名不暴露在图片入口上。
 
-访问链路：
-用户
-   ↓
-img.example.com(自定义域名)
-   ↓
-Cloudflare Cache / CDN
-   ↓
-R2
+结构：
+
+```mermaid
+flowchart TD
+  subgraph A[上传链路]
+    A1[Chevereto 后台] --> A2[Chevereto]
+    A2 --> A3[R2]
+  end
+
+  subgraph B[访问链路]
+    B1[用户] --> B2[img.example.com<br/>自定义域名]
+    B2 --> B3[Cloudflare Cache / CDN]
+    B3 --> B4[R2]
+  end
+  
+  A3 ~~~ B1
 ```
 
 ---
 
 # Chevereto 部署
 
-如果是第一次搭建，建议直接走 **Docker 部署**。
+使用 **Docker 部署**。
 
 ## 创建项目目录
 
@@ -193,6 +164,8 @@ docker compose restart
 :::
 
 ## 配置 Nginx
+
+Nginx 做反向代理。Chevereto 跑在本机 8080，Nginx 统一处理域名和 HTTPS。
 
 创建站点配置文件（推荐独立文件，便于管理）：
 
@@ -352,6 +325,10 @@ nginx -s reload
 
 ## 配置 R2 存储桶
 
+Chevereto 把 R2 当 S3 兼容存储对接。先配通基础连接，确认上传和访问正常，再换自定义域名。
+
+参数：
+
 | 项目                    | 值             |
 | ---------------------- | --------------- |
 | `API`          | `S3 Compatible` |
@@ -376,14 +353,16 @@ nginx -s reload
 
 建议：
 
-* `chevereto.example.com`：Chevereto 管理站
-* `img.example.com`：R2 图片访问域名(开发测试阶段可临时使用 R2 公共开发 URL，正式环境更建议绑定自定义域名)
+* `chevereto.example.com`：Chevereto 管理站，只给自己登录和管理用
+* `img.example.com`：专门给博客和外部访问图片用
+
+> 后台和图片分开，后面接缓存、调域名、排错都方便。
 
 ---
 
 # 配置定时任务
 
-Chevereto 需要 `cron` 来执行后台任务。
+**Chevereto** 有一些后台清理和维护要靠 cron 跑，容易被忽略。
 
 这些任务包括：
 

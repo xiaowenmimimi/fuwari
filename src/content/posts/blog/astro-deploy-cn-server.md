@@ -9,47 +9,23 @@ draft: false
 
 ## 背景说明
 
-在当前的个人博客 / 静态站点部署实践中，**Cloudflare Pages** 提供了非常友好的体验：
+博客一直放在 **Cloudflare Pages**上，和 GitHub 集成起来方便，push 代码即自动部署。
 
-* 原生 GitHub 集成，自动构建与发布
-* 全球 CDN 分发
-* 几乎零运维成本
+但 Cloudflare Pages 从中国大陆访问不稳定。迁移到国内又没必要，毕竟海外访问很正常。
 
-但在**中国大陆网络环境**下，访问 Cloudflare Pages 往往存在以下现实问题：
+目标方案：
 
-* 跨境网络 RTT 高、稳定性不可控
-* 首次访问 TTFB 偏大
-* 不同运营商访问体验差异明显
+- **海外**：Cloudflare Pages
+- **国内**：加一台服务器做静态入口，GitHub Actions 自动部署
 
-另一方面，完全放弃 Cloudflare Pages、迁移到国内云平台也并非理想方案：
+一份代码，两边各走最合适的入口。
 
-* 丢失 Cloudflare Pages 的自动化优势
-* 运维与 CI 成本上升
-* 海外访问体验下降
-
-**因此，一个我认为更务实的目标是：**
-
-> **保留 Cloudflare Pages 作为海外入口，**
-> 
-> **同时增加一台国内服务器作为国内访问入口，**
-> 
-> **并通过自动化部署保证两端内容一致。**
-
-:::important[DNS 国内 / 海外分流方案]
+:::important[站内DNS 国内 / 海外分流方案文章]
 > ::link-card{title="阿里云 DNS + Cloudflare Pages 实现国内 / 海外分流" url="/posts/blog/dns-geo-split-aliyun-cloudflare/" desc="在使用 Cloudflare Pages 的前提下，为国内提供更稳定、更快的访问入口，并保持整套方案长期可维护。" badge="Blog" target="_self"}
 :::
 
-:::tip[未采用的方案]
-曾在网上搜索解决方案，评估通过 DNS SaaS 或 Cloudflare Workers 路由分流的方式，对网站解析 IP 进行优选以提升可用性与访问速度。
-
-但在 Cloudflare Pages 场景下：
-
-* **SaaS 解析优选**依赖固定源站 IP，而 Pages 属于“边缘即源站”，解析结果不可控，长期稳定性不足；
-* **Workers 路由分流** 只能在请求到达 Cloudflare 后生效，无法消除中国大陆访问 Cloudflare 的跨境链路瓶颈。
-
-上述方案在一定程度上可以提升可用性，但均**无法解决国内访问 Cloudflare 的根本网络问题**。
-
-最终选择引入一个**物理上位于国内的访问入口**，并通过自动化手段降低维护成本。
+:::tip[其他方案]
+DNS 优选和 Workers 分流治标不治本。DNS 优选需要可控源站，Pages 不是这个模式。Workers 分流在请求到达 Cloudflare 后才生效，跨境问题已经发生了。直接加一台国内服务器更实际。
 :::
 
 ---
@@ -58,43 +34,46 @@ draft: false
 
 ### 方案目标
 
-* **提供一个国内访问更稳定的静态入口**
-* **保留 Cloudflare Pages 的自动化部署与海外访问优势**
-* **通过 GitHub Actions 实现全自动部署**
-* **所有部署过程完全自动化**
-* **任一入口失败不影响另一侧**
+能长期维护是第一位的。
+
+- **国内访问比直连 Cloudflare Pages 稳定**
+- **海外继续走 Cloudflare Pages，不丢原有优势**
+- **一次 push，两边同时更新**
+- **一侧出问题不拖累另一侧**
 
 ### 整体架构说明
 
-```txt showLineNumbers=false
-GitHub Repository
-        │
-        │ git push main
-        ▼
-GitHub Actions（CI）
-        │
-        ├─ 安装依赖
-        ├─ 构建静态产物（dist/）
-        ├─ 上传到国内服务器（rsync）
-        └─ 原子切换线上目录
-                 │
-                 ▼
-            Nginx 静态站点
+```mermaid
+flowchart TD
+  A[GitHub Repository] -->|git push| B[GitHub Actions]
+
+  subgraph C[GitHub Actions 执行流程]
+    D[安装依赖]
+    E[构建静态产物]
+    F[上传到国内服务器]
+    G[切换线上目录]
+  end
+
+  B --> D
+  D --> E
+  E --> F
+  F --> G
+  G --> H[Nginx 静态站点]
 ```
 
-同时，Cloudflare Pages 继续监听同一 GitHub 仓库，并由 Cloudflare 平台独立完成构建与发布流程。
-
-国内服务器的部署流程由 GitHub Actions 单独负责，两条部署链路相互独立、互不依赖，仅共享同一份源代码。
-
-* Cloudflare Pages 仍然监听同一个仓库
-* 使用 Cloudflare 的自动构建与发布
-* 两端使用 同一份代码、同一份构建逻辑
+**Cloudflare Pages** 继续监听同一仓库，由 Cloudflare 独立完成构建和发布。国内服务器由 **GitHub Actions** 单独部署。两条链路独立运行。
 
 ---
 
 ## 二、服务器部署设计
 
-### 目录结构（版本化发布）
+### 目录结构（版本化）
+
+没有直接覆盖线上目录，用了 `releases + current` 的发布结构：
+
+- 每个部署版本独立目录，方便回滚和排查
+- 软链接切换版本，操作更稳妥
+- 构建失败不会弄坏当前线上内容
 
 ```bash showLineNumbers=false
 /var/www/my-site/
@@ -112,21 +91,13 @@ mkdir -p /var/www/my-site/releases/
 chown -R deploy:deploy  /var/www/my-site/
 ```
 
-> `deploy` 为推荐的部署用户（可用 root，但不建议）
-
-设计原则：
-
-* 每个部署版本都有一个独立的目录，方便回滚与审计。
-* 使用软链接进行原子切换，确保切换过程中网站始终可用。
-* 构建失败不影响当前线上版本，可快速回滚。
+> 新增 `deploy` 部署用户（可用 root，但不建议）
 
 ### Nginx 配置示例
 
 > 说明：
 > 
-> 本节示例使用 HTTP（80 端口）仅用于验证自动化部署链路是否正常。
-> 
-> 实际生产环境中，建议后续启用 HTTPS（443），并将 80 端口仅用于跳转。
+> 先用 HTTP（80 端口）跑通整条部署链路。确认能部署、能访问、目录切换没问题后，再补 HTTPS 和跳转配置。
 
 ```nginx
 <!-- /etc/nginx/conf.d/my-site.conf -->
@@ -170,7 +141,7 @@ nginx -t
 nginx -s reload
 ```
 
-服务器仅用于**静态文件托管**，不参与构建过程。
+服务器仅用于**静态文件托管**，不会参与构建过程。
 
 ---
 
@@ -198,12 +169,6 @@ cat id_ed25519.pub >> ~/.ssh/authorized_keys
 :::important[项目配置]
 **项目仓库 → Settings → Secrets and variables → Actions → Repository secrets → New repository secret**
 
-> 本文示例使用 Repository secrets，
-> 
-> 以保证部署流程简洁、可直接自动执行。
-> 
-> 若在团队或生产场景中，可进一步引入 Environment secrets 与审批机制。
-
 新增以下 Secrets：
 
 | 名称                    | 说明             |
@@ -212,7 +177,7 @@ cat id_ed25519.pub >> ~/.ssh/authorized_keys
 | `CN_USER`          | SSH 用户名（如 `deploy`） |
 | `CN_SSH_PRIVATE_KEY` | **私钥完整内容**（含 BEGIN/END） |
 :::
-![](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/astro-deploy-cn-server-1.png)
+![astro-deploy-cn-server-1](https://img.xhwen.cn/gh/xiaowenmimimi/myImage/main/img/blog/astro-deploy-cn-server-1.png)
 
 ---
 
@@ -224,7 +189,7 @@ GitHub 会自动识别该路径下的 workflow 文件。
 
 **完整配置**
 
-> 安装依赖以及打包部署使用的是 `pnpm`
+> 我用的是 `pnpm`，如果项目用 `npm` 对应修改即可。
 
 ```yaml
 <!-- .github/workflows/deploy-cn-server.yml -->
@@ -379,7 +344,7 @@ ln -sfn /var/www/my-site/releases/<旧版本> /var/www/my-site/current
 * 检查：
 
   * IP 是否正确
-  * SSH 端口是否是 22（非 22 需改命令）
+  * SSH 端口是否是 22（如果非 22 需改命令）
   * 私钥是否完整粘贴
 
 ### 2. 页面 404 / 没更新
@@ -388,4 +353,4 @@ ln -sfn /var/www/my-site/releases/<旧版本> /var/www/my-site/current
 
   * Nginx root 指向 current
   * dist/ 是否包含 index.html
-  * 是否缓存浏览器（强刷）
+  * 是否缓存浏览器（强制刷新一下）

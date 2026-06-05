@@ -13,26 +13,17 @@ draft: false
 
 ## 方案说明
 
-为了给博客增加 **文章浏览量与访客统计功能**，同时保持对数据的可控性，我选择在自己的服务器上部署 **Umami** 作为统计方案。
+为了给博客增加 **文章浏览量与访客统计功能**，我在服务器上部署 **Umami** 作为统计方案。
 
-本文记录的是一次部署实践，适用于：
+适用环境：
 
 - CentOS 7.9
 - Nginx 反向代理
 - 静态博客（Astro / Fuwari）
 - 自建统计服务
 
-:::tip[为什么选择自建 Umami，而不是第三方统计？]
-**第一，数据掌控感更强。**
-自建 Umami 意味着统计数据完全保存在自己的服务器上，不依赖任何第三方平台，也不需要把访客数据交给外部服务。这种“数据在自己手里”的感觉，会更安心一些。
-
-**第二，隐私友好。**
-Umami 默认不使用 Cookie，也不会收集多余的个人信息，对访客更友好，也更符合我对博客“轻量、克制”的期待。
-
-**第三，可控且可扩展。**
-作为自建服务，如果以后想把统计数据接入博客侧边栏，或者在文章页展示阅读次数，都可以按自己的需求来做，而不是受限于第三方平台的展示方式。
-
-自建 Umami 不是为了“更专业”，而是为了让博客整体保持一种**简单、可控、不过度依赖外部服务**的状态。
+:::tip[为什么自建 Umami]
+数据留在自己服务器上，不依赖第三方，也不用把访客数据交给外部服务。Umami 默认不用 Cookie，不收集多余个人信息，对访客友好。后续想怎么用这些统计数据（侧边栏展示、文章阅读次数等），都按自己需求来，不用受限于第三方平台的展示方式。
 :::
 
 ### 实现目标
@@ -51,18 +42,13 @@ Umami 默认不使用 Cookie，也不会收集多余的个人信息，对访客�
 - 脚本会把 PV/UV 等数据上报到你自建的 Umami 服务
 - Umami 后台面板也通过 `https://analytics.example.com` 访问
 
-```text showLineNumbers=false
-浏览器
-  ↓（加载博客页面）
-博客站点（Astro / Fuwari）
-  ↓（加载统计脚本）
-https://analytics.example.com/script.js
-  ↓
-Nginx（反向代理，HTTPS）
-  ↓
-Docker 容器（Umami）
-  ↓
-Docker 容器（PostgreSQL）                  
+```mermaid
+flowchart TD
+    A[浏览器] -->|加载博客页面| B[博客站点<br/>Astro / Fuwari]
+    B -->|加载统计脚本| C[https://analytics.example.com/script.js]
+    C --> D[Nginx<br/>反向代理，HTTPS]
+    D --> E[Docker 容器<br/>Umami]
+    E --> F[Docker 容器<br/>PostgreSQL]
 ```
 
 ---
@@ -78,13 +64,13 @@ Docker 容器（PostgreSQL）
 
 ### 域名与访问方式
 
-建议为 Umami 单独使用一个子域名，例如：`analytics.example.com`
+Umami 最好用独立子域名，例如：`analytics.example.com`
 
-该域名通过 Nginx 反向代理访问 Umami 服务，同时启用 HTTPS。
+该域名通过 Nginx 反代到 Umami 服务，并启用 HTTPS。
 
 DNS 添加一条 A 记录指向服务器公网 IP。
 
-> 建议 Umami 用独立子域名：
+> Umami 用独立子域名：
 > - 不和博客站点混在一起
 > - Nginx 配置更清晰
 > - 后续可以单独加访问控制/防护策略
@@ -151,23 +137,23 @@ yum install -y docker-compose-plugin
 docker compose version
 ```
 
-### 创建 Umami 部署目录（关键：数据持久化与可维护性）
+### 创建 Umami 部署目录
 
-建议单独放在 `/opt/umami`（清晰、好管理）：
+放在 `/opt/umami`（清晰、好管理）：
 
 ```bash showLineNumbers=false
 mkdir -p /opt/umami
 cd /opt/umami
 ```
 
-建议再建两个子目录，用于持久化数据与备份：
+再建两个子目录，用于持久化数据与备份：
 
 ```bash showLineNumbers=false
 mkdir -p postgres backups
 ```
 
 - `postgres/`：PostgreSQL 数据卷（容器重启/更新不会丢数据）
-- `backups/`：手动导出 SQL 备份文件（升级前强烈建议备份）
+- `backups/`：手动导出 SQL 备份文件（升级前先备份）
 
 ### 编写 docker-compose.yml
 
@@ -194,7 +180,7 @@ services:
       POSTGRES_USER: umami
       POSTGRES_PASSWORD: "CHANGE_ME_STRONG_PASSWORD"
     volumes:
-      # 关键：持久化数据库数据，否则容器删除/重建会丢数据
+      # 持久化数据库数据，容器删除/重建不会丢
       - ./postgres:/var/lib/postgresql/data
     healthcheck:
       # 让 Umami 等数据库健康后再启动（减少首次启动时的报错概率）
@@ -204,10 +190,8 @@ services:
       retries: 5
 
   umami:
-    # 官方文档示例给出了预构建镜像拉取方式（含 postgresql 支持）:contentReference[oaicite:1]{index=1}
-    # 你可以用官方推荐的 registry 域名：
+    # 官方预构建镜像（含 postgresql 支持），两个 registry 二选一：
     image: docker.umami.is/umami-software/umami:postgresql-latest
-    # 也可以用 Docker Hub 的镜像标签（如果你拉取更顺手）:contentReference[oaicite:2]{index=2}
     # image: umamisoftware/umami:postgresql-latest
 
     container_name: umami
@@ -217,18 +201,17 @@ services:
         condition: service_healthy
 
     environment:
-      # 关键：连接的是 compose 网络内的 db 服务（host 写 db，不是 127.0.0.1）
+      # 注意：host 写 db（compose 网络内的服务名），不是 127.0.0.1
       DATABASE_URL: "postgresql://umami:CHANGE_ME_STRONG_PASSWORD@db:5432/umami"
 
-      # 关键：用于加密会话/令牌。必须随机且足够长。:contentReference[oaicite:3]{index=3}
+      # 用于加密会话/令牌，必须随机且足够长
       APP_SECRET: "CHANGE_ME_RANDOM_SECRET"
 
       # 建议填写你对外访问的完整 URL（含 https）
       APP_URL: "https://analytics.example.com"
 
     ports:
-      # 关键：只绑定到 127.0.0.1，避免 Umami 端口直接暴露公网
-      # 外部访问统一走 Nginx 反向代理 + HTTPS
+      # 只绑 127.0.0.1，Umami 不直接暴露公网，外部走 Nginx 反代 + HTTPS
       - "127.0.0.1:3000:3000"
 ```
 
@@ -319,7 +302,7 @@ server {
         proxy_set_header X-Forwarded-For $proxy_add_x_forwarded_for;
         proxy_set_header X-Forwarded-Proto $scheme;
 
-        # 可选：减少一些代理相关的小问题
+        # HTTP/1.1 + 关闭缓冲，避免 WebSocket 或长连接异常
         proxy_http_version 1.1;
         proxy_buffering off;
     }
@@ -333,7 +316,7 @@ nginx -t
 nginx -s reload
 ```
 
-此时访问（HTTP）应可打开：`https://analytics.example.com`
+此时访问应可打开：`https://analytics.example.com`
 
 ### 首次登录 Umami 后台（默认账号）
 
@@ -346,7 +329,7 @@ nginx -s reload
 - admin
 - umami
 
-> 强烈建议：第一次登录后立刻修改密码（Settings / Profile 里改）。
+> 第一次登录后记得修改密码（Settings → Profile）。
 
 ### 在 Umami 后台添加站点 & 获取统计脚本
 

@@ -26,8 +26,6 @@ passwordHint: "门何以开，在初生之日。年为首，月为腰，日为�
 - **VLESS + Reality**
 - **VLESS + WebSocket + TLS + Cloudflare + 优选 IP**
 
-这篇文章主要记录我从安装 3x-ui 面板，到配置这两种方案，再到客户端连接的完整过程。
-
 ---
 
 ## 安装和初始化 3x-ui 面板
@@ -41,8 +39,6 @@ passwordHint: "门何以开，在初生之日。年为首，月为腰，日为�
 :::
 
 ### VPS 配置
-
-VPS 是自建节点体验的核心。
 
 我的 VPS 配置：
 
@@ -117,7 +113,11 @@ bash <(curl -Ls https://raw.githubusercontent.com/mhsanaei/3x-ui/master/install.
 
 VLESS + Reality 是一种不依赖传统 TLS 证书、不强制需要域名的方案。
 
-> 连接方式是：客户端 → VPS IP → 3x-ui / Xray
+```mermaid
+flowchart TD
+    A[客户端] --> B[VPS IP]
+    B --> C[3x-ui / Xray]
+```
 
 **优点：**
 
@@ -126,15 +126,11 @@ VLESS + Reality 是一种不依赖传统 TLS 证书、不强制需要域名的�
 - 速度上限更高
 - 不强制需要域名
 
-> 如果 VPS 线路足够好，Reality 理论上延迟更低，速度上限也更高。
-
 **缺点：**
 
 - 非常依赖 VPS 线路
 - VPS 线路差时提升有限
 - 源站 IP 直接暴露
-
-> 如果 VPS 线路不好，Reality 也不能从根本上解决速度问题。
 
 ### 3x-ui 添加入站与基础配置
 
@@ -260,7 +256,12 @@ SNI: www.amazon.com
 
 VLESS + WebSocket + TLS + Cloudflare + 优选 IP 是让客户端先连接 Cloudflare，再由 Cloudflare 转发到源站 VPS。
 
-> 连接方式是：客户端 → Cloudflare 优选 IP 或域名 → VPS → 3x-ui / Xray
+```mermaid
+flowchart TD
+    A[客户端] --> B[Cloudflare 优选 IP 或域名]
+    B --> C[VPS]
+    C --> D[3x-ui / Xray]
+```
 
 **优点：**
 
@@ -268,8 +269,6 @@ VLESS + WebSocket + TLS + Cloudflare + 优选 IP 是让客户端先连接 Cloudf
 - 低成本 VPS 也能变得可用
 - 域名访问更自然
 - 对直连线路差的 VPS 有时更友好
-
-> 在 VPS 线路差的情况下，利用 Cloudflare 入口改善连接。
 
 **缺点：**
 

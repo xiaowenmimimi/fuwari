@@ -3,7 +3,7 @@ title: CloudFlare-ImgBed + 阿里云 OSS 搭建图床
 description: 使用 CloudFlare-ImgBed + 阿里云 OSS 搭建图床，实现图片托管、管理与自定义域名访问。
 published: 2026-04-14
 updated: 2026-04-21
-tags: [图床, 博客搭建, CloudFlare-ImgBed, OSS]
+tags: [图床, 博客搭建, CloudFlare-ImgBed]
 category: 技术教程
 draft: false
 ---
@@ -14,44 +14,38 @@ draft: false
 
 ::github{repo="MarSeventh/CloudFlare-ImgBed"}
 
-相比传统图床程序，CloudFlare-ImgBed 更吸引我的地方在于：
-
-- **界面更现代**  
-- **支持文件管理、目录、鉴权、API 等，更接近一套完整的托管系**
-- **支持多种存储后端，兼容性强，选择多样**
-- **对 Cloudflare 生态更友好，整体设计思路和现代边缘部署方式更契合**
-- **架构更灵活，程序本体负责上传、管理和生成链接；对象存储负责保存文件**
+- 界面美观好看
+- 支持文件管理、目录、鉴权、API，接近完整的托管系统
+- 支持多种存储后端
+- 对 Cloudflare 生态友好
+- 架构灵活：程序本体负责上传、管理和生成链接，对象存储负责保存文件
 
 ## 为什么搭配阿里云 OSS
 
-在底层存储上，没有继续走 **R2**，而是选择了 **阿里云 OSS**，原因是：
+底层存储选了阿里云 OSS，没用 R2：
 
-- 国内访问场景下，通常更容易获得稳定速度
-- 更方便接入阿里云生态
-- 自定义域名、权限控制、生命周期规则这些能力更成熟
-- 后续如果要加 **ESA**，整体链路也会更自然
+- 国内访问稳定
+- 方便接入阿里云生态
+- 自定义域名、权限控制、生命周期规则这些能力成熟
+- 后续加 ESA 链路也顺
 
 ## 整体架构
 
-```txt showLineNumbers=false
-上传链路：
-浏览器 / CloudFlare-ImgBed 后台
-   ↓
-CloudFlare-ImgBed
-   ↓
-阿里云 OSS Bucket
+```mermaid
+flowchart TD
+  subgraph A[上传链路]
+    A1[CloudFlare-ImgBed 后台] --> A2[CloudFlare-ImgBed]
+    A2 --> A3[阿里云 OSS Bucket]
+  end
 
-访问链路：
-用户
-   ↓
-img.example.com（自定义访问域名）
-   ↓
-CDN / ESA（可选）
-   ↓
-阿里云 OSS Bucket
+  subgraph B[访问链路]
+    B1[用户] --> B2[img.example.com<br/>自定义访问域名]
+    B2 --> B3[CDN / ESA（可选）]
+    B3 --> B4[阿里云 OSS Bucket]
+  end
+  
+  A3 ~~~ B1
 ```
-
-> 这里把 **CloudFlare-ImgBed 当成上传与管理后台**，真正的文件存储和最终访问层交给 OSS + CDN / ESA 处理。
 
 ---
 
@@ -100,8 +94,6 @@ services:
     volumes:
       - ./data:/app/data
 ```
-
-说明：`./data:/app/data` 用于保存容器数据，避免容器重建后丢失
 
 ### 启动容器
 
@@ -185,7 +177,7 @@ nginx -s reload
 
 ## 完成首次初始化
 
-浏览器打开访问管理后台安全设置示例：`https://imgbed.example.com/systemConfig#security`
+浏览器打开：`https://imgbed.example.com/systemConfig#security`
 
 > 管理后台默认无需密码，登录后请及时设置管理员用户名和密码。
 
@@ -236,12 +228,12 @@ nginx -s reload
 
 ## 创建访问密钥
 
-CloudFlare-ImgBed 接入阿里云 OSS 时，需要一组可编程访问 OSS 的身份凭证：
+CloudFlare-ImgBed 接入阿里云 OSS 需要一组 API 凭证：
 
 - `AccessKey ID`
 - `AccessKey Secret`
 
-这组凭证用于程序调用 OSS API，不能用于登录阿里云控制台。需要特别注意的是，`AccessKey Secret` 只会在创建时显示一次，后续无法再次查看，所以创建后必须立刻妥善保存。
+`AccessKey Secret` 只在创建时显示一次，后续无法查看，创建后立刻保存。
 
 :::note[建议]
 不要直接为主账号创建访问密钥，而是专门为图床程序创建一个 RAM 用户。
@@ -309,9 +301,7 @@ CloudFlare-ImgBed 接入阿里云 OSS 时，需要一组可编程访问 OSS 的�
 
 ![cloudflare-imgbed-oss-astro-guide-06.webp](https://image.xhwen.cn/blog/cloudflare-imgbed-oss-astro-guide/cloudflare-imgbed-oss-astro-guide-06.webp)
 
-这样这个 RAM 用户只能操作指定 Bucket 内的对象，不会拥有其他 OSS 资源的更高权限。
-
-策略名称可以起成：`CloudFlare-ImgBedOSSBucketPolicy`
+策略名称：`CloudFlare-ImgBedOSSBucketPolicy`
 
 创建完成后，进入**用户** → **新增授权**
 
@@ -366,41 +356,26 @@ CloudFlare-ImgBed 当前支持多种上传渠道，阿里云 OSS 这里走的是
 ::link-card{title="阿里云服务的地域和Endpoint 列表" url="https://help.aliyun.com/zh/oss/user-guide/regions-and-endpoints?utm_source=chatgpt.com" desc="每个地域都有一个对应的 Endpoint，用于访问 OSS 存储桶。" badge="Aliyun" image="https://image.xhwen.cn/blog/alibabacloud-color.webp"}
 :::
 
-> 存储配置保存后，记得启用，否则上传不会真正走 OSS。
+> 存储配置保存后，记得启用，否则上传不会走 OSS。
 
 ---
 
 # 公共读 OSS（简单方案）
 
-如果想先快速跑通，可以使用：
+OSS Bucket 设为 **公共读**，图片访问域名绑定到 OSS 或挂 CDN，CloudFlare-ImgBed 的 **CDN 域名** 填公开访问域名。
 
-- OSS Bucket 设为 **公共读**
-- 图片访问域名直接绑定到 OSS 或前面挂 CDN
-- CloudFlare-ImgBed 的 **CDN 域名** 填这个公开访问域名
-
-这套方案简单直接，适合先验证链路是否跑通。
-
-优点：
-
-- 配置简单
-- 调试成本低
-- 上传与访问都容易排错
-
-缺点：
-
-- 用户理论上可以绕过访问层，直接访问源站
-- 防盗链、限流、访问控制能力较弱
+配置简单、调试成本低，但防盗链和访问控制弱，用户可以绕过访问层直连源站。
 
 ---
 
 # 私有 OSS + ESA 私有回源（可选）
 
-相比“公共读 Bucket + 自定义域名”的简单方案，**私有 OSS + ESA 私有回源** 会是更稳的一种架构。
+公共读方案的短板在于访问控制弱。私有 OSS + ESA 私有回源解决这个问题：
 
-* **OSS 不对匿名用户开放**
-* **更难绕过 ESA 直接访问源站**
-* **更适合做防盗链、鉴权、限流和边缘安全控制**
-* **源站与访问层彻底分离**
+* OSS 不对匿名用户开放
+* 无法绕过 ESA 直接访问源站
+* 支持防盗链、鉴权、限流和边缘安全控制
+* 源站与访问层分离
 
 ## 保持 OSS Bucket 为私有
 
@@ -448,18 +423,18 @@ CloudFlare-ImgBed 当前支持多种上传渠道，阿里云 OSS 这里走的是
 
 # 上传测试图验证连接
 
-接入 OSS 后，上传一张测试图，重点检查四件事：
+接入 OSS 后，上传一张测试图，检查三件事：
 
 **1. CloudFlare-ImgBed 后台能看到图片**
 
-说明应用侧逻辑正常。
+应用逻辑正常。
 
 **2. OSS Bucket 里能看到对象**
 
-说明文件已经真正写入对象存储。
+文件已写入对象存储。
 
 **3. 图片访问 URL 能直接打开**
 
 ![有馬かな.webp](https://image.xhwen.cn/banner/有馬かな.webp)
 
-说明外部访问链路正常。
+外部访问链路正常。
