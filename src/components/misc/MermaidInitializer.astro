@@ -9,15 +9,70 @@ declare global {
 	if (window.initMermaidDiagrams) return;
 
 	let mermaidModulePromise: Promise<typeof import("mermaid")> | null = null;
+	let currentMermaidTheme: "light" | "dark" | null = null;
+	let themeRerenderFrame = 0;
+
+	const getThemeMode = () =>
+		document.documentElement.classList.contains("dark") ? "dark" : "light";
+
+	const getMermaidConfig = (mode: "light" | "dark") => ({
+		startOnLoad: false,
+		theme: "base" as const,
+		themeVariables:
+			mode === "dark"
+				? {
+						background: "transparent",
+						primaryColor: "#1f3347",
+						primaryTextColor: "#d8e5f4",
+						primaryBorderColor: "#5f85ad",
+						secondaryColor: "#193d38",
+						tertiaryColor: "#2b2f3a",
+						lineColor: "#8aa1ba",
+						textColor: "#d8e5f4",
+						mainBkg: "#1f3347",
+						secondBkg: "#193d38",
+						tertiaryTextColor: "#d8e5f4",
+						clusterBkg: "#1a2430",
+						clusterBorder: "#50677f",
+						edgeLabelBackground: "#18212c",
+						noteBkgColor: "#2b2f3a",
+						noteTextColor: "#d8e5f4",
+						noteBorderColor: "#5f85ad",
+						fontFamily: "inherit",
+					}
+				: {
+						background: "transparent",
+						primaryColor: "#eaf3ff",
+						primaryTextColor: "#223044",
+						primaryBorderColor: "#86acd8",
+						secondaryColor: "#e8f7f3",
+						tertiaryColor: "#f3f5f8",
+						lineColor: "#61748b",
+						textColor: "#223044",
+						mainBkg: "#eaf3ff",
+						secondBkg: "#e8f7f3",
+						tertiaryTextColor: "#223044",
+						clusterBkg: "#f6f8fb",
+						clusterBorder: "#c5d1df",
+						edgeLabelBackground: "#ffffff",
+						noteBkgColor: "#fff7dd",
+						noteTextColor: "#3a2f17",
+						noteBorderColor: "#d2b25f",
+						fontFamily: "inherit",
+					},
+	});
+
+	const applyMermaidTheme = (mermaid: typeof import("mermaid").default) => {
+		const mode = getThemeMode();
+		if (currentMermaidTheme === mode) return;
+
+		mermaid.initialize(getMermaidConfig(mode));
+		currentMermaidTheme = mode;
+	};
 
 	const getMermaid = async () => {
 		mermaidModulePromise ??= import("mermaid").then((module) => {
-			module.default.initialize({
-				startOnLoad: false,
-				theme: document.documentElement.classList.contains("dark")
-					? "dark"
-					: "default",
-			});
+			applyMermaidTheme(module.default);
 			return module;
 		});
 
@@ -63,6 +118,39 @@ declare global {
 		diagram.dataset.mermaidError = "true";
 	};
 
+	const resetRenderedDiagram = (diagram: HTMLElement) => {
+		diagram.querySelector(".mermaid-render")?.remove();
+
+		if (!diagram.querySelector(".mermaid-placeholder")) {
+			const placeholder = document.createElement("div");
+			placeholder.className = "mermaid-placeholder";
+			placeholder.textContent = "图表加载中...";
+			diagram.prepend(placeholder);
+		}
+
+		diagram.dataset.mermaidPending = "true";
+		delete diagram.dataset.mermaidLoaded;
+		delete diagram.dataset.mermaidError;
+	};
+
+	const rerenderLoadedDiagramsForTheme = () => {
+		if (themeRerenderFrame) return;
+
+		themeRerenderFrame = window.requestAnimationFrame(() => {
+			themeRerenderFrame = 0;
+
+			const diagrams = Array.from(
+				document.querySelectorAll<HTMLElement>(
+					".mermaid-diagram[data-mermaid-loaded='true']",
+				),
+			);
+			if (!diagrams.length) return;
+
+			diagrams.forEach(resetRenderedDiagram);
+			window.initMermaidDiagrams?.(document);
+		});
+	};
+
 	window.initMermaidDiagrams = async (root = document) => {
 		const diagrams = Array.from(
 			root.querySelectorAll<HTMLElement>(
@@ -78,6 +166,7 @@ declare global {
 
 		try {
 			const { default: mermaid } = await getMermaid();
+			applyMermaidTheme(mermaid);
 
 			await Promise.all(
 				diagrams.map(async (diagram, index) => {
@@ -144,6 +233,20 @@ declare global {
 		schedule(() => {
 			window.initMermaidDiagrams?.(root ?? document);
 		});
+	});
+
+	new MutationObserver((mutations) => {
+		if (
+			mutations.some(
+				(mutation) =>
+					mutation.type === "attributes" && mutation.attributeName === "class",
+			)
+		) {
+			rerenderLoadedDiagramsForTheme();
+		}
+	}).observe(document.documentElement, {
+		attributeFilter: ["class"],
+		attributes: true,
 	});
 })();
 </script>
