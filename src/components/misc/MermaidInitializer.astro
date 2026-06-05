@@ -1,0 +1,124 @@
+<script>
+declare global {
+	interface Window {
+		initMermaidDiagrams?: (root?: ParentNode) => Promise<void>;
+	}
+}
+
+(() => {
+	if (window.initMermaidDiagrams) return;
+
+	let mermaidModulePromise: Promise<typeof import("mermaid")> | null = null;
+
+	const getMermaid = async () => {
+		mermaidModulePromise ??= import("mermaid").then((module) => {
+			module.default.initialize({
+				startOnLoad: false,
+				theme: document.documentElement.classList.contains("dark")
+					? "dark"
+					: "default",
+			});
+			return module;
+		});
+
+		return mermaidModulePromise;
+	};
+
+	const schedule = (callback: () => void) => {
+		const requestIdleCallback = (
+			window as Window & {
+				requestIdleCallback?: (
+					callback: () => void,
+					options?: { timeout: number },
+				) => number;
+			}
+		).requestIdleCallback;
+
+		if (requestIdleCallback) {
+			requestIdleCallback(callback, { timeout: 1500 });
+			return;
+		}
+		window.setTimeout(callback, 0);
+	};
+
+	window.initMermaidDiagrams = async (root = document) => {
+		const diagrams = Array.from(
+			root.querySelectorAll<HTMLElement>(
+				".mermaid-diagram[data-mermaid-pending='true']:not([data-mermaid-rendering='true'])",
+			),
+		);
+
+		if (!diagrams.length) return;
+
+		diagrams.forEach((diagram) => {
+			diagram.dataset.mermaidRendering = "true";
+		});
+
+		try {
+			const { default: mermaid } = await getMermaid();
+
+			await Promise.all(
+				diagrams.map(async (diagram, index) => {
+					const source = diagram.querySelector<HTMLElement>(".mermaid-source");
+					const placeholder =
+						diagram.querySelector<HTMLElement>(".mermaid-placeholder");
+					const definition = source?.textContent?.trim();
+
+					if (!definition) {
+						throw new Error("Mermaid definition is empty.");
+					}
+
+					const id = `mermaid-${Date.now()}-${index}`;
+					const { svg, bindFunctions } = await mermaid.render(id, definition);
+					const renderTarget = document.createElement("div");
+					renderTarget.className = "mermaid-render";
+					renderTarget.innerHTML = svg;
+
+					placeholder?.replaceWith(renderTarget);
+					bindFunctions?.(renderTarget);
+					diagram.dataset.mermaidPending = "false";
+					diagram.dataset.mermaidLoaded = "true";
+				}),
+			);
+		} catch (error) {
+			console.error("[MERMAID] Failed to render diagram.", error);
+			diagrams.forEach((diagram) => {
+				const placeholder = diagram.querySelector<HTMLElement>(
+					".mermaid-placeholder",
+				);
+				if (placeholder) {
+					placeholder.textContent = "图表渲染失败，请检查 Mermaid 语法。";
+				}
+				diagram.dataset.mermaidPending = "false";
+				diagram.dataset.mermaidError = "true";
+			});
+		} finally {
+			diagrams.forEach((diagram) => {
+				delete diagram.dataset.mermaidRendering;
+			});
+		}
+	};
+
+	const initPageMermaid = () => {
+		schedule(() => {
+			window.initMermaidDiagrams?.(document);
+		});
+	};
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", initPageMermaid, {
+			once: true,
+		});
+	} else {
+		initPageMermaid();
+	}
+
+	document.addEventListener("astro:page-load", initPageMermaid);
+	document.addEventListener("encrypted-post-unlocked", (event) => {
+		const root = (event as CustomEvent<{ root?: ParentNode }>).detail?.root;
+		schedule(() => {
+			window.initMermaidDiagrams?.(root ?? document);
+		});
+	});
+})();
+</script>

@@ -24,6 +24,7 @@ import { GithubCardComponent } from "./src/plugins/rehype-component-github-card.
 import { LinkCardComponent } from "./src/plugins/rehype-component-link-card.mjs"; // 导入自定义的链接卡片组件
 import { parseDirectiveNode } from "./src/plugins/remark-directive-rehype.js";
 import { remarkExcerpt } from "./src/plugins/remark-excerpt.js";
+import { remarkMermaid } from "./src/plugins/remark-mermaid.mjs";
 import { remarkReadingTime } from "./src/plugins/remark-reading-time.mjs";
 
 // https://astro.build/config
@@ -113,6 +114,7 @@ export default defineConfig({
 			remarkExcerpt,
 			remarkGithubAdmonitionsToDirectives,
 			remarkDirective,
+			remarkMermaid,
 			remarkSectionize,
 			parseDirectiveNode,
 		],

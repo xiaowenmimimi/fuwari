@@ -3,6 +3,7 @@ import path from "node:path";
 import EncryptedPost from "@components/EncryptedPost.svelte";
 import GithubCardInitializer from "@components/misc/GithubCardInitializer.astro";
 import License from "@components/misc/License.astro";
+import MermaidInitializer from "@components/misc/MermaidInitializer.astro";
 import Markdown from "@components/misc/Markdown.astro";
 import WalineComments from "@components/WalineComments.astro";
 import I18nKey from "@i18n/i18nKey";
@@ -70,6 +71,7 @@ const walineLang =
 <MainGridLayout banner={entry.data.image} title={entry.data.title} description={entry.data.description} lang={entry.data.lang} setOGTypeArticle={true} headings={visibleHeadings} dynamicToc={entry.data.encrypted}>
     <script is:inline slot="head" type="application/ld+json" set:html={JSON.stringify(jsonLd)}></script>
     <GithubCardInitializer />
+    <MermaidInitializer />
     <div class="flex w-full rounded-[var(--radius-large)] overflow-hidden relative mb-4">
         <div id="post-container" class:list={["card-base z-10 px-6 md:px-9 pt-6 pb-4 relative w-full ",
             {}
