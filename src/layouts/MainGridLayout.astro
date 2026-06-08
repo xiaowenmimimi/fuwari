@@ -93,9 +93,9 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
         </div>
     </div>
     <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
-        <div class="hero-content text-white pointer-events-auto cursor-pointer" onclick="window.scrollTo({top: window.innerHeight, behavior: 'smooth'})">
+        <button id="home-scroll-button" type="button" aria-label="Scroll to content" class="hero-content text-white pointer-events-auto cursor-pointer border-0 bg-transparent p-0">
             <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
-        </div>
+        </button>
     </div>
 </div>}
 
@@ -140,6 +140,27 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 </style>
 
 <script is:inline define:vars={{ subtitle: siteConfig.homeSubtitle }}>
+    function scrollHomeMainGridIntoView() {
+        const target = document.getElementById("home-post-list-anchor") ?? document.getElementById("main-grid");
+        if (!target) return;
+
+        const navbar = document.getElementById("navbar-wrapper");
+        const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
+        const extraGap = 12;
+        const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight - extraGap;
+
+        window.scrollTo({
+            top: Math.max(0, targetTop),
+            behavior: "smooth",
+        });
+    }
+
+    function bindHomeScrollButton() {
+        const scrollButton = document.getElementById("home-scroll-button");
+        if (!scrollButton) return;
+        scrollButton.onclick = scrollHomeMainGridIntoView;
+    }
+
     function shouldRunHomeTypewriter() {
         return document.body.classList.contains("is-home") || window.location.pathname === "/";
     }
@@ -186,13 +207,16 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 
     document.addEventListener('astro:page-load', startTypewriter);
     document.addEventListener('astro:page-load', startPostWaveDivider);
+    document.addEventListener('astro:page-load', bindHomeScrollButton);
     // Initial load
     if (document.readyState === 'complete') {
         startTypewriter();
         startPostWaveDivider();
+        bindHomeScrollButton();
     } else {
         document.addEventListener('DOMContentLoaded', startTypewriter);
         document.addEventListener('DOMContentLoaded', startPostWaveDivider);
+        document.addEventListener('DOMContentLoaded', bindHomeScrollButton);
     }
 </script>
 
