@@ -24,7 +24,7 @@ export type SiteConfig = {
 	};
 	banner: {
 		enable: boolean;
-		src: string | string[];
+		src: BannerImageSource;
 		position?: "top" | "center" | "bottom";
 		credit: {
 			enable: boolean;
@@ -41,6 +41,20 @@ export type SiteConfig = {
 	waline: WalineConfig;
 	umami: UmamiConfig;
 };
+
+export type NonEmptyStringArray = [string, ...string[]];
+
+export type RandomApiBannerSource = {
+	random: boolean;
+	fallback: string | NonEmptyStringArray;
+	api: string;
+	ossBase: string;
+};
+
+export type BannerImageSource =
+	| string
+	| NonEmptyStringArray
+	| RandomApiBannerSource;
 
 export type Favicon = {
 	src: string;

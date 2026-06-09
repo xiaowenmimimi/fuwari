@@ -15,6 +15,11 @@ import {
 	BANNER_HEIGHT_EXTEND,
 	MAIN_PANEL_OVERLAPS_BANNER_HEIGHT,
 } from "../constants/constants";
+import {
+	getBannerFallbackSource,
+	getRandomBannerConfig,
+	pickBannerSource,
+} from "../utils/banner-utils";
 import { pathsEqual, url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
@@ -45,13 +50,14 @@ const mainPanelTop = siteConfig.banner.enable
 	? `calc(${BANNER_HEIGHT}vh - ${MAIN_PANEL_OVERLAPS_BANNER_HEIGHT}rem)`
 	: "5.5rem";
 
-let bannerSrc = siteConfig.banner.src;
+const fallbackBannerSource = getBannerFallbackSource(siteConfig.banner.src);
+const pickedFallbackBanner = pickBannerSource(fallbackBannerSource);
 let bannerCreditText = siteConfig.banner.credit.text;
 let bannerCreditUrl = siteConfig.banner.credit.url;
+const fallbackBannerImage = pickedFallbackBanner.src;
 // 如果横幅是一个数组，我们需要随机选择一个，并选择相应的信用文本和url
-if (Array.isArray(bannerSrc)) {
-	const index = Math.floor(Math.random() * bannerSrc.length);
-	bannerSrc = bannerSrc[index];
+if (pickedFallbackBanner.index !== null) {
+	const index = pickedFallbackBanner.index;
 	if (Array.isArray(bannerCreditText)) {
 		bannerCreditText = bannerCreditText[index];
 	}
@@ -60,11 +66,16 @@ if (Array.isArray(bannerSrc)) {
 	}
 }
 
-const bannerImage = (
-	banner && banner.length > 0 ? banner : bannerSrc
-) as string;
+const bannerImage =
+	banner && banner.trim().length > 0 ? banner : (fallbackBannerImage ?? "");
+const hasBannerImage = bannerImage.length > 0;
 const bannerText = bannerCreditText as string;
 const bannerUrl = bannerCreditUrl as string;
+const randomBannerConfig = getRandomBannerConfig(siteConfig.banner.src);
+const randomBannerEnabled =
+	siteConfig.banner.enable &&
+	!!randomBannerConfig?.api &&
+	!!randomBannerConfig.ossBase;
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 ---
 
@@ -80,7 +91,14 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 </div>
 
 <!-- Banner -->
-{siteConfig.banner.enable && <div id="banner-wrapper" class={`absolute z-10 w-full transition duration-700 overflow-hidden`} style={`top: calc(-1 * var(--banner-extend-vh, ${BANNER_HEIGHT_EXTEND}vh))`}>
+{siteConfig.banner.enable && hasBannerImage && <div
+	id="banner-wrapper"
+	class={`absolute z-10 w-full transition duration-700 overflow-hidden`}
+	style={`top: calc(-1 * var(--banner-extend-vh, ${BANNER_HEIGHT_EXTEND}vh))`}
+	data-random-banner-enabled={randomBannerEnabled ? "true" : "false"}
+	data-random-banner-api={randomBannerConfig?.api}
+	data-random-banner-oss-base={randomBannerConfig?.ossBase}
+>
 	<ImageWrapper id="banner" alt="Banner image of the blog" class:list={["object-cover h-full transition duration-700 opacity-0 scale-105"]}
                   src={bannerImage} position={siteConfig.banner.position}
     >
@@ -218,6 +236,101 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
         document.addEventListener('DOMContentLoaded', startPostWaveDivider);
         document.addEventListener('DOMContentLoaded', bindHomeScrollButton);
     }
+</script>
+
+<script>
+	import { toRandomBannerImageUrl } from "../utils/banner-utils";
+
+	const randomBannerState = window as Window & {
+		__fuwariRandomBannerLoaded?: boolean;
+	};
+	const RANDOM_BANNER_TIMEOUT_MS = 2500;
+	const RANDOM_BANNER_IMAGE_TIMEOUT_MS = 5000;
+
+	function preloadImage(src: string) {
+		return new Promise<void>((resolve, reject) => {
+			const image = new Image();
+			const timeout = window.setTimeout(() => {
+				image.onload = null;
+				image.onerror = null;
+				reject(new Error("Random banner image load timed out"));
+			}, RANDOM_BANNER_IMAGE_TIMEOUT_MS);
+
+			image.referrerPolicy = "no-referrer";
+			image.decoding = "async";
+			image.onload = () => {
+				window.clearTimeout(timeout);
+				resolve();
+			};
+			image.onerror = () => {
+				window.clearTimeout(timeout);
+				reject(new Error("Random banner image failed to load"));
+			};
+			image.src = src;
+		});
+	}
+
+	function replaceBannerImage(banner: HTMLElement, imageUrl: string) {
+		const image = banner.querySelector("img");
+		if (!image) return;
+
+		if (image.currentSrc === imageUrl || image.src === imageUrl) return;
+
+		for (const source of banner.querySelectorAll("source")) {
+			source.removeAttribute("srcset");
+		}
+		image.removeAttribute("srcset");
+		image.removeAttribute("sizes");
+		image.referrerPolicy = "no-referrer";
+		image.decoding = "async";
+		image.src = imageUrl;
+	}
+
+	async function loadRandomBanner() {
+		if (randomBannerState.__fuwariRandomBannerLoaded) return;
+
+		const wrapper = document.getElementById("banner-wrapper");
+		const banner = document.getElementById("banner");
+		if (!wrapper || !banner) return;
+		if (wrapper.dataset.randomBannerEnabled !== "true") return;
+
+		const api = wrapper.dataset.randomBannerApi;
+		const ossBase = wrapper.dataset.randomBannerOssBase;
+		if (!api || !ossBase) return;
+
+		const controller = new AbortController();
+		const timeout = window.setTimeout(
+			() => controller.abort(),
+			RANDOM_BANNER_TIMEOUT_MS,
+		);
+
+		try {
+			const response = await fetch(api, {
+				signal: controller.signal,
+				cache: "no-store",
+				referrerPolicy: "no-referrer",
+			});
+			if (!response.ok) return;
+
+			const data = (await response.json()) as unknown;
+			const imageUrl = toRandomBannerImageUrl(data, ossBase);
+			if (!imageUrl) return;
+
+			await preloadImage(imageUrl);
+			replaceBannerImage(banner, imageUrl);
+			randomBannerState.__fuwariRandomBannerLoaded = true;
+		} catch {
+			// Keep the fallback banner when the random API or image request fails.
+		} finally {
+			window.clearTimeout(timeout);
+		}
+	}
+
+	if (document.readyState === "loading") {
+		document.addEventListener("DOMContentLoaded", loadRandomBanner, { once: true });
+	} else {
+		loadRandomBanner();
+	}
 </script>
 
 <!-- Main content -->

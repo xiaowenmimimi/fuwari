@@ -20,12 +20,16 @@ export const siteConfig: SiteConfig = {
 	},
 	banner: {
 		enable: true,
-		// 支持多张图片轮播的数组配置
-		src: [
-			"assets/images/Cinnabar 2.png",
-			"assets/images/20260109-mini.png",
-			"assets/images/wallhaven-13mrg3-mini.jpg",
-		], // Relative to the /src directory. Relative to the /public directory if it starts with '/'
+		src: {
+			random: true, // 是否启用随机横幅图；false 时只使用 fallback，不请求随机图片接口
+			fallback: [
+				"assets/images/Cinnabar 2.png",
+				"assets/images/20260109-mini.png",
+				"assets/images/wallhaven-13mrg3-mini.jpg",
+			], // 兜底横幅图：随机接口关闭、请求失败或随机图片未加载完成前显示；路径规则同原 src
+			api: "https://imgbed.xhwen.cn/random?dir=banner&orientation=auto", // 随机图片信息接口，返回格式示例：{"url":"/file/banner/xxx.webp"}
+			ossBase: "https://image.xhwen.cn", // OSS/CDN 访问域名，会把 /file/banner/xxx.webp 转换为 https://image.xhwen.cn/banner/xxx.webp
+		},
 		position: "center", // Equivalent to object-position, only supports 'top', 'center', 'bottom'. 'center' by default
 		credit: {
 			enable: false, // Display the credit text of the banner image

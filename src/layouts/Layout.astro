@@ -17,6 +17,10 @@ import {
 } from "../constants/constants";
 import { defaultFavicons } from "../constants/icon";
 import type { Favicon } from "../types/config";
+import {
+	getBannerFallbackSource,
+	pickBannerSource,
+} from "../utils/banner-utils";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
 import ExternalLinkModal from "../components/misc/ExternalLinkModal.astro";
@@ -45,22 +49,14 @@ const configHueCandidates = siteConfig.themeColor.hue;
 const configHue = Array.isArray(configHueCandidates)
 	? (configHueCandidates[0] ?? 250)
 	: configHueCandidates;
-if (!banner || typeof banner !== "string" || banner.trim() === "") {
-	const bannerSrc = siteConfig.banner.src;
-	if (Array.isArray(bannerSrc)) {
-		banner = bannerSrc[Math.floor(Math.random() * bannerSrc.length)];
-	} else {
-		banner = bannerSrc;
-	}
-}
-
 // TODO don't use post cover as banner for now
 // banner = siteConfig.banner.src;
-const bannerSrc = siteConfig.banner.src;
-if (Array.isArray(bannerSrc)) {
-	banner = bannerSrc[Math.floor(Math.random() * bannerSrc.length)];
-} else {
-	banner = bannerSrc;
+const fallbackBannerSource = getBannerFallbackSource(siteConfig.banner.src);
+const pickedFallbackBanner = pickBannerSource(fallbackBannerSource);
+if (pickedFallbackBanner.src) {
+	banner = pickedFallbackBanner.src;
+} else if (!banner || typeof banner !== "string" || banner.trim() === "") {
+	banner = undefined;
 }
 
 const enableBanner = siteConfig.banner.enable;
