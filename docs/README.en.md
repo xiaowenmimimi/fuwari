@@ -30,6 +30,11 @@ Compared to the original Fuwari, this project mainly adds the following features
   - Supports page PV/UV statistics display.
   - Automatically handles statistics reporting when switching routes (compatible with Swup).
 
+- 🖼️ **Random Banner Images**
+  - Supports fetching banner image information from a random image API and loading the image through an OSS/CDN direct URL.
+  - Shows a local banner image first, then replaces it after the random image loads successfully to avoid a blank page.
+  - Keeps using the fallback banner when the random API is disabled, unavailable, or the image fails to load.
+
 ## 🛠️ Configuration Guide
 
 All configuration items for this project are located in the `src/config.ts` file and include detailed explanatory comments.
