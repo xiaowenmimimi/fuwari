@@ -147,14 +147,22 @@ const bannerOffset =
 					}
 			}
 
-			// Load the hue from local storage
+			// 从本地存储加载色调，每次刷新时随机选择一个色调
 			const hueCandidates = Array.isArray(configHueCandidates) ? configHueCandidates : [configHueCandidates];
 			const normalizedHueCandidates = hueCandidates.length > 0 ? hueCandidates : [250];
-			const randomHue = normalizedHueCandidates[Math.floor(Math.random() * normalizedHueCandidates.length)];
-			if (!localStorage.getItem('hue')) {
+			const storedHue = localStorage.getItem('hue');
+			const existingRandomHue = document.documentElement.dataset.randomHue;
+			const lastRandomHue = sessionStorage.getItem('lastRandomHue');
+			const availableHueCandidates = normalizedHueCandidates.length > 1
+				? normalizedHueCandidates.filter((candidate) => String(candidate) !== lastRandomHue)
+				: normalizedHueCandidates;
+			const randomHueCandidates = availableHueCandidates.length > 0 ? availableHueCandidates : normalizedHueCandidates;
+			const randomHue = randomHueCandidates[Math.floor(Math.random() * randomHueCandidates.length)];
+			if (!storedHue && !existingRandomHue) {
 				document.documentElement.dataset.randomHue = randomHue;
+				sessionStorage.setItem('lastRandomHue', String(randomHue));
 			}
-			const hue = localStorage.getItem('hue') || randomHue;
+			const hue = storedHue || existingRandomHue || randomHue;
 			document.documentElement.style.setProperty('--hue', hue);
 
 			// calculate the --banner-height-extend, which needs to be a multiple of 4 to avoid blurry text
@@ -247,7 +255,7 @@ import {
 	// SizeObserverPlugin,
 	// ClickScrollPlugin
 } from 'overlayscrollbars';
-import {getHue, getStoredTheme, setHue, setTheme} from "../utils/setting-utils";
+import {getHue, getStoredTheme, setTheme} from "../utils/setting-utils";
 import {pathsEqual, url} from "../utils/url-utils";
 import {
 	BANNER_HEIGHT,
