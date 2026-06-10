@@ -77,6 +77,9 @@ const randomBannerEnabled =
 	!!randomBannerConfig?.api &&
 	!!randomBannerConfig.ossBase;
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
+const bannerWrapperTop = isHomePage
+	? `calc(-1 * var(--banner-height-extend, ${BANNER_HEIGHT_EXTEND}vh))`
+	: `calc(-1 * var(--banner-extend-vh, ${BANNER_HEIGHT_EXTEND}vh))`;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
@@ -94,7 +97,7 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
 {siteConfig.banner.enable && hasBannerImage && <div
 	id="banner-wrapper"
 	class={`absolute z-10 w-full transition duration-700 overflow-hidden`}
-	style={`top: calc(-1 * var(--banner-extend-vh, ${BANNER_HEIGHT_EXTEND}vh))`}
+	style={`top: ${bannerWrapperTop}`}
 	data-random-banner-enabled={randomBannerEnabled ? "true" : "false"}
 	data-random-banner-api={randomBannerConfig?.api}
 	data-random-banner-oss-base={randomBannerConfig?.ossBase}
@@ -178,9 +181,11 @@ const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
         const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
         const extraGap = 12;
         const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight - extraGap;
+        const banner = document.getElementById("banner-wrapper");
+        const bannerBottom = banner ? Math.ceil(banner.getBoundingClientRect().bottom + window.scrollY) : 0;
 
         window.scrollTo({
-            top: Math.max(0, targetTop),
+            top: Math.max(0, targetTop, bannerBottom),
             behavior: "smooth",
         });
     }
