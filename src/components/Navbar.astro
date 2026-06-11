@@ -23,17 +23,17 @@ let links: NavBarLink[] = navBarConfig.links.map(
 <div id="navbar" class="navbar-shell relative z-50 max-w-[var(--page-width)] h-[4.5rem] !rounded-t-none mx-auto">
     <div id="navbar-bg" class:list={[
         className,
-        "!overflow-visible h-full w-full flex items-center justify-between px-4"]}>
-        <a href={url('/')} class="btn-plain scale-animation rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
-            <div class="flex flex-row text-[var(--primary)] items-center text-md">
-                <Icon name="material-symbols:home-outline-rounded" class="text-[1.75rem] mb-1 mr-2" />
-                {siteConfig.title}
+        "!overflow-visible h-full w-full grid grid-cols-[minmax(0,1fr)_auto_minmax(0,1fr)] items-center px-4"]}>
+        <a href={url('/')} class="btn-plain scale-animation justify-self-start min-w-0 max-w-full rounded-lg h-[3.25rem] px-5 font-bold active:scale-95">
+            <div class="flex min-w-0 flex-row text-[var(--primary)] items-center text-md">
+                <Icon name="material-symbols:home-outline-rounded" class="shrink-0 text-[1.75rem] mb-1 mr-2" />
+                <span class="truncate">{siteConfig.title}</span>
             </div>
         </a>
-        <div class="hidden md:flex">
+        <div class="hidden md:flex justify-self-center max-w-[min(52vw,calc(var(--page-width)_-_24rem))] overflow-x-auto hide-scrollbar">
             {links.map((l) => {
                 return <a aria-label={l.name} href={l.external ? l.url : url(l.url)} target={l.external ? "_blank" : null}
-                          class="btn-plain scale-animation rounded-lg h-11 font-bold px-5 active:scale-95"
+                          class="btn-plain scale-animation shrink-0 rounded-lg h-11 font-bold px-5 active:scale-95"
                 >
                     <div class="flex items-center">
                         {l.name}
@@ -42,7 +42,7 @@ let links: NavBarLink[] = navBarConfig.links.map(
                 </a>;
             })}
         </div>
-        <div class="flex">
+        <div class="flex justify-self-end justify-end min-w-[11rem] md:min-w-[15.5rem]">
             <!--<SearchPanel client:load>-->
             <Search client:only="svelte"></Search>
             {!siteConfig.themeColor.fixed && (
