@@ -77,9 +77,7 @@ const randomBannerEnabled =
 	!!randomBannerConfig?.api &&
 	!!randomBannerConfig.ossBase;
 const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
-const bannerWrapperTop = isHomePage
-	? `calc(-1 * var(--banner-height-extend, ${BANNER_HEIGHT_EXTEND}vh))`
-	: `calc(-1 * var(--banner-extend-vh, ${BANNER_HEIGHT_EXTEND}vh))`;
+const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-height-extend, ${BANNER_HEIGHT_EXTEND}vh)))`;
 ---
 
 <Layout title={title} banner={banner} description={description} lang={lang} setOGTypeArticle={setOGTypeArticle}>
