@@ -11,6 +11,12 @@ import type {
 const bangumiConfig = {
 	username: "xiaowen", // 在这里配置你的Bangumi用户名
 	apiUrl: "https://api.bgm.tv",
+	// Bangumi 图片反代配置：只替换指定源站的封面地址，避免影响其他外链图片
+	imageProxy: {
+		enable: true,
+		baseUrl: "https://bgm-img.xhwen.top",
+		sourceHosts: ["lain.bgm.tv"],
+	},
 	categories: {
 		book: false,
 		anime: true,
@@ -35,6 +41,43 @@ const categoryMap = {
 	game: { id: "game", name: "游戏", subjectType: 4 },
 	real: { id: "real", name: "三次元", subjectType: 6 },
 };
+
+function getBangumiImageProxyUrl(imageUrl: string) {
+	if (!imageUrl || !bangumiConfig.imageProxy.enable) return imageUrl;
+
+	try {
+		const url = new URL(imageUrl);
+		if (!bangumiConfig.imageProxy.sourceHosts.includes(url.hostname)) {
+			return imageUrl;
+		}
+
+		const proxyBaseUrl = bangumiConfig.imageProxy.baseUrl.replace(/\/+$/, "");
+		const imagePath = url.pathname;
+		return `${proxyBaseUrl}${imagePath}${url.search}${url.hash}`;
+	} catch {
+		// API 返回异常地址时保留原值，避免图片地址转换影响页面渲染
+		return imageUrl;
+	}
+}
+
+function getBangumiItemWithProxiedImages(item: UserSubjectCollection) {
+	const images = item.subject?.images;
+	if (!images) return item;
+
+	return {
+		...item,
+		subject: {
+			...item.subject,
+			images: {
+				large: getBangumiImageProxyUrl(images.large),
+				common: getBangumiImageProxyUrl(images.common),
+				medium: getBangumiImageProxyUrl(images.medium),
+				small: getBangumiImageProxyUrl(images.small),
+				grid: getBangumiImageProxyUrl(images.grid),
+			},
+		},
+	};
+}
 
 // 获取Bangumi数据的函数 - 支持分页获取所有数据
 async function fetchBangumiData(username: string, subjectType: number) {
@@ -75,7 +118,9 @@ async function fetchBangumiData(username: string, subjectType: number) {
 			}
 
 			const data = (await response.json()) as UserSubjectCollectionResponse;
-			const currentBatch = data.data || [];
+			const currentBatch = (data.data || []).map(
+				getBangumiItemWithProxiedImages,
+			);
 
 			if (currentBatch.length > 0) {
 				allData = allData.concat(currentBatch);
