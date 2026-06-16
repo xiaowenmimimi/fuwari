@@ -197,8 +197,8 @@ html, body {
     height: var(--collapsedHeight);
 }
 
-/* 文章页：内容整体更靠下，纯色背景更“高” */
-.enable-banner.is-post {
+/* 非首页页面，顶部大横幅高度 */
+.enable-banner:not(.is-home) {
   --banner-extend-vh: 55vh; /* 数值越小：图片露出越多；分界越靠下 */
   --banner-wrapper-offset: var(--banner-extend-vh);
   --main-panel-top: calc(45vh - 3.5rem);
@@ -206,7 +206,7 @@ html, body {
 }
 
 @media (min-height: 1440px) {
-  .enable-banner.is-post {
+  .enable-banner:not(.is-home) {
     --main-panel-top: calc(42vh - 3.5rem);
   }
 }
