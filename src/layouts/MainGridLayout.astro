@@ -111,9 +111,11 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
             <span id="subtitle-typewriter"></span>
         </div>
     </div>
-    <div class="absolute bottom-8 w-full flex justify-center z-20 pointer-events-none">
-        <button id="home-scroll-button" type="button" aria-label="Scroll to content" class="hero-content text-white pointer-events-auto cursor-pointer border-0 bg-transparent p-0">
-            <Icon name="material-symbols:keyboard-arrow-down-rounded" class="text-4xl md:text-6xl drop-shadow-md animate-bounce"></Icon>
+    <div class="absolute bottom-28 md:bottom-20 w-full flex justify-center z-20 pointer-events-none">
+        <button id="home-scroll-button" type="button" aria-label="Scroll to content" class="hero-content home-scroll-pearl text-white pointer-events-auto cursor-pointer border-0 bg-transparent p-0">
+            <span class="home-scroll-pearl-line home-scroll-pearl-line-top" aria-hidden="true"></span>
+            <span class="home-scroll-pearl-drop" aria-hidden="true"></span>
+            <span class="home-scroll-pearl-line home-scroll-pearl-line-bottom" aria-hidden="true"></span>
         </button>
     </div>
 	<!-- Banner image credit -->
@@ -156,6 +158,106 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
     .is-home .hero-content {
         opacity: 1;
         transform: translateY(0);
+    }
+    .home-scroll-pearl {
+        position: relative;
+        display: flex;
+        width: 5.75rem;
+        height: 7.25rem;
+        align-items: center;
+        justify-content: center;
+        filter: drop-shadow(0 0.85rem 1.35rem rgb(0 0 0 / 0.38));
+        outline: none;
+    }
+    .home-scroll-pearl::before {
+        content: "";
+        position: absolute;
+        width: 3.5rem;
+        height: 3.5rem;
+        border-radius: 999px;
+        background: radial-gradient(circle, rgb(255 255 255 / 0.34), rgb(255 255 255 / 0.08) 48%, rgb(255 255 255 / 0) 72%);
+        animation: home-scroll-pearl-glow 2.8s ease-in-out infinite;
+    }
+    .home-scroll-pearl-line {
+        position: absolute;
+        left: 50%;
+        width: 2px;
+        transform: translateX(-50%);
+        border-radius: 999px;
+        background: linear-gradient(to bottom, rgb(255 255 255 / 0), rgb(255 255 255 / 0.9), rgb(255 255 255 / 0));
+        transition: opacity 0.25s ease, height 0.25s ease;
+    }
+    .home-scroll-pearl-line-top {
+        top: 0.35rem;
+        height: 2.6rem;
+    }
+    .home-scroll-pearl-line-bottom {
+        bottom: 0.25rem;
+        height: 1.9rem;
+        opacity: 0.68;
+    }
+    .home-scroll-pearl-drop {
+        position: relative;
+        width: 2.15rem;
+        height: 2.15rem;
+        border-radius: 999px;
+        background:
+            radial-gradient(circle at 35% 28%, rgb(255 255 255 / 0.96) 0 18%, rgb(255 255 255 / 0) 19%),
+            linear-gradient(135deg, rgb(255 255 255 / 0.92), rgb(222 236 248 / 0.58));
+        box-shadow:
+            inset 0 1px 1px rgb(255 255 255 / 0.7),
+            inset 0 -0.42rem 0.85rem rgb(255 255 255 / 0.2),
+            0 0.5rem 1.45rem rgb(0 0 0 / 0.32),
+            0 0 1.15rem rgb(255 255 255 / 0.3);
+        animation: home-scroll-pearl-fall 2.8s cubic-bezier(0.42, 0, 0.2, 1) infinite;
+        transition: transform 0.25s ease, box-shadow 0.25s ease;
+    }
+    .home-scroll-pearl:hover .home-scroll-pearl-drop,
+    .home-scroll-pearl:focus-visible .home-scroll-pearl-drop {
+        transform: translateY(0.18rem) scale(1.05);
+        box-shadow:
+            inset 0 1px 1px rgb(255 255 255 / 0.78),
+            inset 0 -0.42rem 0.85rem rgb(255 255 255 / 0.26),
+            0 0.6rem 1.65rem rgb(0 0 0 / 0.34),
+            0 0 1.35rem rgb(255 255 255 / 0.36);
+    }
+    .home-scroll-pearl:hover .home-scroll-pearl-line,
+    .home-scroll-pearl:focus-visible .home-scroll-pearl-line {
+        opacity: 0.9;
+    }
+    .home-scroll-pearl:focus-visible {
+        border-radius: 999px;
+        box-shadow: 0 0 0 2px rgb(255 255 255 / 0.68);
+    }
+    @keyframes home-scroll-pearl-fall {
+        0%, 100% {
+            opacity: 0.88;
+            transform: translateY(-0.55rem) scale(0.96);
+        }
+        45% {
+            opacity: 1;
+            transform: translateY(0.28rem) scale(1);
+        }
+        70% {
+            opacity: 0.94;
+            transform: translateY(0.56rem) scale(0.98);
+        }
+    }
+    @keyframes home-scroll-pearl-glow {
+        0%, 100% {
+            opacity: 0.45;
+            transform: scale(0.9);
+        }
+        48% {
+            opacity: 0.9;
+            transform: scale(1.08);
+        }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .home-scroll-pearl::before,
+        .home-scroll-pearl-drop {
+            animation: none;
+        }
     }
     #subtitle-typewriter::after {
         content: "|";
