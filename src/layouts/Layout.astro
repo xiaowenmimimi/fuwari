@@ -217,13 +217,18 @@ const bannerOffset =
 		@apply h-[var(--banner-height-home)] translate-y-[var(--bannerOffset)]
 	}
 	.enable-banner.is-home #main-grid {
-		@apply translate-y-[calc(var(--banner-height-extend)_+_8.75rem)];
+		transform: translateY(calc(var(--banner-height-extend) + 5rem + var(--home-main-grid-spacer-height, 0px)));
+		transition-property: opacity;
 	}
-	.enable-banner #top-row {
+	.enable-banner.is-home #top-row {
+		height: 0;
+		@apply transition-all duration-300
+	}
+	.enable-banner:not(.is-home) #top-row {
 		@apply h-[calc(var(--banner-height-home)_-_4rem)] md:h-[calc(var(--banner-height-home)_-_5.5rem)] transition-all duration-300
 	}
 	.enable-banner.is-home #sidebar-sticky {
-		@apply top-[calc(5.5rem_-_var(--banner-height-extend)_-_8.75rem)]
+		@apply top-[calc(5.5rem_-_var(--banner-height-extend)_-_10.5rem)]
 	}
 }
 </style>

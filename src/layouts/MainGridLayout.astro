@@ -171,10 +171,65 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
 </style>
 
 <script is:inline define:vars={{ subtitle: siteConfig.homeSubtitle }}>
+    function isHomePageActive() {
+        return document.body.classList.contains("is-home") || window.location.pathname === "/";
+    }
+
+    const homeNavSpacer = {
+        ticking: false,
+    };
+
+    function updateHomeNavSpacer() {
+        homeNavSpacer.ticking = false;
+
+        const root = document.documentElement;
+        const topRow = document.getElementById("top-row");
+        if (!topRow) return;
+
+        if (!isHomePageActive()) {
+            root.style.removeProperty("--home-main-grid-spacer-height");
+            topRow.classList.remove("home-nav-spacer-active");
+            return;
+        }
+
+        const navbar = document.getElementById("navbar-wrapper");
+        const banner = document.getElementById("banner-wrapper");
+        const target = document.getElementById("home-post-list-anchor") ?? document.getElementById("main-grid");
+        if (!navbar || !banner || !target) {
+            root.style.setProperty("--home-main-grid-spacer-height", "0px");
+            topRow.classList.remove("home-nav-spacer-active");
+            return;
+        }
+
+        const navbarHeight = Math.ceil(navbar.getBoundingClientRect().height);
+        const gap = 16;
+        const currentSpacer = Number.parseFloat(root.style.getPropertyValue("--home-main-grid-spacer-height")) || 0;
+        const targetTopWithoutSpacer = target.getBoundingClientRect().top + window.scrollY - currentSpacer;
+        const targetVisibleGap = gap;
+        const spacerStartScrollY = targetTopWithoutSpacer - navbarHeight - targetVisibleGap;
+        const maxSpacerHeight = navbarHeight + gap;
+        const nextSpacer = Math.min(
+            maxSpacerHeight,
+            Math.max(0, window.scrollY - spacerStartScrollY),
+        );
+        const shouldShowSpacer = nextSpacer > 0;
+        const spacerHeight = `${nextSpacer}px`;
+
+        root.style.setProperty("--home-main-grid-spacer-height", spacerHeight);
+        topRow.classList.toggle("home-nav-spacer-active", shouldShowSpacer);
+    }
+
+    function requestHomeNavSpacerUpdate() {
+        if (homeNavSpacer.ticking) return;
+        homeNavSpacer.ticking = true;
+        window.requestAnimationFrame(updateHomeNavSpacer);
+    }
+
     function scrollHomeMainGridIntoView() {
         const target = document.getElementById("home-post-list-anchor") ?? document.getElementById("main-grid");
         if (!target) return;
 
+        updateHomeNavSpacer();
         const navbar = document.getElementById("navbar-wrapper");
         const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
         const extraGap = 12;
@@ -194,8 +249,16 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
         scrollButton.onclick = scrollHomeMainGridIntoView;
     }
 
+    function bindHomeNavSpacer() {
+        requestHomeNavSpacerUpdate();
+        window.removeEventListener("scroll", requestHomeNavSpacerUpdate);
+        window.removeEventListener("resize", requestHomeNavSpacerUpdate);
+        window.addEventListener("scroll", requestHomeNavSpacerUpdate, { passive: true });
+        window.addEventListener("resize", requestHomeNavSpacerUpdate);
+    }
+
     function shouldRunHomeTypewriter() {
-        return document.body.classList.contains("is-home") || window.location.pathname === "/";
+        return isHomePageActive();
     }
 
     function typeWriter(text, i, fnCallback) {
@@ -241,15 +304,19 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
     document.addEventListener('astro:page-load', startTypewriter);
     document.addEventListener('astro:page-load', startPostWaveDivider);
     document.addEventListener('astro:page-load', bindHomeScrollButton);
+    document.addEventListener('astro:page-load', bindHomeNavSpacer);
+    document.addEventListener('astro:after-swap', bindHomeNavSpacer);
     // Initial load
     if (document.readyState === 'complete') {
         startTypewriter();
         startPostWaveDivider();
         bindHomeScrollButton();
+        bindHomeNavSpacer();
     } else {
         document.addEventListener('DOMContentLoaded', startTypewriter);
         document.addEventListener('DOMContentLoaded', startPostWaveDivider);
         document.addEventListener('DOMContentLoaded', bindHomeScrollButton);
+        document.addEventListener('DOMContentLoaded', bindHomeNavSpacer);
     }
 </script>
 
