@@ -36,10 +36,27 @@ interface Props {
 
 let { title, banner, description, lang, setOGTypeArticle } = Astro.props;
 
+const normalizePath = (path: string) =>
+	path
+		.replace(/^https?:\/\/[^/]+/i, "")
+		.split(/[?#]/)[0]
+		.replace(/^\/|\/$/g, "")
+		.toLowerCase();
+const normalizedBase = normalizePath(url("/"));
+const isHomeListPagePath = (path: string) => {
+	const normalizedPath = normalizePath(path);
+	if (normalizedPath === normalizedBase) return true;
+	const relativePath =
+		normalizedBase && normalizedPath.startsWith(`${normalizedBase}/`)
+			? normalizedPath.slice(normalizedBase.length + 1)
+			: normalizedPath;
+	return /^\d+$/.test(relativePath);
+};
+
 // apply a class to the body element to decide the height of the banner, only used for initial page load
 // Swup can update the body for each page visit, but it's after the page transition, causing a delay for banner height change
 // so use Swup hooks instead to change the height immediately when a link is clicked
-const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
+const isHomePage = isHomeListPagePath(Astro.url.pathname);
 const isPostPage = Astro.url.pathname.startsWith(url("/posts/"));
 const isBangumiPage = pathsEqual(Astro.url.pathname, url("/bangumi"));
 
@@ -339,6 +356,26 @@ function loadHue() {
 	document.documentElement.style.setProperty('--hue', String(hue));
 }
 
+function normalizePath(path: string) {
+	return path
+		.replace(/^https?:\/\/[^/]+/i, "")
+		.split(/[?#]/)[0]
+		.replace(/^\/|\/$/g, "")
+		.toLowerCase();
+}
+
+const normalizedHomeBase = normalizePath(url('/'));
+
+function isHomeListPagePath(path: string) {
+	const normalizedPath = normalizePath(path);
+	if (normalizedPath === normalizedHomeBase) return true;
+	const relativePath =
+		normalizedHomeBase && normalizedPath.startsWith(`${normalizedHomeBase}/`)
+			? normalizedPath.slice(normalizedHomeBase.length + 1)
+			: normalizedPath;
+	return /^\d+$/.test(relativePath);
+}
+
 function initCustomScrollbar() {
 	const bodyElement = document.querySelector('body');
 	if (!bodyElement) return;
@@ -443,10 +480,35 @@ init();
 let lastTrackedPath: string | null = null;
 let pendingTrackPath: string | null = null;
 let nextUmamiUrl: string | null = null;
+let pendingHomePaginationScroll = false;
+let homePaginationClickListenerBound = false;
 const resetScrollPosition = () => {
 	window.scrollTo(0, 0);
 	document.documentElement.scrollTop = 0;
 	document.body.scrollTop = 0;
+};
+const scrollToHomePostList = () => {
+	const target = document.getElementById('home-post-list-anchor') ?? document.getElementById('main-grid');
+	if (!target) return;
+
+	const navbar = document.getElementById('navbar-wrapper');
+	const navbarHeight = navbar?.getBoundingClientRect().height ?? 0;
+	const extraGap = 12;
+	const targetTop = target.getBoundingClientRect().top + window.scrollY - navbarHeight - extraGap;
+	const banner = document.getElementById('banner-wrapper');
+	const bannerBottom = banner ? Math.ceil(banner.getBoundingClientRect().bottom + window.scrollY) : 0;
+
+	window.scrollTo({
+		top: Math.max(0, targetTop, bannerBottom),
+		behavior: 'auto',
+	});
+	const refreshHomeNavSpacer = () => {
+		window.dispatchEvent(new Event('scroll'));
+		window.dispatchEvent(new Event('resize'));
+	};
+	window.requestAnimationFrame(refreshHomeNavSpacer);
+	window.setTimeout(refreshHomeNavSpacer, 120);
+	window.setTimeout(refreshHomeNavSpacer, 320);
 };
 function trackUmamiPageview(tries = 0, urlOverride: string | null = null) {
 	const desiredUrl = urlOverride ?? window.location.href;
@@ -482,6 +544,16 @@ trackUmamiPageview();
 
 const setup = () => {
 	window.history.scrollRestoration = 'manual';
+	if (!homePaginationClickListenerBound) {
+		document.addEventListener('click', (event) => {
+			const target = event.target;
+			if (!(target instanceof Element)) return;
+			const link = target.closest('a[data-home-pagination-link]');
+			if (!link || link.classList.contains('disabled')) return;
+			pendingHomePaginationScroll = true;
+		}, { capture: true });
+		homePaginationClickListenerBound = true;
+	}
 	// TODO: temp solution to change the height of the banner
 /*
 	window.swup.hooks.on('animation:out:start', () => {
@@ -500,13 +572,24 @@ const setup = () => {
 
 	})
 	window.swup.hooks.on('content:replace', (visit: any) => {
-		if (visit.scroll.reset && !visit.history.popstate) {
+		const shouldUseHomePaginationScroll =
+			pendingHomePaginationScroll &&
+			isHomeListPagePath(visit.to.url) &&
+			!visit.history.popstate;
+		if (visit.scroll.reset && !visit.history.popstate && !shouldUseHomePaginationScroll) {
 			resetScrollPosition();
 		}
 		initCustomScrollbar();
 	})
 	window.swup.hooks.on('visit:start', (visit: {to: {url: string}, scroll?: {reset?: boolean}, history?: {popstate?: boolean}}) => {
 		nextUmamiUrl = visit.to.url;
+		const shouldUseHomePaginationScroll =
+			pendingHomePaginationScroll &&
+			isHomeListPagePath(visit.to.url) &&
+			!visit.history?.popstate;
+		if (pendingHomePaginationScroll && !isHomeListPagePath(visit.to.url)) {
+			pendingHomePaginationScroll = false;
+		}
 		const toHash = (() => {
 			try {
 				return new URL(visit.to.url, window.location.origin).hash;
@@ -514,12 +597,12 @@ const setup = () => {
 				return '';
 			}
 		})();
-		if (visit.scroll?.reset !== false && !visit.history?.popstate && !toHash) {
+		if (visit.scroll?.reset !== false && !visit.history?.popstate && !toHash && !shouldUseHomePaginationScroll) {
 			resetScrollPosition();
 		}
 		// change banner height immediately when a link is clicked
 		const bodyElement = document.querySelector('body')
-		if (pathsEqual(visit.to.url, url('/'))) {
+		if (isHomeListPagePath(visit.to.url)) {
 			bodyElement!.classList.add('is-home');
 		} else {
 			bodyElement!.classList.remove('is-home');
@@ -568,6 +651,10 @@ const setup = () => {
 			const toc = document.getElementById('toc-wrapper');
 			if (toc) {
 				toc.classList.remove('toc-not-ready')
+			}
+			if (pendingHomePaginationScroll && isHomeListPagePath(window.location.pathname)) {
+				scrollToHomePostList();
+				pendingHomePaginationScroll = false;
 			}
 			scrollFunction();
 		});

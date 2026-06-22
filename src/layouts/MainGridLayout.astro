@@ -20,7 +20,7 @@ import {
 	getRandomBannerConfig,
 	pickBannerSource,
 } from "../utils/banner-utils";
-import { pathsEqual, url } from "../utils/url-utils";
+import { url } from "../utils/url-utils";
 import Layout from "./Layout.astro";
 
 interface Props {
@@ -76,7 +76,23 @@ const randomBannerEnabled =
 	siteConfig.banner.enable &&
 	!!randomBannerConfig?.api &&
 	!!randomBannerConfig.ossBase;
-const isHomePage = pathsEqual(Astro.url.pathname, url("/"));
+const normalizePath = (path: string) =>
+	path
+		.replace(/^https?:\/\/[^/]+/i, "")
+		.split(/[?#]/)[0]
+		.replace(/^\/|\/$/g, "")
+		.toLowerCase();
+const normalizedBase = normalizePath(url("/"));
+const isHomeListPagePath = (path: string) => {
+	const normalizedPath = normalizePath(path);
+	if (normalizedPath === normalizedBase) return true;
+	const relativePath =
+		normalizedBase && normalizedPath.startsWith(`${normalizedBase}/`)
+			? normalizedPath.slice(normalizedBase.length + 1)
+			: normalizedPath;
+	return /^\d+$/.test(relativePath);
+};
+const isHomePage = isHomeListPagePath(Astro.url.pathname);
 const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-height-extend, ${BANNER_HEIGHT_EXTEND}vh)))`;
 ---
 
