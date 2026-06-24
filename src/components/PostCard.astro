@@ -21,6 +21,7 @@ interface Props {
 	description: string;
 	draft: boolean;
 	style: string;
+	useCurrentBannerImage?: boolean;
 }
 const {
 	entry,
@@ -33,14 +34,18 @@ const {
 	image,
 	description,
 	style,
+	useCurrentBannerImage = false,
 } = Astro.props;
 const className = Astro.props.class;
 
-const hasCover = image !== undefined && image !== null && image !== "";
+const hasPostCover = image !== undefined && image !== null && image !== "";
+const hasCover = useCurrentBannerImage || hasPostCover;
 const isPinned = (entry.data.pin ?? 0) > 0;
 
 const coverWidth = "28%";
 const pageviewPath = url;
+const transparentPixel =
+	"data:image/gif;base64,R0lGODlhAQABAAAAACwAAAAAAQABAAA=";
 
 const { remarkPluginFrontmatter } = await entry.render();
 ---
@@ -80,8 +85,11 @@ const { remarkPluginFrontmatter } = await entry.render();
     </div>
 
     {hasCover && <a href={url} aria-label={title}
+                    data-home-first-post-cover={useCurrentBannerImage ? "true" : undefined}
                     class:list={["group",
-                        "max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0",
+                        useCurrentBannerImage && !hasPostCover
+                            ? "hidden md:block md:max-h-none md:mb-0 md:mx-0 md:mt-0"
+                            : "max-h-[20vh] md:max-h-none mx-4 mt-4 -mb-2 md:mb-0 md:mx-0 md:mt-0",
                         "md:w-[var(--coverWidth)] relative md:absolute md:top-3 md:bottom-3 md:right-3 rounded-xl overflow-hidden active:scale-95"
                     ]} >
         <div class="absolute pointer-events-none z-10 w-full h-full group-hover:bg-black/30 group-active:bg-black/50 transition"></div>
@@ -90,9 +98,25 @@ const { remarkPluginFrontmatter } = await entry.render();
                   class="transition opacity-0 group-hover:opacity-100 scale-50 group-hover:scale-100 text-white text-5xl">
             </Icon>
         </div>
-        <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
-                  class="w-full h-full">
-        </ImageWrapper>
+        {useCurrentBannerImage
+            ? <>
+                <div class:list={["w-full h-full overflow-hidden relative", {"hidden md:block": hasPostCover}]}>
+                <img
+                    src={transparentPixel}
+                    data-home-first-post-cover-image
+                    alt="Cover Image of the Post"
+                    loading="eager"
+                    decoding="async"
+                    class="home-first-post-cover-image w-full h-full object-cover opacity-0 scale-[1.03] transition duration-500"
+                />
+                </div>
+                {hasPostCover && <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
+                          class="w-full h-full md:hidden">
+                </ImageWrapper>}
+            </>
+            : <ImageWrapper src={image} basePath={path.join("content/posts/", getDir(entry.id))} alt="Cover Image of the Post"
+                      class="w-full h-full">
+            </ImageWrapper>}
     </a>}
 
     {!hasCover &&
@@ -109,4 +133,8 @@ const { remarkPluginFrontmatter } = await entry.render();
 <div class="transition border-t-[1px] border-dashed mx-6 border-black/10 dark:border-white/[0.15] last:border-t-0 md:hidden"></div>
 
 <style define:vars={{coverWidth}}>
+    [data-home-first-post-cover="true"].home-first-post-cover-ready .home-first-post-cover-image {
+        opacity: 1;
+        transform: scale(1);
+    }
 </style>

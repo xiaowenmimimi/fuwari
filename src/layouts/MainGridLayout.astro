@@ -297,6 +297,41 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
         ticking: false,
     };
 
+    function getCurrentBannerImageUrl() {
+        const bannerImage = document.querySelector("#banner img");
+        if (!(bannerImage instanceof HTMLImageElement)) return "";
+
+        return bannerImage.currentSrc || bannerImage.src || "";
+    }
+
+    function syncHomeFirstPostCover(nextImageUrl) {
+        if (!isHomePageActive()) return;
+
+        const cover = document.querySelector('[data-home-first-post-cover="true"]');
+        if (!(cover instanceof HTMLElement)) return;
+
+        const coverImage = cover.querySelector("[data-home-first-post-cover-image]");
+        if (!(coverImage instanceof HTMLImageElement)) return;
+
+        const imageUrl =
+            typeof nextImageUrl === "string" && nextImageUrl
+                ? nextImageUrl
+                : getCurrentBannerImageUrl();
+        if (!imageUrl) return;
+
+        if (coverImage.src !== imageUrl && coverImage.currentSrc !== imageUrl) {
+            coverImage.removeAttribute("srcset");
+            coverImage.removeAttribute("sizes");
+            coverImage.referrerPolicy = "no-referrer";
+            coverImage.decoding = "async";
+            coverImage.src = imageUrl;
+        }
+
+        cover.classList.add("home-first-post-cover-ready");
+    }
+
+    window.__fuwariSyncHomeFirstPostCover = syncHomeFirstPostCover;
+
     function updateHomeNavSpacer() {
         homeNavSpacer.ticking = false;
 
@@ -423,18 +458,22 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
     document.addEventListener('astro:page-load', startPostWaveDivider);
     document.addEventListener('astro:page-load', bindHomeScrollButton);
     document.addEventListener('astro:page-load', bindHomeNavSpacer);
+    document.addEventListener('astro:page-load', () => syncHomeFirstPostCover());
     document.addEventListener('astro:after-swap', bindHomeNavSpacer);
+    document.addEventListener('astro:after-swap', () => syncHomeFirstPostCover());
     // Initial load
     if (document.readyState === 'complete') {
         startTypewriter();
         startPostWaveDivider();
         bindHomeScrollButton();
         bindHomeNavSpacer();
+        syncHomeFirstPostCover();
     } else {
         document.addEventListener('DOMContentLoaded', startTypewriter);
         document.addEventListener('DOMContentLoaded', startPostWaveDivider);
         document.addEventListener('DOMContentLoaded', bindHomeScrollButton);
         document.addEventListener('DOMContentLoaded', bindHomeNavSpacer);
+        document.addEventListener('DOMContentLoaded', () => syncHomeFirstPostCover());
     }
 </script>
 
@@ -443,6 +482,7 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
 
 	const randomBannerState = window as Window & {
 		__fuwariRandomBannerLoaded?: boolean;
+		__fuwariSyncHomeFirstPostCover?: (imageUrl?: string) => void;
 	};
 	const RANDOM_BANNER_TIMEOUT_MS = 2500;
 	const RANDOM_BANNER_IMAGE_TIMEOUT_MS = 5000;
@@ -484,6 +524,7 @@ const bannerWrapperTop = `calc(-1 * var(--banner-wrapper-offset, var(--banner-he
 		image.referrerPolicy = "no-referrer";
 		image.decoding = "async";
 		image.src = imageUrl;
+		randomBannerState.__fuwariSyncHomeFirstPostCover?.(imageUrl);
 	}
 
 	async function loadRandomBanner() {
