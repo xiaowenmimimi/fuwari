@@ -1,4 +1,5 @@
 ---
+import { Icon } from "astro-icon/components";
 import "@waline/client/waline.css";
 
 interface Props {
@@ -17,66 +18,194 @@ const {
 	pageview = false,
 } = Astro.props;
 ---
-<div class="card-base !overflow-visible z-10 relative w-full mb-4 pt-4 pb-4">
-	<div
-		class="font-bold transition text-lg text-neutral-900 dark:text-neutral-100 relative ml-8
-			before:w-1 before:h-4 before:rounded-md before:bg-[var(--primary)]
-			before:absolute before:left-[-16px] before:top-[5.5px]"
-	>
-		评论
-	</div>
-	<div class="px-4">
-		<div
-			id="waline"
-			data-server-url={serverURL}
-			data-lang={lang}
-			data-login={login}
-			data-dark={dark}
-			data-pageview={pageview ? "true" : "false"}
-		>
-			<div class="waline-placeholder">评论加载中…</div>
+<section class="comment-section card-base !overflow-visible z-10 relative w-full mb-4 px-4 py-5 sm:px-6 sm:py-6" aria-labelledby="comments-title">
+	<div class="comment-section__header mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
+		<div class="flex items-start gap-3">
+			<div class="comment-section__icon mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
+				<Icon name="material-symbols:forum-rounded" class="text-[1.35rem]" />
+			</div>
+			<div>
+				<h2 id="comments-title" class="comment-section__title m-0 text-lg font-bold leading-tight text-neutral-900 transition dark:text-neutral-100">
+					评论
+				</h2>
+				<p class="comment-section__description mt-1 text-sm leading-6">
+					文字让我们短暂相逢。
+				</p>
+			</div>
 		</div>
 	</div>
-</div>
+	<div
+		id="waline"
+		data-server-url={serverURL}
+		data-lang={lang}
+		data-login={login}
+		data-dark={dark}
+		data-pageview={pageview ? "true" : "false"}
+	>
+		<div class="waline-placeholder" aria-live="polite">
+			<div class="waline-placeholder__avatar" aria-hidden="true"></div>
+			<div class="waline-placeholder__content">
+				<div class="waline-placeholder__line waline-placeholder__line--short" aria-hidden="true"></div>
+				<div class="waline-placeholder__line" aria-hidden="true"></div>
+				<div class="waline-placeholder__line waline-placeholder__line--medium" aria-hidden="true"></div>
+				<div class="waline-placeholder__text">评论加载中…</div>
+			</div>
+		</div>
+	</div>
+</section>
 <style is:global>
+	.comment-section {
+		isolation: isolate;
+		scroll-margin-top: 6rem;
+	}
+
+	.comment-section::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		z-index: 0;
+		border-radius: inherit;
+		pointer-events: none;
+		background:
+			radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--primary) 12%, transparent), transparent 34%),
+			linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 94%, var(--page-bg)), var(--card-bg));
+	}
+
+	.comment-section > * {
+		position: relative;
+		z-index: 1;
+	}
+
+	.comment-section__icon {
+		color: var(--primary);
+		background: color-mix(in srgb, var(--primary) 12%, transparent);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 18%, transparent);
+	}
+
+	.comment-section__description {
+		color: color-mix(in srgb, var(--btn-content) 68%, transparent);
+	}
+
+	html.dark .comment-section::before {
+		background:
+			radial-gradient(circle at 8% 0%, color-mix(in srgb, var(--primary) 16%, transparent), transparent 36%),
+			linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 92%, black), var(--card-bg));
+	}
+
+	html.dark .comment-section__icon {
+		background: color-mix(in srgb, var(--primary) 18%, transparent);
+		box-shadow: inset 0 0 0 1px color-mix(in srgb, var(--primary) 28%, transparent);
+	}
+
+	html.dark .comment-section__description {
+		color: color-mix(in srgb, var(--btn-content) 76%, transparent);
+	}
+
+	#waline {
+		scroll-margin-top: 6rem;
+	}
+
 	#waline .waline-placeholder {
-		min-height: 8rem;
+		min-height: 11rem;
 		display: flex;
-		align-items: center;
-		justify-content: center;
-		color: color-mix(in srgb, var(--btn-content) 60%, transparent);
-		background: color-mix(in srgb, var(--btn-regular-bg) 70%, transparent);
+		align-items: flex-start;
+		gap: 0.9rem;
+		padding: 1rem;
+		color: color-mix(in srgb, var(--btn-content) 62%, transparent);
+		background:
+			linear-gradient(180deg, color-mix(in srgb, var(--btn-regular-bg) 65%, transparent), transparent),
+			color-mix(in srgb, var(--card-bg) 86%, var(--page-bg));
 		border: 1px dashed var(--line-divider);
 		border-radius: var(--radius-large);
+	}
+
+	#waline .waline-placeholder__avatar {
+		width: 2.75rem;
+		height: 2.75rem;
+		border-radius: 0.85rem;
+		background: color-mix(in srgb, var(--primary) 16%, var(--btn-regular-bg));
+	}
+
+	#waline .waline-placeholder__content {
+		flex: 1;
+		display: grid;
+		gap: 0.65rem;
+		min-width: 0;
+	}
+
+	#waline .waline-placeholder__line {
+		position: relative;
+		overflow: hidden;
+		height: 0.72rem;
+		border-radius: 999px;
+		background: color-mix(in srgb, var(--btn-regular-bg-hover) 72%, transparent);
+	}
+
+	#waline .waline-placeholder__line::after {
+		content: "";
+		position: absolute;
+		inset: 0;
+		transform: translateX(-100%);
+		background: linear-gradient(90deg, transparent, color-mix(in srgb, var(--card-bg) 62%, transparent), transparent);
+		animation: waline-placeholder-shimmer 1.4s ease-in-out infinite;
+	}
+
+	#waline .waline-placeholder__line--short {
+		width: min(9rem, 58%);
+	}
+
+	#waline .waline-placeholder__line--medium {
+		width: min(18rem, 82%);
+	}
+
+	#waline .waline-placeholder__text {
+		margin-top: 0.15rem;
+		font-size: 0.9rem;
+	}
+
+	@keyframes waline-placeholder-shimmer {
+		to {
+			transform: translateX(100%);
+		}
 	}
 
 	[data-waline] {
 		font-family: var(--font-body);
 
-		--waline-font-size: 1.05rem;
+		--waline-font-size: 1rem;
 		--waline-theme-color: var(--primary);
 		--waline-active-color: var(--primary);
-		--waline-bg-color: var(--card-bg);
+		--waline-bg-color: color-mix(in srgb, var(--card-bg) 96%, var(--page-bg));
 		--waline-bg-color-light: var(--btn-regular-bg);
 		--waline-bg-color-hover: var(--btn-regular-bg-hover);
 		--waline-border-color: var(--line-divider);
-		--waline-color: var(--btn-content);
-		--waline-info-bg-color: var(--btn-regular-bg);
+		--waline-color: color-mix(in srgb, var(--btn-content) 76%, black);
+		--waline-info-bg-color: color-mix(in srgb, var(--btn-regular-bg) 82%, transparent);
 		--waline-badge-color: var(--primary);
 		--waline-border: 1px solid var(--line-divider);
-		--waline-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
-		--waline-avatar-radius: 0.75rem;
+		--waline-box-shadow: 0 14px 34px rgba(0, 0, 0, 0.055);
+		--waline-avatar-radius: 0.85rem;
+		--waline-avatar-size: 3rem;
+		--waline-m-avatar-size: 2.55rem;
 	}
 
 	@supports (color: color-mix(in srgb, #000 0%, #fff)) {
 		[data-waline] {
-			--waline-active-color: color-mix(in srgb, var(--primary) 85%, white);
-			--waline-info-color: color-mix(in srgb, var(--btn-content) 65%, transparent);
+			--waline-active-color: color-mix(in srgb, var(--primary) 88%, black);
+			--waline-info-color: color-mix(in srgb, var(--btn-content) 58%, transparent);
 		}
 	}
 
 	html.dark [data-waline] {
-		--waline-box-shadow: 0 10px 30px rgba(0, 0, 0, 0.35);
+		--waline-bg-color: color-mix(in srgb, var(--card-bg) 92%, black);
+		--waline-bg-color-light: color-mix(in srgb, var(--btn-regular-bg) 72%, black);
+		--waline-bg-color-hover: color-mix(in srgb, var(--btn-regular-bg-hover) 72%, black);
+		--waline-border-color: color-mix(in srgb, var(--line-divider) 80%, white);
+		--waline-color: color-mix(in srgb, white 78%, var(--btn-content));
+		--waline-active-color: color-mix(in srgb, var(--primary) 84%, white);
+		--waline-info-bg-color: color-mix(in srgb, var(--btn-regular-bg) 52%, transparent);
+		--waline-info-color: color-mix(in srgb, var(--btn-content) 68%, transparent);
+		--waline-box-shadow: 0 14px 34px rgba(0, 0, 0, 0.28);
 	}
 
 	#waline [data-waline] .wl-panel,
@@ -88,14 +217,31 @@ const {
 	#waline [data-waline] .wl-panel {
 		position: relative;
 		z-index: 2;
-		border: 1px solid var(--line-divider);
+		overflow: hidden;
+		margin: 0;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 64%, transparent);
 		box-shadow: var(--waline-box-shadow);
 		transition: box-shadow 180ms ease, transform 180ms ease, border-color 180ms ease, background 180ms ease;
+	}
+
+	#waline [data-waline] .wl-panel::before {
+		content: "";
+		position: absolute;
+		inset: 0;
+		pointer-events: none;
+		background:
+			radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--primary) 9%, transparent), transparent 32%),
+			linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 92%, transparent), transparent 62%);
+	}
+
+	#waline [data-waline] .wl-panel > * {
+		position: relative;
 	}
 
 	#waline [data-waline] .wl-comments {
 		position: relative;
 		z-index: 1;
+		margin-top: 1rem;
 	}
 
 	#waline [data-waline] .wl-tab-wrapper {
@@ -104,8 +250,8 @@ const {
 
 	@supports (background: color-mix(in srgb, #000 0%, transparent)) {
 		#waline [data-waline] .wl-panel {
-			border-color: color-mix(in srgb, var(--line-divider) 70%, transparent);
-			background: color-mix(in srgb, var(--card-bg) 88%, transparent);
+			border-color: color-mix(in srgb, var(--line-divider) 60%, transparent);
+			background: color-mix(in srgb, var(--card-bg) 92%, transparent);
 			backdrop-filter: blur(14px) saturate(1.2);
 			-webkit-backdrop-filter: blur(14px) saturate(1.2);
 		}
@@ -123,20 +269,39 @@ const {
 	}
 
 	#waline [data-waline] .wl-header {
-		background: var(--btn-regular-bg);
-		border-bottom: 1px dashed var(--line-divider);
+		display: grid;
+		grid-template-columns: repeat(3, minmax(0, 1fr));
+		gap: 0.6rem;
+		padding: 0.85rem 0.85rem 0.45rem;
+		background: transparent;
+		border-bottom: 0;
 		border-top-left-radius: var(--radius-large);
 		border-top-right-radius: var(--radius-large);
 	}
 
-	@supports (background: color-mix(in srgb, #000 0%, transparent)) {
-		#waline [data-waline] .wl-header {
-			background: color-mix(in srgb, var(--btn-regular-bg) 85%, transparent);
-		}
+	#waline [data-waline] .wl-header-1 {
+		grid-template-columns: 1fr;
+	}
+
+	#waline [data-waline] .wl-header-2 {
+		grid-template-columns: repeat(2, minmax(0, 1fr));
 	}
 
 	#waline [data-waline] .wl-header-item {
 		align-items: center;
+		min-width: 0;
+		overflow: hidden;
+		width: auto;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 62%, transparent);
+		border-radius: 0.85rem;
+		background: color-mix(in srgb, var(--btn-regular-bg) 56%, transparent);
+		transition: background 160ms ease, border-color 160ms ease, box-shadow 160ms ease;
+	}
+
+	#waline [data-waline] .wl-header-item:focus-within {
+		border-color: color-mix(in srgb, var(--primary) 46%, var(--line-divider));
+		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 12%, transparent);
 	}
 
 	#waline [data-waline] .wl-header label {
@@ -148,31 +313,51 @@ const {
 	#waline [data-waline] .wl-header input {
 		box-sizing: border-box;
 		font-size: 0.95em;
-		border-radius: 0.75rem;
-		padding: 0.3rem 0.6rem;
+		border-radius: 0;
+		padding: 0.45rem 0.65rem;
 		line-height: 1.2;
-		border: 1px solid color-mix(in srgb, var(--line-divider) 70%, transparent);
-		background: color-mix(in srgb, var(--card-bg) 70%, transparent);
+		border: 0;
+		background: transparent;
 		transition: background 160ms ease, border-color 160ms ease;
 	}
 
 	#waline [data-waline] .wl-header input:focus {
-		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
-		border-color: color-mix(in srgb, var(--primary) 55%, var(--line-divider));
+		background: transparent;
 	}
 
 	#waline [data-waline] .wl-editor {
-		border-radius: 0.875rem;
-		padding: 0.75rem 0.9rem;
-		background: color-mix(in srgb, var(--card-bg) 70%, transparent);
+		width: calc(100% - 1.7rem);
+		min-height: 9.4rem;
+		margin: 0.4rem 0.85rem 0.7rem;
+		border-radius: 0.95rem;
+		padding: 0.85rem 1rem;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 64%, transparent);
+		background: color-mix(in srgb, var(--card-bg) 76%, transparent);
+		line-height: 1.8;
 	}
 
 	#waline [data-waline] .wl-editor:focus {
 		background: color-mix(in srgb, var(--card-bg) 92%, transparent);
+		border-color: color-mix(in srgb, var(--primary) 45%, var(--line-divider));
+		box-shadow: 0 0 0 3px color-mix(in srgb, var(--primary) 11%, transparent);
 	}
 
 	#waline [data-waline] .wl-footer {
-		padding: 0.1rem 0.25rem 0.25rem;
+		margin: 0;
+		padding: 0 0.85rem 0.85rem;
+	}
+
+	#waline [data-waline] .wl-actions {
+		min-width: 0;
+	}
+
+	#waline [data-waline] .wl-info {
+		gap: 0.55rem;
+	}
+
+	#waline [data-waline] .wl-info .wl-text-number {
+		font-variant-numeric: tabular-nums;
+		color: color-mix(in srgb, var(--waline-info-color) 92%, transparent);
 	}
 
 	#waline [data-waline] .wl-action {
@@ -180,6 +365,12 @@ const {
 		height: 1.75em;
 		border-radius: 0.6rem;
 		transition: background 160ms ease, color 160ms ease, transform 160ms ease;
+	}
+
+	#waline [data-waline] .wl-action:focus-visible,
+	#waline [data-waline] .wl-btn:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--primary) 58%, transparent);
+		outline-offset: 2px;
 	}
 
 	#waline [data-waline] .wl-action:hover {
@@ -191,9 +382,123 @@ const {
 		background: var(--btn-plain-bg-active);
 	}
 
+	#waline [data-waline] .wl-comment {
+		position: relative;
+	}
+
+	#waline [data-waline] .wl-comment:has(.wl-close) .wl-header {
+		padding-inline-end: 3rem;
+	}
+
+	#waline [data-waline] .wl-panel:has(.wl-close) {
+		overflow: visible;
+	}
+
+	#waline [data-waline] .wl-close {
+		position: absolute;
+		inset-block-start: 0.45rem;
+		inset-inline-end: 0.45rem;
+		z-index: 20;
+		display: inline-flex;
+		width: 1.95rem;
+		height: 1.95rem;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 62%, transparent);
+		border-radius: 999px;
+		padding: 0;
+		background: color-mix(in srgb, var(--card-bg) 78%, transparent);
+		color: color-mix(in srgb, var(--btn-content) 68%, transparent);
+		box-shadow:
+			0 6px 14px rgba(0, 0, 0, 0.06),
+			inset 0 1px 0 color-mix(in srgb, white 28%, transparent);
+		backdrop-filter: blur(10px) saturate(1.08);
+		-webkit-backdrop-filter: blur(10px) saturate(1.08);
+		cursor: pointer;
+		line-height: 1;
+		transition: background 160ms ease, border-color 160ms ease, color 160ms ease, transform 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	#waline [data-waline] .wl-close::before,
+	#waline [data-waline] .wl-close::after {
+		content: "";
+		position: absolute;
+		pointer-events: none;
+		inset-block-start: 50%;
+		inset-inline-start: 50%;
+		width: 0.86rem;
+		height: 1.5px;
+		border-radius: 999px;
+		background: currentColor;
+		opacity: 1;
+		transition: width 160ms ease, background 160ms ease, transform 160ms ease;
+	}
+
+	#waline [data-waline] .wl-close::before {
+		transform: translate(-50%, -50%) rotate(45deg);
+	}
+
+	#waline [data-waline] .wl-close::after {
+		transform: translate(-50%, -50%) rotate(-45deg);
+	}
+
+	#waline [data-waline] .wl-close:hover::before,
+	#waline [data-waline] .wl-close:hover::after,
+	#waline [data-waline] .wl-close:focus-visible::before,
+	#waline [data-waline] .wl-close:focus-visible::after {
+		width: 0.96rem;
+	}
+
+	#waline [data-waline] .wl-close:hover {
+		border-color: color-mix(in srgb, var(--primary) 34%, var(--line-divider));
+		background: color-mix(in srgb, var(--primary) 7%, var(--card-bg));
+		color: color-mix(in srgb, var(--primary) 88%, black);
+		box-shadow:
+			0 8px 18px rgba(0, 0, 0, 0.08),
+			inset 0 1px 0 color-mix(in srgb, white 32%, transparent);
+	}
+
+	#waline [data-waline] .wl-close:active {
+		transform: scale(0.96);
+		box-shadow:
+			0 5px 12px rgba(0, 0, 0, 0.1),
+			0 0 0 3px color-mix(in srgb, var(--primary) 10%, transparent);
+	}
+
+	#waline [data-waline] .wl-close:focus-visible {
+		outline: 2px solid color-mix(in srgb, var(--primary) 58%, transparent);
+		outline-offset: 2px;
+	}
+
+	#waline [data-waline] .wl-close .wl-close-icon {
+		display: none;
+	}
+
+	html.dark #waline [data-waline] .wl-close {
+		border-color: color-mix(in srgb, var(--line-divider) 72%, white);
+		background: color-mix(in srgb, var(--card-bg) 74%, black);
+		color: color-mix(in srgb, var(--btn-content) 76%, white);
+		box-shadow:
+			0 8px 18px rgba(0, 0, 0, 0.24),
+			inset 0 1px 0 color-mix(in srgb, white 12%, transparent);
+	}
+
 	#waline [data-waline] .wl-btn {
+		box-sizing: border-box;
+		display: inline-flex;
+		align-items: center;
+		justify-content: center;
 		border-color: color-mix(in srgb, var(--line-divider) 70%, transparent);
-		background: color-mix(in srgb, var(--btn-regular-bg) 75%, transparent);
+		border-radius: 0.85rem;
+		background: color-mix(in srgb, var(--btn-regular-bg) 64%, transparent);
+		width: auto;
+		height: 2.1rem;
+		min-height: 0;
+		padding: 0 0.72rem;
+		font-size: 0.875rem;
+		font-weight: 600;
+		line-height: 1;
 		transition: background 160ms ease, border-color 160ms ease, transform 160ms ease;
 	}
 
@@ -207,10 +512,273 @@ const {
 		background: var(--btn-regular-bg-active);
 	}
 
+	#waline [data-waline] .wl-info .wl-btn:not(.primary) {
+		color: color-mix(in srgb, var(--btn-content) 78%, transparent);
+		border-color: color-mix(in srgb, var(--line-divider) 42%, transparent);
+		background: color-mix(in srgb, var(--btn-regular-bg) 36%, transparent);
+		box-shadow: none;
+	}
+
+	#waline [data-waline] .wl-info .wl-btn.primary {
+		padding-inline: 0.82rem;
+	}
+
+	#waline [data-waline] .wl-info .wl-btn:not(.primary):hover {
+		color: var(--primary);
+		border-color: color-mix(in srgb, var(--primary) 28%, var(--line-divider));
+		background: color-mix(in srgb, var(--primary) 8%, transparent);
+	}
+
 	#waline [data-waline] .wl-btn.primary {
 		color: white;
 		border-color: transparent;
-		background: var(--primary);
+		background: color-mix(in srgb, var(--primary) 78%, black);
+		box-shadow: 0 5px 12px color-mix(in srgb, var(--primary) 16%, transparent);
+	}
+
+	#waline [data-waline] .wl-btn.primary:hover,
+	#waline [data-waline] .wl-btn.primary:active {
+		color: white;
+		background: color-mix(in srgb, var(--primary) 88%, black);
+	}
+
+	#waline [data-waline] .wl-meta-head {
+		align-items: center;
+		padding: 0.75rem 0 0.35rem;
+		border-bottom: 1px solid color-mix(in srgb, var(--line-divider) 30%, transparent);
+	}
+
+	#waline [data-waline] .wl-count {
+		font-size: 1rem;
+		color: color-mix(in srgb, var(--waline-color) 86%, transparent);
+	}
+
+	#waline [data-waline] .wl-sort li {
+		border-radius: 0.55rem;
+		padding: 0.28rem 0.48rem;
+		transition: background 160ms ease, color 160ms ease;
+	}
+
+	#waline [data-waline] .wl-sort li:hover,
+	#waline [data-waline] .wl-sort li.active {
+		background: color-mix(in srgb, var(--primary) 12%, transparent);
+	}
+
+	#waline [data-waline] .wl-card-item {
+		padding: 0.85rem 0;
+	}
+
+	#waline [data-waline] .wl-card:first-child {
+		margin-inline-start: 0.85rem;
+	}
+
+	#waline [data-waline] .wl-card {
+		padding-bottom: 0.9rem;
+		border-bottom-color: color-mix(in srgb, var(--line-divider) 32%, transparent);
+	}
+
+	#waline [data-waline] .wl-card-item:last-child .wl-card,
+	#waline [data-waline] .wl-cards > .wl-card:last-child {
+		border-bottom-color: transparent;
+	}
+
+	#waline [data-waline] .wl-cards .wl-user {
+		margin-inline-end: 0.85rem;
+	}
+
+	#waline [data-waline] .wl-cards .wl-user .wl-user-avatar {
+		box-shadow: 0 8px 18px rgba(0, 0, 0, 0.08);
+	}
+
+	#waline [data-waline] .wl-card .wl-head {
+		line-height: 1.6;
+	}
+
+	#waline [data-waline] .wl-card .wl-head .wl-nick {
+		font-size: 0.95em;
+		color: color-mix(in srgb, var(--waline-color) 92%, transparent);
+	}
+
+	#waline [data-waline] .wl-card .wl-time {
+		color: color-mix(in srgb, var(--waline-info-color) 88%, transparent);
+	}
+
+	#waline [data-waline] .wl-card .wl-content {
+		margin-bottom: 0.55rem;
+		padding-top: 0.55rem;
+		color: color-mix(in srgb, var(--waline-color) 86%, transparent);
+		font-size: 0.95em;
+		line-height: 1.9;
+	}
+
+	#waline [data-waline] .wl-card .wl-meta > span {
+		border-radius: 0.5rem;
+		background: color-mix(in srgb, var(--btn-regular-bg) 68%, transparent);
+	}
+
+	#waline [data-waline] .wl-card .wl-delete,
+	#waline [data-waline] .wl-card .wl-like,
+	#waline [data-waline] .wl-card .wl-reply,
+	#waline [data-waline] .wl-card .wl-edit {
+		border-radius: 0.5rem;
+		padding: 0.22rem;
+		color: color-mix(in srgb, var(--waline-color) 62%, transparent);
+	}
+
+	#waline [data-waline] .wl-card .wl-delete:hover,
+	#waline [data-waline] .wl-card .wl-like:hover,
+	#waline [data-waline] .wl-card .wl-reply:hover,
+	#waline [data-waline] .wl-card .wl-edit:hover {
+		background: color-mix(in srgb, var(--primary) 10%, transparent);
+		color: var(--primary);
+	}
+
+	#waline [data-waline] .wl-empty {
+		display: none;
+	}
+
+	#waline [data-waline] .wl-cards:empty {
+		display: block;
+		min-height: 5.4rem;
+	}
+
+	#waline [data-waline] .wl-cards:empty::before,
+	#waline [data-waline] .waline-empty-state {
+		min-height: 5.4rem;
+		margin-top: 0.35rem;
+		background: transparent;
+		color: color-mix(in srgb, var(--waline-info-color) 82%, transparent);
+		font-size: 0.9rem;
+		letter-spacing: 0;
+	}
+
+	#waline [data-waline] .wl-cards:empty::before {
+		content: "还没有评论，写下第一句吧。";
+		display: flex;
+		align-items: center;
+		justify-content: center;
+	}
+
+	#waline [data-waline] .waline-empty-state {
+		display: grid;
+		margin-bottom: 0.15rem;
+		padding: 1.05rem 0 0.95rem;
+		place-items: center;
+		gap: 0.55rem;
+	}
+
+	#waline [data-waline] .waline-empty-state__text {
+		max-width: 17rem;
+		text-align: center;
+		line-height: 1.55;
+	}
+
+	#waline [data-waline] .waline-empty-state__refresh {
+		display: inline-flex;
+		order: -1;
+		height: 1.72rem;
+		align-items: center;
+		justify-content: center;
+		border: 1px solid color-mix(in srgb, var(--line-divider) 52%, transparent);
+		border-radius: 999px;
+		padding: 0 0.68rem;
+		background: transparent;
+		color: color-mix(in srgb, var(--waline-color) 66%, transparent);
+		font-size: 0.78rem;
+		font-weight: 600;
+		line-height: 1;
+		box-shadow: none;
+		transition: color 160ms ease, background 160ms ease, border-color 160ms ease, transform 160ms ease,
+			box-shadow 160ms ease;
+	}
+
+	#waline [data-waline] .waline-empty-state__refresh:hover {
+		border-color: color-mix(in srgb, var(--primary) 32%, var(--line-divider));
+		background: color-mix(in srgb, var(--primary) 7%, transparent);
+		color: color-mix(in srgb, var(--primary) 88%, black);
+		box-shadow: 0 4px 10px color-mix(in srgb, var(--primary) 8%, transparent);
+	}
+
+	#waline [data-waline] .waline-empty-state__refresh:active {
+		transform: translateY(1px);
+	}
+
+	#waline [data-waline] .waline-empty-state__refresh:disabled {
+		cursor: wait;
+		opacity: 0.6;
+	}
+
+	#waline [data-waline] .wl-operation {
+		margin-top: 0.2rem;
+		text-align: center;
+	}
+
+	#waline [data-waline] .wl-operation button {
+		margin: 0.5rem 0 0.15rem;
+		border-color: color-mix(in srgb, var(--line-divider) 44%, transparent);
+		background: transparent;
+		box-shadow: none;
+	}
+
+	#waline [data-waline] :is(.wl-empty, .wl-cards:empty, .wl-cards:has(.waline-empty-state)) + .wl-operation {
+		margin: 0;
+		padding: 0.7rem 0 0.25rem;
+	}
+
+	#waline [data-waline] :is(.wl-empty, .wl-cards:empty, .wl-cards:has(.waline-empty-state)) + .wl-operation button {
+		margin: 0;
+	}
+
+	#waline [data-waline] .wl-cards:has(.waline-empty-state) + .wl-operation {
+		display: none;
+	}
+
+	#waline [data-waline] .wl-meta-foot {
+		display: grid;
+		grid-template-columns: 1fr;
+		align-items: center;
+		margin-top: 0.35rem;
+		padding: 0.55rem 0.15rem 0;
+		border-top: 0;
+	}
+
+	#waline [data-waline] :is(.wl-empty, .wl-cards:empty, .wl-cards:has(.waline-empty-state)) + .wl-operation + .wl-meta-foot {
+		margin-top: 0.2rem;
+		padding-top: 0.2rem;
+		border-top: 0;
+	}
+
+	#waline [data-waline] .wl-rss {
+		display: none;
+	}
+
+	#waline [data-waline] .wl-power {
+		justify-self: end;
+		margin-inline-start: 0;
+		padding: 0;
+		opacity: 0.55;
+		transition: opacity 160ms ease;
+	}
+
+	html.dark #waline [data-waline] .wl-header-item,
+	html.dark #waline [data-waline] .wl-editor {
+		border-color: color-mix(in srgb, var(--line-divider) 68%, white);
+		background-color: color-mix(in srgb, var(--card-bg) 76%, black);
+	}
+
+	html.dark #waline [data-waline] .wl-panel::before {
+		background:
+			radial-gradient(circle at 0% 0%, color-mix(in srgb, var(--primary) 13%, transparent), transparent 34%),
+			linear-gradient(180deg, color-mix(in srgb, var(--card-bg) 82%, transparent), transparent 66%);
+	}
+
+	html.dark #waline [data-waline] .wl-btn.primary {
+		background: color-mix(in srgb, var(--primary) 76%, white);
+		color: color-mix(in srgb, var(--card-bg) 92%, black);
+	}
+
+	#waline [data-waline] .wl-power:hover {
+		opacity: 0.85;
 	}
 
 	#waline [data-waline] .wl-content .wl-reply-to {
@@ -266,6 +834,88 @@ const {
 	.wln-toast.show {
 		transform: translateY(0);
 		opacity: 1;
+	}
+
+	@media (max-width: 580px) {
+		.comment-section {
+			padding: 1rem;
+		}
+		#waline .waline-placeholder {
+			min-height: 9.5rem;
+		}
+
+		#waline [data-waline] .wl-header,
+		#waline [data-waline] .wl-header-1,
+		#waline [data-waline] .wl-header-2,
+		#waline [data-waline] .wl-header-3 {
+			grid-template-columns: 1fr;
+			gap: 0.5rem;
+			padding: 0.75rem 0.75rem 0.35rem;
+		}
+
+		#waline [data-waline] .wl-header-item:not(:last-child) {
+			border-bottom: 1px solid color-mix(in srgb, var(--line-divider) 56%, transparent);
+		}
+
+		#waline [data-waline] .wl-editor {
+			width: calc(100% - 1.5rem);
+			min-height: 8.25rem;
+			margin-inline: 0.75rem;
+		}
+
+		#waline [data-waline] .wl-footer {
+			display: grid;
+			grid-template-columns: minmax(0, 1fr) auto;
+			align-items: center;
+			column-gap: 0.55rem;
+			row-gap: 0.45rem;
+		}
+
+		#waline [data-waline] .wl-actions {
+			flex: initial;
+			flex-wrap: wrap;
+		}
+
+		#waline [data-waline] .wl-info {
+			flex: initial;
+			flex-basis: auto;
+			gap: 0.38rem;
+			min-width: max-content;
+			justify-content: flex-end;
+		}
+
+		#waline [data-waline] .wl-info .wl-text-number {
+			min-width: 2.35rem;
+			text-align: end;
+		}
+
+		#waline [data-waline] .wl-info button {
+			margin-inline-start: 0;
+		}
+
+		#waline [data-waline] .wl-card:first-child {
+			margin-inline-start: 0.65rem;
+		}
+	}
+
+	@media (prefers-reduced-motion: reduce) {
+		#waline .waline-placeholder__line::after {
+			animation: none;
+		}
+
+		#waline [data-waline] .wl-panel,
+		#waline [data-waline] .wl-header-item,
+		#waline [data-waline] .wl-editor,
+		#waline [data-waline] .wl-action,
+		#waline [data-waline] .wl-close,
+		#waline [data-waline] .wl-close::before,
+		#waline [data-waline] .wl-close::after,
+		#waline [data-waline] .wl-btn,
+		#waline [data-waline] .wl-sort li,
+		#waline [data-waline] .waline-empty-state__refresh,
+		#waline [data-waline] .wl-power {
+			transition-duration: 0.01ms;
+		}
 	}
 </style>
 <script>
@@ -453,6 +1103,7 @@ const {
 					replaceAlertTextInElement(addedNode, text);
 				}
 			}
+			syncWalineEmptyState();
 		});
 
 		observer.observe(document.body, { childList: true, subtree: true });
@@ -525,6 +1176,66 @@ const {
 		root.addEventListener("click", onClickCapture, true);
 	};
 
+	const refreshWalineComments = async (button?: HTMLButtonElement) => {
+		const state = getEnhanceState();
+		const el = document.querySelector("#waline");
+		if (!(el instanceof HTMLElement)) return;
+		if (state.waline.initPromise) return state.waline.initPromise;
+
+		if (button) {
+			button.disabled = true;
+			button.textContent = "刷新中";
+		}
+
+		delete el.dataset.walineInited;
+		state.waline.initedPath = "";
+
+		try {
+			await initWaline();
+		} finally {
+			if (button?.isConnected) {
+				button.disabled = false;
+				button.textContent = "刷新";
+			}
+		}
+	};
+
+	const syncWalineEmptyState = () => {
+		const cards = document.querySelector("#waline [data-waline] .wl-cards");
+		if (!(cards instanceof HTMLElement)) return;
+
+		const existing = cards.querySelector(".waline-empty-state");
+		const hasRealComments = Array.from(cards.children).some((child) => {
+			if (!(child instanceof HTMLElement)) return false;
+			return !child.classList.contains("waline-empty-state");
+		});
+
+		if (hasRealComments) {
+			existing?.remove();
+			return;
+		}
+		if (existing) return;
+
+		const emptyState = document.createElement("div");
+		emptyState.className = "waline-empty-state";
+		emptyState.setAttribute("role", "status");
+
+		const text = document.createElement("span");
+		text.className = "waline-empty-state__text";
+		text.textContent = "还没有评论，写下第一句吧。";
+
+		const refreshButton = document.createElement("button");
+		refreshButton.type = "button";
+		refreshButton.className = "waline-empty-state__refresh";
+		refreshButton.textContent = "刷新";
+		refreshButton.addEventListener("click", () => {
+			refreshWalineComments(refreshButton);
+		});
+
+		emptyState.append(text, refreshButton);
+		cards.appendChild(emptyState);
+	};
+
 	const initWaline = async () => {
 		const state = getEnhanceState();
 		if (state.waline.initPromise) return state.waline.initPromise;
@@ -544,6 +1255,8 @@ const {
 			el.innerHTML = "";
 			const options = getWalineOptions(el, pageKey);
 			waline?.init?.(options);
+			requestAnimationFrame(() => syncWalineEmptyState());
+			window.setTimeout(syncWalineEmptyState, 500);
 			el.dataset.walineInited = "true";
 			state.waline.initedPath = pageKey;
 		})().finally(() => {
