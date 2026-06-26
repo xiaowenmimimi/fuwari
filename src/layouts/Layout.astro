@@ -62,10 +62,10 @@ const isBangumiPage = pathsEqual(Astro.url.pathname, url("/bangumi"));
 
 // defines global css variables
 // why doing this in Layout instead of GlobalStyles: https://github.com/withastro/astro/issues/6728#issuecomment-1502203757
-const configHueCandidates = siteConfig.themeColor.hue;
-const configHue = Array.isArray(configHueCandidates)
-	? (configHueCandidates[0] ?? 250)
-	: configHueCandidates;
+const configHueCandidates = siteConfig.themeColor.presets.map(
+	(preset) => preset.hue,
+);
+const configHue = configHueCandidates[0] ?? 250;
 // TODO don't use post cover as banner for now
 // banner = siteConfig.banner.src;
 const fallbackBannerSource = getBannerFallbackSource(siteConfig.banner.src);

@@ -46,11 +46,11 @@ let links: NavBarLink[] = navBarConfig.links.map(
             <!--<SearchPanel client:load>-->
             <Search client:only="svelte"></Search>
             {!siteConfig.themeColor.fixed && (
-                    <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch">
-                        <Icon name="material-symbols:palette-outline" class="text-[1.25rem]"></Icon>
+                    <button aria-label="Display Settings" class="btn-plain scale-animation rounded-lg h-11 w-11 active:scale-90" id="display-settings-switch" type="button">
+                        <Icon name="material-symbols:palette-outline" class="theme-trigger-icon text-[1.25rem]"></Icon>
                     </button>
             )}
-            <LightDarkSwitch client:only="svelte"></LightDarkSwitch>
+            <LightDarkSwitch client:load></LightDarkSwitch>
             <button aria-label="Menu" name="Nav Menu" class="btn-plain scale-animation rounded-lg w-11 h-11 active:scale-90 md:!hidden" id="nav-menu-switch">
                 <Icon name="material-symbols:menu-rounded" class="text-[1.25rem]"></Icon>
             </button>
@@ -69,6 +69,52 @@ function switchTheme() {
         document.documentElement.classList.add('dark');
         localStorage.theme = 'dark';
     }
+}
+
+function getThemePresets() {
+    const configCarrier = document.getElementById("config-carrier");
+    const rawPresets = configCarrier?.dataset.themePresets;
+    if (!rawPresets) return [];
+    try {
+        const parsed = JSON.parse(rawPresets);
+        return Array.isArray(parsed) ? parsed : [];
+    } catch {
+        return [];
+    }
+}
+
+function getCurrentHue() {
+    const storedHue = localStorage.getItem("hue");
+    if (storedHue) {
+        return Number.parseInt(storedHue, 10);
+    }
+    const randomHue = document.documentElement.dataset.randomHue;
+    if (randomHue) {
+        return Number.parseInt(randomHue, 10);
+    }
+    const configCarrier = document.getElementById("config-carrier");
+    return Number.parseInt(configCarrier?.dataset.hue || "250", 10);
+}
+
+function getThemeName(hue: number) {
+    const normalizedHue = Number.isFinite(hue)
+        ? ((Math.round(hue) % 361) + 361) % 361
+        : 250;
+    const preset = getThemePresets().find((item) => Number(item?.hue) === normalizedHue);
+    return typeof preset?.name === "string" && preset.name.trim().length > 0
+        ? preset.name.trim()
+        : `Hue ${normalizedHue}`;
+}
+
+function updateThemeTrigger(detail?: { hue?: number; name?: string }) {
+    const settingBtn = document.getElementById("display-settings-switch");
+    if (!settingBtn) return;
+    const nextHue = detail?.hue;
+    const hue = typeof nextHue === "number" ? nextHue : getCurrentHue();
+    const name = typeof detail?.name === "string" && detail.name.trim().length > 0
+        ? detail.name.trim()
+        : getThemeName(hue);
+    settingBtn.setAttribute("title", `当前主题：${name}`);
 }
 
 function loadButtonScript() {
@@ -98,9 +144,15 @@ function loadButtonScript() {
             }
         };
     }
+
+    updateThemeTrigger();
 }
 
 loadButtonScript();
+document.addEventListener("theme-hue-change", (event) => {
+    const customEvent = event as CustomEvent<{ hue?: number; name?: string }>;
+    updateThemeTrigger(customEvent.detail);
+});
 
 document.addEventListener('astro:after-swap', () => {
     loadButtonScript();

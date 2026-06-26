@@ -157,6 +157,13 @@
     .btn-regular-dark.success {
         @apply bg-[oklch(0.75_0.14_var(--hue))] dark:bg-[oklch(0.75_0.14_var(--hue))]
     }
+
+    .theme-trigger-icon {
+        @apply shrink-0 text-[var(--primary)];
+        transition:
+            opacity 180ms cubic-bezier(0.32, 0.72, 0, 1),
+            color 220ms cubic-bezier(0.32, 0.72, 0, 1);
+    }
 }
 
 /* :root {

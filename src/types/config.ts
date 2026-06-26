@@ -19,7 +19,7 @@ export type SiteConfig = {
 		| "id";
 
 	themeColor: {
-		hue: number | number[];
+		presets: ThemeColorPreset[];
 		fixed: boolean;
 	};
 	banner: {
@@ -40,6 +40,11 @@ export type SiteConfig = {
 	favicon: Favicon[];
 	waline: WalineConfig;
 	umami: UmamiConfig;
+};
+
+export type ThemeColorPreset = {
+	name: string;
+	hue: number;
 };
 
 export type NonEmptyStringArray = [string, ...string[]];

@@ -2,9 +2,15 @@
 
 import { siteConfig } from "../config";
 
-const hueConfig = siteConfig.themeColor.hue;
-const hue = Array.isArray(hueConfig) ? (hueConfig[0] ?? 250) : hueConfig;
+const presets = siteConfig.themeColor.presets;
+const hueCandidates = presets.map((preset) => preset.hue);
+const hue = hueCandidates[0] ?? 250;
 ---
 
-<div id="config-carrier" data-hue={hue}>
+<div
+	id="config-carrier"
+	data-hue={hue}
+	data-hue-candidates={hueCandidates.join(",")}
+	data-theme-presets={JSON.stringify(presets)}
+>
 </div>
