@@ -51,7 +51,7 @@ draft: false
 flowchart TD
     A[浏览器用户] --> B[example.com<br/>Astro / Fuwari]
     B --> C[comment.example.com]
-    C --> D[Nginx<br/>(HTTPS)]
+    C --> D["Nginx<br/>(HTTPS)"]
     D --> E[Docker: Waline Server]
     E --> F[Docker: PostgreSQL]
 ```
