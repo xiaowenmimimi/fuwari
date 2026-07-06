@@ -12,7 +12,7 @@ draft: false
 
 之前用的 **PicGo + GitHub + Cloudflare** 搭图床，写过一篇记录：
 
-::link-card{title=”PicGo + GitHub + Cloudflare 搭建图床” url=”/posts/blog/github-image-hosting-with-picgo/” desc=”搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速。” badge=”Blog” target=”_self”}
+::link-card{title="PicGo + GitHub + Cloudflare 搭建图床" url="/posts/blog/github-image-hosting-with-picgo/" desc="搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速。" badge="Blog" target="_self"}
 
 使用下来发现的几个问题：
 
@@ -26,7 +26,7 @@ draft: false
 
 **Chevereto** 有后台、有相册、支持公开访问，比单纯传图工具完整：
 
-::github{repo=”chevereto/chevereto”}
+::github{repo="chevereto/chevereto"}
 
 后续想拿来做图库或内容源也顺手。
 
@@ -198,7 +198,7 @@ server {
     # 关闭 session tickets，减少某些场景下的安全风险
     ssl_session_tickets off;
 
-    # 关闭“优先使用服务端加密套件”设置
+    # 关闭"优先使用服务端加密套件"设置
     ssl_prefer_server_ciphers off;
 
     # 日志配置

@@ -41,7 +41,7 @@ git commit --amend --no-edit
 ### 说明
 
 * `--no-edit` 表示沿用上一次的提交说明
-* 很适合“刚提交完就发现漏文件”的情况
+* 很适合"刚提交完就发现漏文件"的情况
 
 ## 3. 提交了不该提交的文件怎么办
 
@@ -59,13 +59,13 @@ git reset 文件名
 
 ### 已经 commit 了，但还没 push
 
-可以回退到“已暂存”状态：
+可以回退到"已暂存"状态：
 
 ```bash showLineNumbers=false
 git reset --soft HEAD~1
 ```
 
-回退到“未暂存”状态：
+回退到"未暂存"状态：
 
 ```bash showLineNumbers=false
 git reset HEAD~1
@@ -160,7 +160,7 @@ git checkout dev
 git stash pop
 ```
 
-如果你已经 commit 了，可以把这次提交“挪”到新分支：
+如果你已经 commit 了，可以把这次提交"挪"到新分支：
 
 ```bash showLineNumbers=false
 # 创建新分支并切换
@@ -244,7 +244,7 @@ git push
 ```
 
 :::tip[为什么推荐 `--rebase`]
-这样会把你的提交“接到”最新远程提交后面，历史更直观。
+这样会把你的提交"接到"最新远程提交后面，历史更直观。
 :::
 
 ## 2. push 到错误分支了怎么办
@@ -397,7 +397,7 @@ git revert 提交ID
 
 * 提交已经 push
 * 团队协作中不希望强推
-* 想通过“新增一个反向提交”来撤销旧改动
+* 想通过"新增一个反向提交"来撤销旧改动
 
 这通常比 `reset` 更安全。
 
@@ -425,7 +425,7 @@ git reset --hard def5678
 ```
 
 :::note[重点]
-`reflog` 是 Git 的“后悔药”，很多误操作都能靠它找回。
+`reflog` 是 Git 的"后悔药"，很多误操作都能靠它找回。
 :::
 
 ---
@@ -638,7 +638,7 @@ git branch backup/临时备份
 
 ---
 
-# 常用“救命命令清单”
+# 常用"救命命令清单"
 
 ```bash showLineNumbers=false
 # 查看当前状态

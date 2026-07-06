@@ -127,7 +127,7 @@ GitHub 会生成一段以 `github_pat_` 开头的 Token（生成后复制，只�
 [PicGo 下载（官方 GitHub Releases）](https://github.com/Molunerfinn/picgo/releases)
 使用版本：PicGo v2.4.0
 
-打开 PicGo → 左侧“图床设置” → “GitHub”
+打开 PicGo → 左侧"图床设置" → "GitHub"
 
 填写以下内容：
 

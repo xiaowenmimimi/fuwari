@@ -307,7 +307,7 @@ jobs:
             ls -1dt /var/www/my-site/releases/* | tail -n +6 | xargs -r rm -rf \
           "
         # 作用：
-        # - ln -sfn：原子切换，不会出现“半更新”状态
+        # - ln -sfn：原子切换，不会出现"半更新"状态
         # - 自动清理旧版本，避免磁盘无限增长
 
 ```

@@ -246,7 +246,7 @@ services:
 
 **说明：**
 - `DB_HOST: postgres`：这里不是 `127.0.0.1`，而是 compose 内部网络的服务名。
-- `depends_on + healthcheck`：确保 PostgreSQL 就绪后再启动 Waline，减少“启动时连不上数据库”的假故障。
+- `depends_on + healthcheck`：确保 PostgreSQL 就绪后再启动 Waline，减少"启动时连不上数据库"的假故障。
 - PG 的 `ports` 可注释掉：让数据库只在 Docker 内部可见，更安全。
 - `NODE_OPTIONS`：低配置服务器强烈建议加。
 
