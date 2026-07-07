@@ -129,6 +129,11 @@ export type WalineConfig = {
 	lang?: string;
 	login?: string;
 	dark?: string;
+	imageUpload?: {
+		endpoint: string;
+		token?: string;
+		maxSizeMB?: number;
+	};
 };
 
 export type UmamiConfig = {

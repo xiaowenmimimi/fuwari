@@ -146,6 +146,9 @@ const walineLang =
         lang={walineLang}
         login={siteConfig.waline.login}
         dark={siteConfig.waline.dark}
+        imageUploadEndpoint={siteConfig.waline.imageUpload?.endpoint}
+        imageUploadToken={siteConfig.waline.imageUpload?.token}
+        imageUploadMaxSizeMB={siteConfig.waline.imageUpload?.maxSizeMB}
     />
 
     <div class="flex flex-col md:flex-row justify-between mb-4 gap-4 overflow-hidden w-full">

@@ -61,6 +61,11 @@ export const siteConfig: SiteConfig = {
 		lang: "zh-CN", // 评论区语言（可选），例如 zh-CN 、 en
 		login: "enable", // 登录方式（可选），例如 enable / disable / force
 		dark: "html.dark", // 暗色模式选择器（可选），默认 html.dark
+		imageUpload: {
+			endpoint: "https://upload-img.xhwen.top/upload",
+			token: import.meta.env.PUBLIC_WALINE_IMAGE_UPLOAD_TOKEN ?? "",
+			maxSizeMB: 20,
+		},
 	},
 	umami: {
 		host: "https://analytics.xhwen.cn", // Umami 服务端地址

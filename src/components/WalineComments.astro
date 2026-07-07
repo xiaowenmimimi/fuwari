@@ -8,6 +8,9 @@ interface Props {
 	login?: string;
 	dark?: string;
 	pageview?: boolean;
+	imageUploadEndpoint?: string;
+	imageUploadToken?: string;
+	imageUploadMaxSizeMB?: number;
 }
 
 const {
@@ -16,6 +19,9 @@ const {
 	login,
 	dark = "html.dark",
 	pageview = false,
+	imageUploadEndpoint,
+	imageUploadToken,
+	imageUploadMaxSizeMB,
 } = Astro.props;
 ---
 <section class="comment-section card-base !overflow-visible z-10 relative w-full mb-4 px-4 py-5 sm:px-6 sm:py-6" aria-labelledby="comments-title">
@@ -41,6 +47,9 @@ const {
 		data-login={login}
 		data-dark={dark}
 		data-pageview={pageview ? "true" : "false"}
+		data-image-upload-endpoint={imageUploadEndpoint}
+		data-image-upload-token={imageUploadToken}
+		data-image-upload-max-size-mb={imageUploadMaxSizeMB}
 	>
 		<div class="waline-placeholder" aria-live="polite">
 			<div class="waline-placeholder__avatar" aria-hidden="true"></div>
@@ -919,6 +928,8 @@ const {
 	}
 </style>
 <script>
+	import { createWalineImageUploader } from "@utils/waline-image-uploader";
+
 	type WalineClient = typeof import("@waline/client/full");
 	type WalineInitOptions = Parameters<WalineClient["init"]>[0];
 	type WalineEnhanceState = {
@@ -951,6 +962,11 @@ const {
 	const REQUIRED_META_RE = /(NickName.*(cannot|required)|E-?Mail.*(error|required)|Please.*email|昵称.*(必填|不能为空)|邮箱.*(必填|不能为空))/i;
 	const REQUIRED_META_TEXT = "昵称和邮箱为必填项，请填写后再提交。";
 	const INVALID_EMAIL_TEXT = "邮箱格式不正确，请检查后再提交。";
+	const UPLOAD_FETCH_ERROR_RE = /(Failed to fetch|fetch failed|NetworkError|Load failed)/i;
+	const UPLOAD_ERROR_RE = /(\u56fe\u7247\u4e0a\u4f20|\u56fe\u7247\u4e0d\u80fd|\u56fe\u7247\u592a\u5927|File too large)/i;
+	const UPLOAD_NETWORK_TEXT =
+		"\u56fe\u7247\u4e0a\u4f20\u5931\u8d25\uff1a\u65e0\u6cd5\u8fde\u63a5\u4e0a\u4f20\u63a5\u53e3\uff0c\u8bf7\u68c0\u67e5\u7f51\u7edc\u3001CORS \u6216 Token \u914d\u7f6e\u3002";
+	const UPLOAD_TOO_LARGE_TEXT = "\u56fe\u7247\u592a\u5927\uff0c\u8bf7\u538b\u7f29\u540e\u518d\u4e0a\u4f20\u3002";
 	const WALINE_ROOT_MARGIN = "600px 0px";
 
 	const normalizePathname = (pathname?: string) => {
@@ -986,8 +1002,23 @@ const {
 		return value === "enable" || value === "disable" || value === "force";
 	};
 
+	const getImageUploadMaxSizeBytes = (value?: string) => {
+		const maxSizeMB = Number(value);
+		if (!Number.isFinite(maxSizeMB) || maxSizeMB <= 0) return undefined;
+		return Math.round(maxSizeMB * 1024 * 1024);
+	};
+
 	const getWalineOptions = (el: HTMLElement, pageKey: string): WalineInitOptions => {
-		const { serverUrl, lang, login, dark, pageview } = el.dataset;
+		const {
+			serverUrl,
+			lang,
+			login,
+			dark,
+			pageview,
+			imageUploadEndpoint,
+			imageUploadToken,
+			imageUploadMaxSizeMb
+		} = el.dataset;
 		const options: WalineInitOptions = {
 			el: "#waline",
 			serverURL: serverUrl || "",
@@ -998,6 +1029,15 @@ const {
 		if (typeof lang !== "undefined") options.lang = lang;
 		if (typeof login !== "undefined" && isWalineLoginStatus(login)) options.login = login;
 		if (typeof pageview !== "undefined") options.pageview = pageview === "true";
+		if (imageUploadEndpoint) {
+			options.imageUploader = imageUploadToken
+				? createWalineImageUploader({
+						endpoint: imageUploadEndpoint,
+						token: imageUploadToken,
+						maxSizeBytes: getImageUploadMaxSizeBytes(imageUploadMaxSizeMb),
+					})
+				: false;
+		}
 		return options;
 	};
 
@@ -1046,6 +1086,15 @@ const {
 		return Date.now() - lastSubmitAt < 5000;
 	};
 
+	const getUploadErrorText = (text: string) => {
+		const value = text.trim();
+		if (!value) return "";
+		if (UPLOAD_FETCH_ERROR_RE.test(value)) return UPLOAD_NETWORK_TEXT;
+		if (/File too large/i.test(value)) return UPLOAD_TOO_LARGE_TEXT;
+		if (UPLOAD_ERROR_RE.test(value)) return value;
+		return "";
+	};
+
 	const patchAlertOnce = () => {
 		const state = getEnhanceState();
 		if (state.patch.alertPatched) return;
@@ -1055,6 +1104,11 @@ const {
 
 		window.alert = (message) => {
 			const text = String(message ?? "");
+			const uploadErrorText = getUploadErrorText(text);
+			if (uploadErrorText) {
+				showToast(uploadErrorText);
+				return;
+			}
 			if (TOO_FAST_RE.test(text)) {
 				if (canNotifyTooFast()) showToast(TOO_FAST_TEXT);
 				return;
@@ -1073,6 +1127,11 @@ const {
 		let replaced = false;
 		for (let node = walker.nextNode(); node; node = walker.nextNode()) {
 			const value = node.nodeValue ?? "";
+			const uploadErrorText = getUploadErrorText(value);
+			if (uploadErrorText) {
+				node.nodeValue = uploadErrorText;
+				replaced = true;
+			}
 			if (TOO_FAST_RE.test(value) && canNotifyTooFast()) {
 				node.nodeValue = value.replace(TOO_FAST_RE, TOO_FAST_TEXT);
 				replaced = true;
@@ -1083,7 +1142,9 @@ const {
 			}
 		}
 		if (replaced && originalText) {
-			if (TOO_FAST_RE.test(originalText) && canNotifyTooFast()) showToast(TOO_FAST_TEXT);
+			const uploadErrorText = getUploadErrorText(originalText);
+			if (uploadErrorText) showToast(uploadErrorText);
+			else if (TOO_FAST_RE.test(originalText) && canNotifyTooFast()) showToast(TOO_FAST_TEXT);
 			else if (REQUIRED_META_RE.test(originalText)) showToast(REQUIRED_META_TEXT);
 		}
 		return replaced;
@@ -1097,9 +1158,12 @@ const {
 			for (const mutation of mutations) {
 				for (const addedNode of mutation.addedNodes) {
 					if (!(addedNode instanceof HTMLElement)) continue;
-					if (!canNotifyTooFast()) continue;
 					const text = addedNode.textContent || "";
-					if (!TOO_FAST_RE.test(text)) continue;
+					const shouldReplace =
+						getUploadErrorText(text) ||
+						REQUIRED_META_RE.test(text) ||
+						(TOO_FAST_RE.test(text) && canNotifyTooFast());
+					if (!shouldReplace) continue;
 					replaceAlertTextInElement(addedNode, text);
 				}
 			}
