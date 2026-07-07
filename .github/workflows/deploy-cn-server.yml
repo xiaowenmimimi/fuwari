@@ -59,6 +59,7 @@ jobs:
         run: pnpm build
         env:
           ENCRYPTED_POST_PASSWORDS: ${{ secrets.ENCRYPTED_POST_PASSWORDS }}
+          PUBLIC_WALINE_IMAGE_UPLOAD_TOKEN: ${{ secrets.PUBLIC_WALINE_IMAGE_UPLOAD_TOKEN }}
         # 输出结果：
         # - 构建完成后生成 dist/ 目录
         # - dist/ 即最终需要部署到服务器的静态文件
