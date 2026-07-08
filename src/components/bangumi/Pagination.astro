@@ -1,5 +1,6 @@
 ---
 import { Icon } from "astro-icon/components";
+import { generateBangumiPageNumbers } from "@/utils/bangumi-render";
 
 interface Props {
 	totalItems: number;
@@ -10,28 +11,8 @@ interface Props {
 
 const { totalItems, itemsPerPage, currentPage, sectionId } = Astro.props;
 const totalPages = Math.ceil(totalItems / itemsPerPage);
-
-function generatePageNumbers(current: number, total: number) {
-	const delta = 2;
-	const rangeWithDots: Array<number | "..."> = [];
-
-	if (total <= 7) {
-		return Array.from({ length: total }, (_, index) => index + 1);
-	}
-
-	const left = Math.max(2, current - delta);
-	const right = Math.min(total - 1, current + delta);
-
-	rangeWithDots.push(1);
-	if (left > 2) rangeWithDots.push("...");
-	for (let i = left; i <= right; i++) rangeWithDots.push(i);
-	if (right < total - 1) rangeWithDots.push("...");
-	if (total > 1) rangeWithDots.push(total);
-
-	return rangeWithDots;
-}
-
-const pageNumbers = generatePageNumbers(currentPage, totalPages);
+// 生成智能分页页码数组
+const pageNumbers = generateBangumiPageNumbers(currentPage, totalPages);
 ---
 
 {totalPages > 1 && (
@@ -42,6 +23,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     data-total-items={totalItems}
     data-current-page={currentPage}
   >
+    <!-- 移动端简化版分页 -->
     <div class="mobile-pagination items-center space-x-2">
       <button
         type="button"
@@ -54,6 +36,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
         <Icon name="material-symbols:chevron-left-rounded" class="text-base" />
       </button>
 
+      <!-- 移动端页码信息 -->
       <div class="flex items-center space-x-1">
         <span class="text-sm text-gray-600 dark:text-gray-400">第</span>
         <span class="mobile-current-page px-2 py-1 text-sm font-medium bg-blue-500 text-white rounded">{currentPage}</span>
@@ -74,6 +57,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
       </button>
     </div>
 
+    <!-- 桌面端完整版分页 -->
     <div class="desktop-pagination items-center space-x-2">
       <button
         type="button"
@@ -126,12 +110,14 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
 )}
 
 <style>
+  /* 确保在所有设备上都能正确显示 */
   .responsive-pagination {
     max-width: 100%;
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
   }
 
+  /* 移动端样式 (< 768px) */
   .mobile-pagination {
     display: flex;
     padding: 0 1rem;
@@ -141,6 +127,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     display: none;
   }
 
+  /* 桌面端样式 (>= 768px) */
   @media (min-width: 768px) {
     .mobile-pagination {
       display: none;
@@ -151,6 +138,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     }
   }
 
+  /* 小屏手机优化 */
   @media (max-width: 640px) {
     .mobile-pagination {
       padding: 0 0.5rem;
@@ -160,6 +148,7 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     }
   }
 
+  /* 超小屏优化 */
   @media (max-width: 480px) {
     .mobile-pagination {
       padding: 0 0.25rem;
@@ -169,34 +158,40 @@ const pageNumbers = generatePageNumbers(currentPage, totalPages);
     }
   }
 
+  /* 平滑过渡效果 */
   .responsive-pagination button {
     transition: all 0.2s ease-in-out;
   }
 
+  /* 高对比度模式支持 */
   @media (prefers-contrast: high) {
     .responsive-pagination button {
       border: 1px solid currentColor;
     }
   }
 
+  /* 减少动画偏好支持 */
   @media (prefers-reduced-motion: reduce) {
     .responsive-pagination button {
       transition: none;
     }
   }
 
+  /* 触摸设备优化 */
   @media (hover: none) and (pointer: coarse) {
     .responsive-pagination button {
       min-height: 44px;
       min-width: 44px;
     }
 
+    /* 移动端触摸优化 */
     .mobile-pagination button {
       min-height: 40px;
       min-width: 40px;
     }
   }
 
+  /* 横屏手机优化 */
   @media (max-width: 768px) and (orientation: landscape) {
     .mobile-pagination {
       padding: 0 0.5rem;

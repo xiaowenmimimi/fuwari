@@ -31,9 +31,11 @@ export type BangumiPageData = {
 	sections: Record<string, BangumiSectionData>;
 };
 
+//////////////// Bangumi 配置 ////////////////////////
 const bangumiConfig = {
 	username: "xiaowen",
 	apiUrl: "https://api.bgm.tv",
+	// Bangumi 图片反代配置：只替换指定源站的封面地址，避免影响其他外链图片
 	imageProxy: {
 		enable: true,
 		baseUrl: "https://bgm-img.xhwen.top",
@@ -46,13 +48,16 @@ const bangumiConfig = {
 		game: true,
 		real: false,
 	},
+	// 数据获取设置
 	pagination: {
 		limit: 50,
 		delay: 50,
 		maxTotal: 1000,
 	},
 };
+////////////////////////////////////////////////////
 
+// 分类映射
 const categoryMap = {
 	book: { id: "book", name: "书籍", subjectType: 1 },
 	anime: { id: "anime", name: "动画", subjectType: 2 },
@@ -126,6 +131,7 @@ function getBangumiImageProxyUrl(imageUrl: string) {
 		const proxyBaseUrl = bangumiConfig.imageProxy.baseUrl.replace(/\/+$/, "");
 		return `${proxyBaseUrl}${image.pathname}${image.search}${image.hash}`;
 	} catch {
+		// API 返回异常地址时保留原值，避免图片地址转换影响页面渲染
 		return imageUrl;
 	}
 }
@@ -149,6 +155,7 @@ function getBangumiItemWithProxiedImages(item: UserSubjectCollection) {
 	};
 }
 
+// 获取Bangumi数据的函数 - 支持分页获取所有数据
 async function fetchBangumiData(username: string, subjectType: number) {
 	try {
 		const { limit, delay, maxTotal } = bangumiConfig.pagination;
@@ -157,6 +164,7 @@ async function fetchBangumiData(username: string, subjectType: number) {
 		let hasMore = true;
 
 		while (hasMore) {
+			// 检查是否超过最大获取限制
 			if (maxTotal > 0 && allData.length >= maxTotal) break;
 
 			const apiUrl = `${bangumiConfig.apiUrl}/v0/users/${username}/collections?subject_type=${subjectType}&limit=${limit}&offset=${offset}`;
@@ -177,12 +185,14 @@ async function fetchBangumiData(username: string, subjectType: number) {
 			if (currentBatch.length > 0) {
 				allData = allData.concat(currentBatch);
 				offset += limit;
+				// 如果本次获取的数据少于limit，说明已经是最后一页
 				if (currentBatch.length < limit) hasMore = false;
 			} else {
 				hasMore = false;
 			}
 
 			if (hasMore) {
+				// 添加延迟避免请求过于频繁
 				await new Promise((resolve) => setTimeout(resolve, delay));
 			}
 		}
@@ -194,6 +204,7 @@ async function fetchBangumiData(username: string, subjectType: number) {
 	}
 }
 
+// 获取所有启用分类的数据
 async function loadBangumiPageData(): Promise<BangumiPageData> {
 	const sections: Record<string, BangumiSectionData> = {};
 	const tabs: BangumiTab[] = [];

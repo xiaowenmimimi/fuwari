@@ -11,6 +11,7 @@ export function escapeBangumiHtml(value: unknown) {
 		.replace(/'/g, "&#39;");
 }
 
+// 状态映射
 export function getBangumiItemStatus(item: UserSubjectCollection) {
 	const statusMap = {
 		1: "wish",
@@ -59,19 +60,33 @@ export function getBangumiTags(item: UserSubjectCollection) {
 	return { tags, extraTagCount };
 }
 
+// 生成智能分页页码数组
 export function generateBangumiPageNumbers(current: number, total: number) {
 	const totalPages = Math.max(1, total);
+	// 如果总页数小于等于7，显示所有页码
 	if (totalPages <= 7) {
 		return Array.from({ length: totalPages }, (_, index) => index + 1);
 	}
 
-	const range: BangumiPageItem[] = [1];
-	const left = Math.max(2, current - 2);
-	const right = Math.min(totalPages - 1, current + 2);
+	const delta = 2; // 当前页左右显示的页码数量
+	// 计算显示范围
+	const left = Math.max(2, current - delta);
+	const right = Math.min(totalPages - 1, current + delta);
 
+	const range: BangumiPageItem[] = [];
+	// 始终显示第一页
+	range.push(1);
+
+	// 如果左边界大于2，添加省略号
 	if (left > 2) range.push("...");
+
+	// 添加中间页码
 	for (let page = left; page <= right; page++) range.push(page);
+
+	// 如果右边界小于最后一页-1，添加省略号
 	if (right < totalPages - 1) range.push("...");
+
+	// 始终显示最后一页（如果总页数大于1）
 	if (totalPages > 1) range.push(totalPages);
 
 	return range;

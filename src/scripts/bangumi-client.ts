@@ -96,6 +96,7 @@ function updatePagination(
 	pagination.dataset.totalItems = String(totalItems);
 	pagination.classList.toggle("hidden", totalPages <= 1);
 
+	// 更新移动端页码显示
 	for (const item of pagination.querySelectorAll(".mobile-current-page")) {
 		item.textContent = String(currentPage);
 	}
@@ -103,6 +104,7 @@ function updatePagination(
 		item.textContent = String(totalPages);
 	}
 
+	// 获取桌面端和移动端所有的 prev 和 next 按钮
 	for (const button of pagination.querySelectorAll<HTMLButtonElement>(
 		'[data-page="prev"]',
 	)) {
@@ -119,6 +121,7 @@ function updatePagination(
 	);
 	if (!pageNumbersContainer) return;
 
+	// 生成智能分页页码数组的JavaScript版本
 	pageNumbersContainer.innerHTML = generateBangumiPageNumbers(
 		currentPage,
 		totalPages,
@@ -222,6 +225,7 @@ async function showSection(
 		`[data-bangumi-grid="${CSS.escape(sectionId)}"]`,
 	);
 	if (!(grid instanceof HTMLElement) || grid.dataset.loaded !== "true") {
+		// 添加渐显动画
 		await renderSection(root, sectionId, currentPages, currentFilters, {
 			animate: true,
 		});
