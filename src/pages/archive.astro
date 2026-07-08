@@ -6,9 +6,10 @@ import MainGridLayout from "@layouts/MainGridLayout.astro";
 import { getSortedPostsListForList } from "../utils/content-utils";
 
 const sortedPostsList = await getSortedPostsListForList();
+const archiveTitle = i18n(I18nKey.archive);
 ---
 
-<MainGridLayout title={i18n(I18nKey.archive)}>
+<MainGridLayout title={archiveTitle}>
+    <h1 class="sr-only">{archiveTitle}</h1>
     <ArchivePanel sortedPosts={sortedPostsList} client:only="svelte"></ArchivePanel>
 </MainGridLayout>
-
