@@ -26,6 +26,7 @@ const { tabs, activeTab } = Astro.props;
         ]}
         data-tab={tab.id}
         type="button"
+        aria-selected={tab.id === activeTab ? "true" : "false"}
       >
         {tab.name}
         {tab.count !== undefined && (
@@ -37,84 +38,3 @@ const { tabs, activeTab } = Astro.props;
     ))}
   </nav>
 </div>
-
-<script>
-  function initTabNavigation() {
-    const tabButtons = document.querySelectorAll('[data-tab]');
-    const sections = document.querySelectorAll('[data-section]');
-
-    tabButtons.forEach(button => {
-      const htmlButton = button as HTMLButtonElement;
-      if (htmlButton.dataset.tabInitialized === 'true') {
-        return;
-      }
-      htmlButton.dataset.tabInitialized = 'true';
-
-      htmlButton.addEventListener('click', (event) => {
-        const currentButton = event.currentTarget as HTMLButtonElement;
-        const targetTab = currentButton.dataset.tab;
-
-        tabButtons.forEach(btn => {
-          const b = btn as HTMLButtonElement;
-          b.classList.remove('border-[var(--primary)]', 'text-[var(--primary)]');
-          b.classList.add('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
-        });
-
-        currentButton.classList.remove('border-transparent', 'text-gray-500', 'hover:text-gray-700', 'hover:border-gray-300', 'dark:text-gray-400', 'dark:hover:text-gray-300');
-        currentButton.classList.add('border-[var(--primary)]', 'text-[var(--primary)]');
-
-        sections.forEach(section => {
-          const htmlSection = section as HTMLElement;
-          if (htmlSection.dataset.section === targetTab) {
-            htmlSection.classList.remove('hidden');
-            
-            // 添加渐显动画
-            const grid = htmlSection.querySelector('.grid');
-            if (grid) {
-              grid.classList.remove('fade-in-up');
-              void (grid as HTMLElement).offsetWidth;
-              grid.classList.add('fade-in-up');
-            }
-          } else {
-            htmlSection.classList.add('hidden');
-          }
-        });
-
-        const activeSection = Array.from(sections).find(section => {
-          const htmlSection = section as HTMLElement;
-          return htmlSection.dataset.section === targetTab;
-        }) as HTMLElement | undefined;
-
-        if (activeSection) {
-          const pagination = activeSection.querySelector<HTMLElement>(`[data-pagination-section="${targetTab}"]`);
-          if (pagination) {
-            const e = new CustomEvent('updatePagination', {
-              detail: {}
-            });
-            pagination.dispatchEvent(e);
-          }
-        }
-      });
-    });
-  }
-
-  function setupTabNavigation() {
-    if (document.readyState === 'loading') {
-      document.addEventListener('DOMContentLoaded', initTabNavigation, { once: true });
-    } else {
-      initTabNavigation();
-    }
-  }
-
-  setupTabNavigation();
-
-  document.addEventListener('astro:page-load', () => {
-    initTabNavigation();
-  });
-
-  if (window?.swup?.hooks) {
-    window.swup.hooks.on('page:view', () => {
-      initTabNavigation();
-    });
-  }
-</script>
