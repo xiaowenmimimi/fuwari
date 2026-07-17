@@ -77,7 +77,7 @@ function hidePanel() {
     </button>
 
     <div id="light-dark-panel" class="hidden lg:block absolute transition float-panel-closed top-[3.125rem] -right-2 pt-5" >
-        <div class="card-base float-panel p-2">
+        <div class="card-base float-panel nav-float-glass nav-float-glass--scheme p-2">
             <button class="flex transition whitespace-nowrap items-center !justify-start w-full btn-plain scale-animation rounded-lg h-9 px-3 font-medium active:scale-95 mb-0.5"
                     class:current-theme-btn={mode === LIGHT_MODE}
                     onclick={() => switchScheme(LIGHT_MODE)}

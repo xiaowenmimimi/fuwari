@@ -156,7 +156,7 @@ function resetHue() {
 
 <div
 	id="display-setting"
-	class="float-panel float-panel-closed absolute right-4 px-4 py-4 transition-all"
+	class="float-panel nav-float-glass nav-float-glass--theme float-panel-closed absolute right-4 px-4 py-4 transition-all"
 >
 	<div class="theme-panel-head">
 		<div class="theme-panel-copy">
@@ -265,25 +265,6 @@ function resetHue() {
 	#display-setting {
 		width: min(21rem, calc(100vw - 2rem));
 		overflow: hidden;
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(255, 255, 255, 0.72)),
-			var(--float-panel-bg);
-		border: 1px solid rgba(255, 255, 255, 0.68);
-		box-shadow:
-			0 22px 70px rgba(38, 56, 86, 0.16),
-			inset 0 1px 0 rgba(255, 255, 255, 0.7);
-		backdrop-filter: blur(22px) saturate(1.5);
-		-webkit-backdrop-filter: blur(22px) saturate(1.5);
-	}
-
-	:global(.dark) #display-setting {
-		background:
-			linear-gradient(180deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.03)),
-			var(--float-panel-bg);
-		border-color: rgba(255, 255, 255, 0.1);
-		box-shadow:
-			0 22px 70px rgba(0, 0, 0, 0.34),
-			inset 0 1px 0 rgba(255, 255, 255, 0.08);
 	}
 
 	.theme-panel-head,
