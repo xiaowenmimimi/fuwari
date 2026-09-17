@@ -2,12 +2,13 @@
  * 超长代码块折叠：测量代码块渲染高度，超过阈值时注入渐变遮罩和展开/收起按钮。
  * 在代码块 meta 中写 nocollapse 可单独关闭，见 src/plugins/expressive-code/collapse-opt-out.ts
  */
+import collapseCss from "../styles/codeblock-collapse.css?inline";
 
 // 折叠后保留可见的行数
 const COLLAPSE_LINES = 20;
 // 被折叠的行数少于此值时不折叠，避免窄屏下按钮只多展开三四行
 const MIN_HIDDEN_LINES = 5;
-// 折叠态底部留给按钮的高度，与 expressive-code.css 中的按钮区域保持一致
+// 折叠态底部留给按钮的高度，与 codeblock-collapse.css 中的按钮区域保持一致
 const BUTTON_STRIP_REM = 2;
 // 收起后若代码块顶部已滚出视口，滚回来时预留的导航栏高度
 const NAVBAR_OFFSET_REM = 5.5;
@@ -133,12 +134,23 @@ function evaluateAll() {
 
 // swup 切换页面后布局还没稳定，等一帧再测量，否则自动换行的行数会偏多
 function scheduleEvaluate() {
+	ensureCollapseStyles();
 	requestAnimationFrame(evaluateAll);
 	// 等宽字体加载后行宽会变化，需要再测一次
 	document.fonts?.ready.then(evaluateAll);
 }
 
+function ensureCollapseStyles() {
+	const styleId = "fuwari-code-collapse-style";
+	if (document.getElementById(styleId)) return;
+	const style = document.createElement("style");
+	style.id = styleId;
+	style.textContent = collapseCss;
+	document.head.append(style);
+}
+
 export function setupCodeBlockCollapse() {
+	ensureCollapseStyles();
 	scheduleEvaluate();
 
 	if (collapseWindow.__fuwariCodeCollapseReady) return;
