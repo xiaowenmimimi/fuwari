@@ -25,7 +25,7 @@ const {
 	imageUploadMaxSizeMB,
 } = Astro.props;
 ---
-<section class="comment-section card-base !overflow-visible z-10 relative w-full mb-4 px-4 py-5 sm:px-6 sm:py-6" aria-labelledby="comments-title">
+<section class="comment-section card-base !overflow-visible z-10 relative w-full mb-4 px-4 py-5 sm:px-6 sm:py-6" aria-labelledby="comments-title" data-waline-section>
 	<div class="comment-section__header mb-4 flex flex-col gap-3 sm:flex-row sm:items-end sm:justify-between">
 		<div class="flex items-start gap-3">
 			<div class="comment-section__icon mt-0.5 flex h-10 w-10 shrink-0 items-center justify-center rounded-xl">
@@ -41,6 +41,19 @@ const {
 			</div>
 		</div>
 	</div>
+	<div data-waline-status role="status" aria-live="polite">
+		<div class="waline-placeholder" data-waline-loading>
+			<div class="waline-placeholder__avatar" aria-hidden="true"></div>
+			<div class="waline-placeholder__content">
+				<div class="waline-placeholder__line waline-placeholder__line--short" aria-hidden="true"></div>
+				<div class="waline-placeholder__line" aria-hidden="true"></div>
+				<div class="waline-placeholder__line waline-placeholder__line--medium" aria-hidden="true"></div>
+				<div class="waline-placeholder__text">评论加载中…</div>
+			</div>
+		</div>
+		<p class="waline-load-error" data-waline-error hidden>评论加载失败，请检查网络后重试。</p>
+		<button type="button" class="waline-retry" data-waline-retry hidden>重试</button>
+	</div>
 	<div
 		id="waline"
 		data-server-url={serverURL}
@@ -51,17 +64,8 @@ const {
 		data-image-upload-endpoint={imageUploadEndpoint}
 		data-image-upload-token={imageUploadToken}
 		data-image-upload-max-size-mb={imageUploadMaxSizeMB}
-	>
-		<div class="waline-placeholder" aria-live="polite">
-			<div class="waline-placeholder__avatar" aria-hidden="true"></div>
-			<div class="waline-placeholder__content">
-				<div class="waline-placeholder__line waline-placeholder__line--short" aria-hidden="true"></div>
-				<div class="waline-placeholder__line" aria-hidden="true"></div>
-				<div class="waline-placeholder__line waline-placeholder__line--medium" aria-hidden="true"></div>
-				<div class="waline-placeholder__text">评论加载中…</div>
-			</div>
-		</div>
-	</div>
+	></div>
+	<button type="button" class="waline-retry" data-waline-refresh hidden>刷新评论</button>
 </section>
 <script>
 	import "../scripts/waline-comments";
