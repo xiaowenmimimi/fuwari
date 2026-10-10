@@ -577,8 +577,49 @@
 		color: color-mix(in srgb, var(--waline-color) 92%, transparent);
 	}
 
+	#waline [data-waline] .wl-card .wl-head > .wl-badge {
+		box-sizing: border-box;
+		display: inline-block;
+		max-inline-size: 100%;
+		margin-block: 0.15rem;
+		margin-inline-end: 0.45rem;
+		padding: 0.12rem 0.5rem;
+		border: 1px solid color-mix(in srgb, var(--waline-badge-color) 18%, transparent);
+		border-radius: 0.35rem;
+		background: color-mix(in srgb, var(--waline-badge-color) 8%, var(--waline-bg-color));
+		color: color-mix(in srgb, var(--waline-badge-color) 35%, var(--waline-color));
+		font-size: 0.72rem;
+		font-weight: 500;
+		line-height: 1.4;
+		vertical-align: 0.08em;
+		white-space: normal;
+		overflow-wrap: anywhere;
+	}
+
+	/* 只识别当前评论的管理员图标，避免嵌套回复影响父评论。 */
+	#waline [data-waline] .wl-card-item:has(> .wl-user > .administrator-icon) > .wl-card > .wl-head > .wl-nick {
+		font-weight: 600;
+	}
+
+	#waline [data-waline] .wl-card-item:has(> .wl-user > .administrator-icon) > .wl-card > .wl-head > .wl-nick::after {
+		content: "博主";
+		display: inline-block;
+		margin-inline-start: 0.5rem;
+		padding: 0.12rem 0.42rem;
+		border: 1px solid color-mix(in srgb, var(--primary) 24%, transparent);
+		border-radius: 0.35rem;
+		background: color-mix(in srgb, var(--primary) 12%, var(--waline-bg-color));
+		color: color-mix(in srgb, var(--primary) 35%, var(--waline-color));
+		font-size: 0.72rem;
+		font-weight: 600;
+		line-height: 1.4;
+		vertical-align: 0.08em;
+		white-space: nowrap;
+	}
+
 	#waline [data-waline] .wl-card .wl-time {
 		color: color-mix(in srgb, var(--waline-info-color) 88%, transparent);
+		white-space: nowrap;
 	}
 
 	#waline [data-waline] .wl-card .wl-content {
