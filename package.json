@@ -11,6 +11,7 @@
 		"astro": "astro",
 		"type-check": "tsc --noEmit --isolatedDeclarations",
 		"new-post": "node scripts/new-post.js",
+		"new-moment": "node scripts/new-moment.js",
 		"format": "biome format --write ./src",
 		"lint": "biome check --write ./src",
 		"preinstall": "npx only-allow pnpm"
@@ -42,7 +43,7 @@
 		"@iconify/svelte": "^4.2.0",
 		"@swup/astro": "^1.7.0",
 		"@tailwindcss/typography": "^0.5.19",
-		"@waline/client": "3",
+		"@waline/client": "3.13.0",
 		"astro": "5.13.10",
 		"astro-expressive-code": "^0.41.3",
 		"astro-icon": "^1.1.5",
@@ -85,5 +86,17 @@
 		"postcss-import": "^16.1.1",
 		"postcss-nesting": "^13.0.2"
 	},
-	"packageManager": "pnpm@9.14.4"
+	"packageManager": "pnpm@9.14.4",
+	"pnpm": {
+		"patchedDependencies": {
+			"@waline/client@3.13.0": "patches/@waline__client@3.13.0.patch"
+		},
+		"packageExtensions": {
+			"@waline/client@3.13.0": {
+				"dependencies": {
+					"dompurify": "3.4.8"
+				}
+			}
+		}
+	}
 }

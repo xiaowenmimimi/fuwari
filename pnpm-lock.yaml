@@ -4,6 +4,13 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+packageExtensionsChecksum: 4b89b12fe33db85d9a9ff20f7b02beea
+
+patchedDependencies:
+  '@waline/client@3.13.0':
+    hash: swkwun2q5mzjbvyglbnaekhsyu
+    path: patches/@waline__client@3.13.0.patch
+
 importers:
 
   .:
@@ -87,8 +94,8 @@ importers:
         specifier: ^0.5.19
         version: 0.5.19(tailwindcss@3.4.18(yaml@2.7.0))
       '@waline/client':
-        specifier: '3'
-        version: 3.13.0(typescript@5.9.3)
+        specifier: 3.13.0
+        version: 3.13.0(patch_hash=swkwun2q5mzjbvyglbnaekhsyu)(typescript@5.9.3)
       astro:
         specifier: 5.13.10
         version: 5.13.10(@types/node@24.5.2)(jiti@1.21.7)(lightningcss@1.29.3)(rollup@2.79.2)(sass@1.80.4)(stylus@0.64.0)(terser@5.43.1)(typescript@5.9.3)(yaml@2.7.0)
@@ -7868,11 +7875,12 @@ snapshots:
 
   '@waline/api@1.1.0': {}
 
-  '@waline/client@3.13.0(typescript@5.9.3)':
+  '@waline/client@3.13.0(patch_hash=swkwun2q5mzjbvyglbnaekhsyu)(typescript@5.9.3)':
     dependencies:
       '@vueuse/core': 14.3.0(vue@3.5.34(typescript@5.9.3))
       '@waline/api': 1.1.0
       autosize: 6.0.1
+      dompurify: 3.4.8
       marked: 17.0.6
       marked-highlight: 2.2.4(marked@17.0.6)
       recaptcha-v3: 1.11.3
