@@ -1,6 +1,5 @@
 import { existsSync, readFileSync, statSync } from "node:fs";
-import { dirname } from "node:path";
-import { join } from "node:path";
+import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
 const scriptDir = dirname(fileURLToPath(import.meta.url));
