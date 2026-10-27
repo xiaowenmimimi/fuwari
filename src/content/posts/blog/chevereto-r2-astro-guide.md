@@ -2,7 +2,7 @@
 title: Chevereto + Cloudflare R2 搭建图床
 description: 搭建 Chevereto + Cloudflare R2 图床，实现图片托管和加速。
 published: 2026-03-27
-updated: 2026-04-01
+updated: 2026-10-22
 tags: [图床, 博客搭建, Cloudflare]
 category: 技术教程
 draft: false
@@ -106,7 +106,7 @@ services:
     depends_on:
       - mariadb # 先启动数据库，再启动 chevereto
     ports:
-      - "8080:80" # 宿主机 8080 映射到容器 80
+      - "8080:8080" # 宿主机 8080 映射到容器 8080
     environment:
       CHEVERETO_DB_HOST: mariadb # 数据库主机名，对应上面的服务名
       CHEVERETO_DB_USER: chevereto # 数据库用户名
