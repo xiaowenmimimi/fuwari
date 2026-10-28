@@ -51,6 +51,9 @@ import { Icon } from "astro-icon/components";
 :global(body:not(.is-post)) #jump-to-comments-btn
     display: none
 
+:global(body:not(:has(#waline))) #jump-to-comments-btn
+    display: none
+
 </style>
 
 <script is:raw is:inline>

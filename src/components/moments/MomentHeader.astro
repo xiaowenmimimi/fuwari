@@ -1,0 +1,27 @@
+---
+import { Icon } from "astro-icon/components";
+---
+
+<header class="moment-header card-base" aria-labelledby="moments-title">
+	<div class="moment-header__inner">
+		<Icon name="material-symbols:edit-note-rounded" class="moment-header__icon" aria-hidden="true" />
+
+		<div class="moment-header__copy">
+			<div class="moment-header__title-line">
+				<h1 id="moments-title">动态手记</h1>
+			</div>
+			<p>人闲桂花落,夜静春山空。</p>
+		</div>
+
+		<dl class="moment-header__stamp" aria-label="动态概览">
+			<div>
+				<dt data-memos-total-label>动态数量</dt>
+				<dd><span class="moment-header__count" data-memos-total>—</span><span class="moment-header__unit">条动态</span></dd>
+			</div>
+			<div>
+				<dt data-memos-latest-label>最近更新</dt>
+				<dd class="moment-header__latest"><time data-memos-latest>加载中…</time></dd>
+			</div>
+		</dl>
+	</div>
+</header>

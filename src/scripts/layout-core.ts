@@ -1,6 +1,7 @@
 import "overlayscrollbars/overlayscrollbars.css";
 import { OverlayScrollbars } from "overlayscrollbars";
 import { BANNER_HEIGHT, BANNER_HEIGHT_EXTEND } from "../constants/constants";
+import { isMomentDetailPagePath } from "../utils/moment-route-utils";
 import { getHue, getStoredTheme, setTheme } from "../utils/setting-utils";
 
 type SwupVisit = {
@@ -386,7 +387,8 @@ function bindSwupHooks() {
 		const toPathname = getPathname(visit.to.url);
 		bodyElement.classList.toggle(
 			"is-post",
-			toPathname.startsWith(getPathname(withBase("/posts/"))),
+			toPathname.startsWith(getPathname(withBase("/posts/"))) ||
+				isMomentDetailPagePath(toPathname),
 		);
 		bodyElement.classList.toggle(
 			"is-bangumi",

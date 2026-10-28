@@ -73,10 +73,22 @@ export const siteConfig: SiteConfig = {
 	},
 };
 
+// 公开可匿名访问的 Memos
+export const momentsConfig = {
+	serverURL: "https://memos.xhwen.cn",
+	creator: "users/xiaowenmimimi",
+	publicationTag: "blog",
+	pageSize: 8,
+};
+
 export const navBarConfig: NavBarConfig = {
 	links: [
 		LinkPreset.Home,
 		LinkPreset.Archive,
+		{
+			name: "动态",
+			url: "/moments/",
+		},
 		{
 			// Bangumi 功能参考：https://kasuha.com/posts/fuwari-enhance-ep2/
 			name: "Bangumi",

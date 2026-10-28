@@ -1,0 +1,87 @@
+---
+import { Icon } from "astro-icon/components";
+import { momentsConfig, siteConfig } from "../../config";
+import { url } from "../../utils/url-utils";
+import "../../styles/moments.css";
+import WalineComments from "../WalineComments.astro";
+import MemosCardTemplate from "./MemosCardTemplate.astro";
+import MomentHeader from "./MomentHeader.astro";
+
+interface Props {
+	detail?: boolean;
+}
+
+const { detail = false } = Astro.props;
+const StatusHeading = detail ? "h1" : "h2";
+---
+
+<div
+	class="moment-feed memos-page"
+	data-memos-root
+	data-memos-mode={detail ? "detail" : "feed"}
+	data-memos-server={momentsConfig.serverURL}
+	data-memos-creator={momentsConfig.creator}
+	data-memos-tag={momentsConfig.publicationTag}
+	data-memos-page-size={momentsConfig.pageSize}
+	data-moment-counts
+	data-server-url={siteConfig.waline.serverURL}
+	data-lang={siteConfig.waline.lang || "zh-CN"}
+	data-site-title={siteConfig.title}
+	data-pagefind-ignore
+>
+	{!detail && <MomentHeader />}
+	{detail && (
+		<nav class="moment-detail-nav" aria-label="动态详情导航">
+			<a href={url("/moments/")} class="moment-detail-back" aria-label="返回动态列表">
+				<span class="moment-detail-back__icon" aria-hidden="true"><Icon name="material-symbols:arrow-back-rounded" /></span>
+				<span>返回动态列表</span>
+			</a>
+		</nav>
+	)}
+	{!detail && (
+		<div data-memos-toolbar hidden class="moment-toolbar">
+			<nav data-memos-filters hidden class="moment-filter" aria-label="按标签筛选动态"></nav>
+		</div>
+	)}
+	<section data-memos-status data-state="loading" class="moment-empty card-base" role="status" aria-live="polite" aria-atomic="true">
+		<Icon name="material-symbols:dynamic-feed-rounded" class="moment-empty__icon" aria-hidden="true" />
+		<StatusHeading data-memos-status-title>动态加载中…</StatusHeading>
+		<p data-memos-status-description>正在读取最新记录。</p>
+		<div class="moment-loading" aria-hidden="true"><span></span><span></span><span></span></div>
+		<div class="moment-empty__actions">
+			<button data-memos-retry type="button" hidden class="moment-retry">重新加载</button>
+			<a data-memos-clear-filter href={url("/moments/")} hidden class="moment-retry">查看全部动态</a>
+		</div>
+	</section>
+	<div data-memos-cards class="moment-list" aria-label={detail ? "动态详情" : "动态列表"} aria-busy="true"></div>
+	{!detail && (
+		<>
+			<div data-memos-pagination></div>
+			<div data-memos-progress hidden class="moment-toolbar" role="status" aria-live="polite">
+				<p data-memos-progress-text></p>
+				<button data-memos-continue type="button" hidden class="moment-retry">继续加载</button>
+			</div>
+		</>
+	)}
+	{detail && (
+		<div id="moment-interactions" data-memos-comments hidden class="scroll-mt-24" tabindex="-1" aria-label="动态评论">
+			<WalineComments
+				serverURL={siteConfig.waline.serverURL}
+				lang={siteConfig.waline.lang || "zh-CN"}
+				login={siteConfig.waline.login}
+				dark={siteConfig.waline.dark}
+				defer={true}
+				imageUploadEndpoint={siteConfig.waline.imageUpload?.endpoint}
+				imageUploadToken={siteConfig.waline.imageUpload?.token}
+				imageUploadMaxSizeMB={siteConfig.waline.imageUpload?.maxSizeMB}
+			/>
+		</div>
+	)}
+	<noscript><p class="card-base px-6 py-8">请启用 JavaScript 查看动态。</p></noscript>
+	<MemosCardTemplate detail={detail} />
+</div>
+
+<script>
+	import "../../scripts/memos-client";
+	import "../../scripts/moment-interactions";
+</script>

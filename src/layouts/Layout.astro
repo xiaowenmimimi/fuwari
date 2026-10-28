@@ -21,6 +21,7 @@ import {
 	getBannerFallbackSource,
 	pickBannerSource,
 } from "../utils/banner-utils";
+import { isMomentDetailPagePath } from "../utils/moment-route-utils";
 import { pathsEqual, url } from "../utils/url-utils";
 import "katex/dist/katex.css";
 import ExternalLinkModal from "../components/misc/ExternalLinkModal.astro";
@@ -58,6 +59,7 @@ const isHomeListPagePath = (path: string) => {
 // so use Swup hooks instead to change the height immediately when a link is clicked
 const isHomePage = isHomeListPagePath(Astro.url.pathname);
 const isPostPage = Astro.url.pathname.startsWith(url("/posts/"));
+const isMomentDetailPage = isMomentDetailPagePath(Astro.url.pathname);
 const isBangumiPage = pathsEqual(Astro.url.pathname, url("/bangumi"));
 
 // defines global css variables
@@ -201,7 +203,7 @@ const bannerOffset =
 		<link rel="alternate" type="application/rss+xml" title={profileConfig.name} href={`${Astro.site}rss.xml`}/>
 
 	</head>
-	<body class=" min-h-screen " class:list={[{"is-home": isHomePage, "is-post": isPostPage, "is-bangumi": isBangumiPage, "enable-banner": enableBanner}]}
+	<body class=" min-h-screen " class:list={[{"is-home": isHomePage, "is-post": isPostPage || isMomentDetailPage, "is-bangumi": isBangumiPage, "enable-banner": enableBanner}]}
 		  data-overlayscrollbars-initialize
 	>
 		<ConfigCarrier></ConfigCarrier>

@@ -1,0 +1,75 @@
+---
+import { Icon } from "astro-icon/components";
+import { profileConfig } from "../../config";
+import { url } from "../../utils/url-utils";
+import ImageWrapper from "../misc/ImageWrapper.astro";
+
+interface Props {
+	detail: boolean;
+}
+
+const { detail } = Astro.props;
+---
+
+<template data-memos-card-template>
+	<article class:list={["moment-card card-base", { "moment-card--feed": !detail, "moment-card--detail": detail }]} data-pagefind-ignore>
+		{detail ? (
+			<header class="moment-card__header">
+				<a href={url("/about/")} class="moment-author__avatar" aria-label={`查看${profileConfig.name}的介绍`}>
+					<ImageWrapper src={profileConfig.avatar || ""} alt={`${profileConfig.name}的头像`} class="moment-avatar" loading="eager" />
+				</a>
+				<div class="moment-card__identity">
+					<a href={url("/about/")} class="moment-author__name">{profileConfig.name}</a>
+					<div class="moment-author__metadata" aria-label="发布时间和位置">
+						<time data-memos-published class="moment-published"></time>
+						<span data-memos-location hidden class="moment-meta-item"><Icon name="material-symbols:location-on-outline-rounded" /><span data-memos-location-text class="moment-location-text"></span></span>
+					</div>
+				</div>
+				<div data-memos-meta-secondary hidden class="moment-card__status">
+					<span data-memos-pin hidden class="moment-pin" title="置顶动态"><Icon name="material-symbols:keep-rounded" />置顶</span>
+				</div>
+			</header>
+		) : (
+			<span data-memos-pin hidden class="moment-pin" title="置顶动态"><Icon name="material-symbols:keep-rounded" />置顶</span>
+		)}
+		{detail ? (
+			<h1 data-memos-title class="moment-title moment-title--detail"></h1>
+		) : (
+			<h2 data-memos-title hidden class="moment-title"><a></a></h2>
+		)}
+		<div data-memos-content class="prose dark:prose-invert prose-base !max-w-none custom-md moment-content"></div>
+		<div data-memos-gallery hidden class="moment-gallery"></div>
+		{detail && (
+			<p data-memos-edited hidden class="moment-edit-note"><span>最后编辑于</span><time data-memos-updated></time></p>
+		)}
+		<footer class="moment-actions">
+			<div class="moment-card__metadata">
+				<div data-memos-tags hidden class="moment-tags" aria-label="动态标签"></div>
+				{!detail && <time data-memos-published class="moment-published"></time>}
+			</div>
+			<div class="moment-action-list">
+				<a data-memos-comment-link class="moment-action" aria-label={detail ? "查看或撰写这条动态的评论" : "查看这条动态的评论"}>
+					<Icon name="material-symbols:mode-comment-outline-rounded" class="text-[1.15rem]" />
+					<span class="moment-comment-label">{detail ? "写评论" : "评论"}</span><span class="moment-comment-count" aria-live="polite">…</span>
+				</a>
+				<button type="button" class="moment-action" data-moment-share aria-label="分享这条动态">
+					<Icon name="material-symbols:ios-share-rounded" class="text-[1.15rem]" /><span class="moment-share-label" role="status" aria-live="polite">分享</span>
+				</button>
+			</div>
+		</footer>
+	</article>
+</template>
+
+<template data-memos-image-template>
+	<button type="button" class="moment-media-trigger">
+		<span class="moment-media overflow-hidden relative block"><img class="w-full h-full object-cover" loading="lazy" decoding="async" alt="" /></span>
+	</button>
+</template>
+
+<template data-memos-pagination-template>
+	<nav class="moment-pagination" aria-label="动态分页">
+		<a data-memos-prev class="moment-pagination__arrow" aria-label="上一页"><Icon name="material-symbols:chevron-left-rounded" /></a>
+		<div data-memos-page-numbers class="moment-pagination__numbers"></div>
+		<a data-memos-next class="moment-pagination__arrow" aria-label="下一页"><Icon name="material-symbols:chevron-right-rounded" /></a>
+	</nav>
+</template>

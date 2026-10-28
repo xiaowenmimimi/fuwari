@@ -199,7 +199,7 @@ html, body {
     font-family: var(--font-body);
 } */
 
-.custom-md img, #post-cover img {
+.custom-md img, #post-cover img, .moment-gallery img {
     @apply cursor-zoom-in
 }
 

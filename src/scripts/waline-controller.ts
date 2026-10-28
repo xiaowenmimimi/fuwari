@@ -12,6 +12,7 @@ type SwupHooks = {
 type Page = {
 	root: HTMLElement;
 	path: string;
+	location: string;
 	instance: WalineInstance | null;
 	pending: Promise<void> | null;
 	observer: MutationObserver | null;
@@ -49,6 +50,7 @@ export class WalineController {
 		document.addEventListener("astro:page-load", this.onReady);
 		document.addEventListener("swup:enable", this.onReady);
 		document.addEventListener("DOMContentLoaded", this.onReady);
+		document.addEventListener("moments:content-ready", this.onReady);
 		this.bindSwup();
 		if (document.readyState !== "loading") this.onReady();
 	}
@@ -59,6 +61,7 @@ export class WalineController {
 		document.removeEventListener("astro:page-load", this.onReady);
 		document.removeEventListener("swup:enable", this.onReady);
 		document.removeEventListener("DOMContentLoaded", this.onReady);
+		document.removeEventListener("moments:content-ready", this.onReady);
 		this.unbindSwup();
 		this.destroy();
 	}
@@ -83,8 +86,18 @@ export class WalineController {
 	private onReady = () => {
 		this.bindSwup();
 		const root = document.getElementById("waline");
-		const path = normalizePathname(window.location.pathname);
-		if (root === this.page?.root && path === this.page.path) return;
+		const path = this.getPath(root);
+		const location = `${window.location.pathname}${window.location.search}`;
+		if (root?.dataset.walineDeferred === "true") {
+			this.destroy();
+			return;
+		}
+		if (
+			root === this.page?.root &&
+			path === this.page.path &&
+			location === this.page.location
+		)
+			return;
 		this.destroy();
 		if (!root) return;
 
@@ -92,6 +105,7 @@ export class WalineController {
 		const page: Page = {
 			root,
 			path,
+			location,
 			instance: null,
 			pending: null,
 			observer: null,
@@ -128,11 +142,21 @@ export class WalineController {
 		observer.observe(root);
 	};
 
+	private getPath(root: HTMLElement | null) {
+		return normalizePathname(
+			root?.dataset.walinePath || window.location.pathname,
+		);
+	}
+
 	private isCurrent(page: Page) {
 		return (
 			this.page === page &&
 			page.root.isConnected &&
-			page.path === normalizePathname(window.location.pathname)
+			page.root.dataset.walineDeferred !== "true" &&
+			page.location ===
+				`${window.location.pathname}${window.location.search}` &&
+			page.path === this.getPath(page.root) &&
+			page.root === document.getElementById("waline")
 		);
 	}
 

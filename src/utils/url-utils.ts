@@ -16,6 +16,18 @@ export function getPostUrlBySlug(slug: string): string {
 	return url(`/posts/${slug}/`);
 }
 
+export function getMemosMomentUrl(id: string): string {
+	return `${url("/moments/detail/")}?${new URLSearchParams({ id })}`;
+}
+
+export function getMemosFeedUrl(tag = "", page = 1): string {
+	const params = new URLSearchParams();
+	if (tag) params.set("tag", tag);
+	if (page > 1) params.set("page", String(page));
+	const query = params.toString();
+	return `${url("/moments/")}${query ? `?${query}` : ""}`;
+}
+
 export function getTagUrl(tag: string): string {
 	if (!tag) return url("/archive/");
 	return url(`/archive/?tag=${encodeURIComponent(tag.trim())}`);

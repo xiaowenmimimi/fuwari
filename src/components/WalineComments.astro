@@ -9,6 +9,7 @@ interface Props {
 	login?: string;
 	dark?: string;
 	pageview?: boolean;
+	defer?: boolean;
 	imageUploadEndpoint?: string;
 	imageUploadToken?: string;
 	imageUploadMaxSizeMB?: number;
@@ -20,6 +21,7 @@ const {
 	login,
 	dark = "html.dark",
 	pageview = false,
+	defer = false,
 	imageUploadEndpoint,
 	imageUploadToken,
 	imageUploadMaxSizeMB,
@@ -61,6 +63,7 @@ const {
 		data-login={login}
 		data-dark={dark}
 		data-pageview={pageview ? "true" : "false"}
+		data-waline-deferred={defer ? "true" : undefined}
 		data-image-upload-endpoint={imageUploadEndpoint}
 		data-image-upload-token={imageUploadToken}
 		data-image-upload-max-size-mb={imageUploadMaxSizeMB}
