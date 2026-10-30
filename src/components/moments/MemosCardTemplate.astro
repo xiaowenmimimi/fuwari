@@ -45,7 +45,7 @@ const { detail } = Astro.props;
 		<footer class="moment-actions">
 			<div class="moment-card__metadata">
 				<div data-memos-tags hidden class="moment-tags" aria-label="动态标签"></div>
-				{!detail && <time data-memos-published class="moment-published"></time>}
+				{!detail && <a data-memos-detail-link class="moment-published"><time data-memos-published></time></a>}
 			</div>
 			<div class="moment-action-list">
 				<a data-memos-comment-link class="moment-action" aria-label={detail ? "查看或撰写这条动态的评论" : "查看这条动态的评论"}>

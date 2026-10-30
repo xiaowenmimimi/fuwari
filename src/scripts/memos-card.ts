@@ -7,6 +7,73 @@ import {
 import { getMemosFeedUrl, getMemosMomentUrl } from "../utils/url-utils";
 import { cloneTemplate, query } from "./memos-dom";
 
+function bindCardNavigation(card: HTMLElement, link: HTMLAnchorElement) {
+	const interactive =
+		'a, button, input, select, textarea, label, summary, audio, video, img, [role="button"], [role="link"], [tabindex], [contenteditable]:not([contenteditable="false"])';
+	const isInteractive = (target: Element) => {
+		const control = target.closest(interactive);
+		// Page navigation may make ancestors focusable; only skip controls inside this card.
+		return control !== null && control !== card && card.contains(control);
+	};
+	let gesture: {
+		id: number;
+		x: number;
+		y: number;
+		startedAt: number;
+		blocked: boolean;
+	} | null = null;
+	const hasSelection = () => Boolean(window.getSelection()?.toString());
+
+	card.addEventListener("pointerdown", (event) => {
+		gesture = {
+			id: event.pointerId,
+			x: event.clientX,
+			y: event.clientY,
+			startedAt: event.timeStamp,
+			blocked:
+				!event.isPrimary ||
+				event.button !== 0 ||
+				hasSelection() ||
+				(event.target instanceof Element && isInteractive(event.target)),
+		};
+	});
+	const trackMovement = (event: PointerEvent) => {
+		if (!gesture || gesture.id !== event.pointerId) return;
+		if (Math.hypot(event.clientX - gesture.x, event.clientY - gesture.y) > 8)
+			gesture.blocked = true;
+		if (
+			event.pointerType === "touch" &&
+			event.timeStamp - gesture.startedAt > 500
+		)
+			gesture.blocked = true;
+	};
+	card.addEventListener("pointermove", trackMovement);
+	card.addEventListener("pointerup", trackMovement);
+	card.addEventListener("pointercancel", () => {
+		if (gesture) gesture.blocked = true;
+	});
+	card.addEventListener("dragstart", () => {
+		if (gesture) gesture.blocked = true;
+	});
+	card.addEventListener("click", (event) => {
+		if (
+			event.defaultPrevented ||
+			event.button !== 0 ||
+			event.ctrlKey ||
+			event.metaKey ||
+			event.shiftKey ||
+			event.altKey ||
+			gesture?.blocked ||
+			hasSelection() ||
+			!(event.target instanceof Element) ||
+			isInteractive(event.target)
+		)
+			return;
+		// Use the existing link so Swup handles navigation just like a title click.
+		link.click();
+	});
+}
+
 function createTag(tag: string): HTMLAnchorElement {
 	const link = document.createElement("a");
 	link.className = "moment-tag";
@@ -44,6 +111,13 @@ export function renderCard(
 		link.href = detailURL;
 		link.textContent = moment.title;
 		title.hidden = !moment.title;
+		const detailLink = query<HTMLAnchorElement>(
+			card,
+			"[data-memos-detail-link]",
+		);
+		detailLink.href = detailURL;
+		detailLink.setAttribute("aria-label", `查看${accessibleTitle}的详情`);
+		bindCardNavigation(card, detailLink);
 	}
 	for (const pin of card.querySelectorAll<HTMLElement>("[data-memos-pin]"))
 		pin.hidden = !moment.pinned;

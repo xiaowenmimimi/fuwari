@@ -764,6 +764,19 @@
 		--moment-heading-2: 22px;
 		--moment-heading-3: 20px;
 		padding: var(--moment-card-pad);
+		cursor: pointer;
+	}
+
+	.moment-card--feed [data-memos-detail-link]:focus-visible {
+		outline: 2px solid var(--primary);
+		outline-offset: 4px;
+		border-radius: 0.2rem;
+	}
+
+	@media (hover: hover) and (pointer: fine) {
+		.moment-card--feed:hover {
+			background: var(--moment-hover);
+		}
 	}
 
 	.moment-card--feed .moment-title {
