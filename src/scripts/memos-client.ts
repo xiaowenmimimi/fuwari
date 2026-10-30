@@ -240,10 +240,10 @@ function isCurrent(page: ActivePage) {
 
 function updateFeedProgress(page: ActivePage, failed = false) {
 	const progress = query(page.root, "[data-memos-progress]");
-	progress.hidden = page.feed?.complete === true;
+	progress.hidden = !failed || page.feed?.complete === true;
 	query(progress, "[data-memos-progress-text]").textContent = failed
 		? "后续动态加载失败，已加载的内容仍可阅读。"
-		: "正在加载更多动态，当前数量和标签统计仅包含已加载内容。";
+		: "";
 	query<HTMLButtonElement>(progress, "[data-memos-continue]").hidden = !failed;
 }
 
