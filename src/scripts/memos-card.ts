@@ -77,6 +77,23 @@ export function renderCard(
 	const rendered = renderMemosContent(moment, page.config.serverURL);
 	const content = query(card, "[data-memos-content]");
 	content.innerHTML = rendered.html;
+	for (const img of content.querySelectorAll<HTMLImageElement>(
+		"img[data-memos-original-src]",
+	)) {
+		const original = img.dataset.memosOriginalSrc;
+		const fallback = img.dataset.memosFallbackSrc;
+		const sources = [...new Set([img.src, original, fallback])].filter(
+			(src): src is string => Boolean(src),
+		);
+		let sourceIndex = 0;
+		img.addEventListener("error", () => {
+			const next = sources[++sourceIndex];
+			if (!next) return;
+			const link = img.closest("a");
+			if (next === fallback && link && link.href === original) link.href = next;
+			img.src = next;
+		});
+	}
 	const hasBody = Boolean(
 		content.textContent?.trim() || content.querySelector("img"),
 	);
@@ -96,6 +113,7 @@ export function renderCard(
 			"[data-memos-image-template]",
 		);
 		trigger.dataset.pswpSrc = image.src;
+		if (image.fallbackSrc) trigger.dataset.pswpFallbackSrc = image.fallbackSrc;
 		// Hidden thumbnails remain part of the complete PhotoSwipe album.
 		trigger.hidden = !page.detail && index >= 9;
 		if (image.width && image.height) {
@@ -109,9 +127,29 @@ export function renderCard(
 		);
 		const img = query<HTMLImageElement>(trigger, "img");
 		img.alt = alt;
-		img.src = image.thumbnail;
 		img.loading = page.detail && index === 0 ? "eager" : "lazy";
+		const sources = [
+			...new Set(
+				[
+					image.thumbnail,
+					image.src,
+					image.fallbackThumbnail,
+					image.fallbackSrc,
+				].filter((src): src is string => Boolean(src)),
+			),
+		];
+		let sourceIndex = 0;
 		img.addEventListener("error", () => {
+			const next = sources[++sourceIndex];
+			if (next) {
+				if (
+					image.fallbackSrc &&
+					(next === image.fallbackThumbnail || next === image.fallbackSrc)
+				)
+					trigger.dataset.pswpSrc = image.fallbackSrc;
+				img.src = next;
+				return;
+			}
 			img.hidden = true;
 			trigger.classList.add("moment-media-trigger--error");
 			const message = document.createElement("span");
@@ -119,6 +157,7 @@ export function renderCard(
 			message.textContent = "图片未能加载，点击查看原图";
 			trigger.append(message);
 		});
+		img.src = image.thumbnail;
 		gallery.append(trigger);
 	}
 	if (!page.detail && rendered.images.length > 1) {

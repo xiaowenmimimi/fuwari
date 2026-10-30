@@ -1,5 +1,7 @@
 export type MemosConfig = {
 	serverURL: string;
+	attachmentBaseURL?: string;
+	attachmentThumbnailStyle?: string;
 	creator: string;
 	publicationTag: string;
 	pageSize: number;
@@ -8,6 +10,8 @@ export type MemosConfig = {
 export type MemosImage = {
 	src: string;
 	thumbnail: string;
+	fallbackSrc?: string;
+	fallbackThumbnail?: string;
 	alt: string;
 	width?: number;
 	height?: number;

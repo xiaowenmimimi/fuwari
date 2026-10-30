@@ -67,6 +67,22 @@ function createLightbox(gallery: string, children?: string) {
 		return itemData;
 	});
 
+	instance.on("loadError", ({ content }) => {
+		const element = content.data.element;
+		if (!(element instanceof HTMLElement)) return;
+		const fallback = element.dataset.pswpFallbackSrc;
+		if (!fallback || content.data.src === fallback) return;
+		const pswp = instance.pswp;
+		if (!pswp) return;
+		element.dataset.pswpSrc = fallback;
+		content.data.src = fallback;
+		// Rebuild the slide to remove the error UI and reset attachment state.
+		requestAnimationFrame(() => {
+			if (instance.pswp === pswp && !pswp.isDestroying)
+				pswp.refreshSlideContent(content.index);
+		});
+	});
+
 	instance.on("loadComplete", ({ content }) => {
 		const element = content.data.element;
 		const image = content.element;

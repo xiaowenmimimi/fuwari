@@ -76,6 +76,9 @@ export const siteConfig: SiteConfig = {
 // 公开可匿名访问的 Memos
 export const momentsConfig = {
 	serverURL: "https://memos.xhwen.cn",
+	// 图片 CDN 地址，对应 Memos S3 路径模板 assets/{filename}；留空使用 Memos 文件接口。
+	attachmentBaseURL: "https://assets.xhwen.cn/assets/",
+	attachmentThumbnailStyle: "thumb_800",
 	creator: "users/xiaowenmimimi",
 	publicationTag: "blog",
 	pageSize: 8,

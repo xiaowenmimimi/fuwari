@@ -46,7 +46,38 @@ function getServerURL(config: MemosConfig): URL {
 	return server;
 }
 
-function normalizeAttachment(value: unknown, base: string): MemosImage | null {
+function getAttachmentURL(
+	filename: string,
+	id: string,
+	base?: string,
+): string | null {
+	if (!base) return null;
+	try {
+		const url = new URL(base);
+		if (
+			url.protocol !== "https:" ||
+			url.username ||
+			url.password ||
+			url.search ||
+			url.hash
+		)
+			return null;
+		const extensionIndex = filename.lastIndexOf(".");
+		const stem =
+			extensionIndex < 0 ? filename : filename.slice(0, extensionIndex);
+		const extension = extensionIndex < 0 ? "" : filename.slice(extensionIndex);
+		if (!url.pathname.endsWith("/")) url.pathname += "/";
+		return new URL(encodeURIComponent(`${stem}_${id}${extension}`), url).href;
+	} catch {
+		return null;
+	}
+}
+
+function normalizeAttachment(
+	value: unknown,
+	base: string,
+	config: MemosConfig,
+): MemosImage | null {
 	if (
 		!isRecord(value) ||
 		typeof value.type !== "string" ||
@@ -58,17 +89,29 @@ function normalizeAttachment(value: unknown, base: string): MemosImage | null {
 	const id = value.name.replace(/^attachments\//, "");
 	if (value.name !== `attachments/${id}` || !isMemosId(id)) return null;
 	const external = typeof value.externalLink === "string" && value.externalLink;
-	const src = safeMemosURL(
-		external || `/file/${value.name}/${encodeURIComponent(value.filename)}`,
+	const managed = safeMemosURL(
+		`/file/${value.name}/${encodeURIComponent(value.filename)}`,
 		base,
 	);
+	if (!managed) return null;
+	const direct = !external
+		? getAttachmentURL(value.filename, id, config.attachmentBaseURL)
+		: null;
+	const src = safeMemosURL(external || direct || managed, base);
 	if (!src) return null;
 	const thumbnail = new URL(src);
-	if (!external) thumbnail.searchParams.set("thumbnail", "true");
+	if (direct && config.attachmentThumbnailStyle)
+		thumbnail.search = `?x-image-process=style/${encodeURIComponent(config.attachmentThumbnailStyle)}`;
+	else if (!external && !direct)
+		thumbnail.searchParams.set("thumbnail", "true");
+	const fallbackThumbnail = new URL(managed);
+	fallbackThumbnail.searchParams.set("thumbnail", "true");
 	const metadata = isRecord(value.mediaMetadata) ? value.mediaMetadata : {};
 	return {
 		src,
 		thumbnail: thumbnail.href,
+		fallbackSrc: direct ? managed : undefined,
+		fallbackThumbnail: direct ? fallbackThumbnail.href : undefined,
 		alt: value.filename,
 		width:
 			typeof metadata.width === "number" && metadata.width > 0
@@ -121,7 +164,7 @@ function normalizeMemo(
 		location:
 			typeof location.placeholder === "string" ? location.placeholder : "",
 		images: (Array.isArray(value.attachments) ? value.attachments : [])
-			.map((attachment) => normalizeAttachment(attachment, base))
+			.map((attachment) => normalizeAttachment(attachment, base, config))
 			.filter((image): image is MemosImage => image !== null),
 	};
 }

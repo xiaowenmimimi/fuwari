@@ -68,7 +68,35 @@ export function renderMemosContent(moment: MemosMoment, serverURL: string) {
 		seen.add(image.src);
 		images.push(image);
 	};
-	const attachments = new Map(moment.images.map((image) => [image.src, image]));
+	const attachments = new Map<string, MemosImage>();
+	const serverOrigin = new URL(serverURL).origin;
+	const attachmentKey = (src: string) => {
+		const url = new URL(src);
+		return url.origin === serverOrigin
+			? url.pathname.match(/^\/file\/(attachments\/[^/]+)(?:\/|$)/)?.[1]
+			: undefined;
+	};
+	const obsAttachmentKey = (src: string) => {
+		const url = new URL(src);
+		url.searchParams.sort();
+		return `obs:${url.href}`;
+	};
+	for (const image of moment.images) {
+		attachments.set(image.src, image);
+		attachments.set(image.thumbnail, image);
+		// Normalize matching keys only for managed OBS URLs, preserving request URLs.
+		if (image.fallbackSrc) {
+			attachments.set(obsAttachmentKey(image.src), image);
+			attachments.set(obsAttachmentKey(image.thumbnail), image);
+		}
+		const managed = image.fallbackSrc || image.src;
+		const key = attachmentKey(managed);
+		if (key) attachments.set(key, image);
+	}
+	const findAttachment = (src: string) =>
+		attachments.get(src) ||
+		attachments.get(attachmentKey(src) || "") ||
+		attachments.get(obsAttachmentKey(src));
 	const heading = tokens.findIndex(
 		(token) => token.type === "heading_open" && token.tag === "h1",
 	);
@@ -92,16 +120,19 @@ export function renderMemosContent(moment: MemosMoment, serverURL: string) {
 			if (child.type === "link_close") linkDepth--;
 			if (child.type !== "image") return true;
 			const src = safeMemosURL(child.attrGet("src") || "", serverURL);
+			const attached = src ? findAttachment(src) : undefined;
 			if (src && linkDepth > 0) {
 				// Linked images keep their destination and stay in the article.
-				child.attrSet("src", src);
+				child.attrSet("src", attached?.thumbnail || src);
+				if (attached) child.attrSet("data-memos-original-src", attached.src);
+				if (attached?.fallbackSrc)
+					child.attrSet("data-memos-fallback-src", attached.fallbackSrc);
 				child.attrSet("loading", "lazy");
 				child.attrSet("decoding", "async");
-				seen.add(src);
+				seen.add(attached?.src || src);
 				return true;
 			}
 			if (src) {
-				const attached = attachments.get(src);
 				addImage(
 					attached
 						? { ...attached, alt: child.content || attached.alt }

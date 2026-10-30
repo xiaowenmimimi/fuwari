@@ -441,6 +441,8 @@ function setupMemos() {
 		key: locationKey(),
 		config: {
 			serverURL: root.dataset.memosServer || "",
+			attachmentBaseURL: root.dataset.memosAttachmentBase || "",
+			attachmentThumbnailStyle: root.dataset.memosThumbnailStyle || "",
 			creator: root.dataset.memosCreator || "",
 			publicationTag: root.dataset.memosTag || "",
 			pageSize: Number.isInteger(pageSize) && pageSize > 0 ? pageSize : 8,
