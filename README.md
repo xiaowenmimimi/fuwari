@@ -46,7 +46,7 @@
 **语法：**
 
 ```markdown
-::link-card{title="标题" url="链接地址" desc="描述(可选)" image="图片链接(可选)" fit="图片填充方式(可选)" badge="标签(可选)" target="打开方式(可选，`_blank`, `_self`)"}
+::link-card{title="标题" url="链接地址" desc="描述(可选)" image="图片链接(可选)" fit="图片填充方式(可选)，`contain`（居中留白，外链默认）或 `cover`（铺满裁切，站内默认）" badge="标签(可选)" target="打开方式(可选，`_blank`, `_self`)"}
 ```
 
 - **外链**：`title`、`url` 必填。`image` 作为 logo 居中显示，同时用作 URL 行的小图标；`badge` 显示在 URL 行末尾。默认新标签页打开。

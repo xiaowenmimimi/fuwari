@@ -46,7 +46,7 @@ In addition to the Markdown syntax supported by Astro by default, this project e
 **Syntax:**
 
 ```markdown
-::link-card{title="Title" url="Link URL" desc="Description(Optional)" image="Image URL(Optional)" fit="Image fit(Optional)" badge="Badge(Optional)" target="Target(Optional. `_blank`, `_self`)"}
+::link-card{title="Title" url="Link URL" desc="Description(Optional)" image="Image URL(Optional)" fit="Image fit(Optional), `contain` (centered with padding, default for external links) or `cover` (fills and crops, default for internal posts)" badge="Badge(Optional)" target="Target(Optional. `_blank`, `_self`)"}
 ```
 
 - **External links**: `title` and `url` are required. `image` is shown centered as a logo and also used as the small icon in the URL row; `badge` is shown at the end of the URL row. Opens in a new tab by default.
