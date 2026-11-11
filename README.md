@@ -46,8 +46,11 @@
 **语法：**
 
 ```markdown
-::link-card{title="标题" url="链接地址" desc="描述(可选)" image="图片链接(可选)" badge="角标(可选)" target="打开方式 (`_blank`, `_self`，默认 `_blank`)(可选)"}
+::link-card{title="标题" url="链接地址" desc="描述(可选)" image="图片链接(可选)" fit="图片填充方式(可选)，`contain`（居中留白，外链默认）或 `cover`（铺满裁切，站内默认）" badge="标签(可选)" target="打开方式(可选，`_blank`, `_self`)"}
 ```
+
+- **外链**：`title`、`url` 必填。`image` 作为 logo 居中显示，同时用作 URL 行的小图标；`badge` 显示在 URL 行末尾。默认新标签页打开。
+- **站内文章**（`url` 为 `/posts/<slug>/`）：只写 `url` 即可，构建时会读取目标文章 frontmatter 的 `title`、`description`、`image`、`category`、`published` 自动填充，卡片上写了的属性优先。`image` 作为封面铺满显示；frontmatter 的 `image` 需为完整 URL 或 `public/` 下的绝对路径，相对路径会被忽略。站内卡片不显示 `badge`。默认当前页打开。
 
 ## 🚀 本地运行
 

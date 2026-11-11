@@ -46,8 +46,11 @@ In addition to the Markdown syntax supported by Astro by default, this project e
 **Syntax:**
 
 ```markdown
-::link-card{title="Title" url="Link URL" desc="Description(Optional)" image="Image URL(Optional)" badge="Badge(Optional)" target="Target (`_blank`, `_self`, default `_blank`)(Optional)"}
+::link-card{title="Title" url="Link URL" desc="Description(Optional)" image="Image URL(Optional)" fit="Image fit(Optional), `contain` (centered with padding, default for external links) or `cover` (fills and crops, default for internal posts)" badge="Badge(Optional)" target="Target(Optional. `_blank`, `_self`)"}
 ```
+
+- **External links**: `title` and `url` are required. `image` is shown centered as a logo and also used as the small icon in the URL row; `badge` is shown at the end of the URL row. Opens in a new tab by default.
+- **Internal posts** (`url` is `/posts/<slug>/`): `url` alone is enough. At build time the card reads `title`, `description`, `image`, `category` and `published` from the target post's frontmatter; attributes written on the card take precedence. `image` fills the media area as a cover; a frontmatter `image` must be a full URL or an absolute path under `public/`, relative paths are ignored. Internal cards don't show `badge`. Opens in the same tab by default.
 
 ## 🚀 Running Locally
 

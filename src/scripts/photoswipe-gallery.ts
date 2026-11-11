@@ -112,9 +112,9 @@ function createLightbox(gallery: string, children?: string) {
 }
 
 function createPhotoSwipe() {
-	// Linked moment images keep their normal anchor navigation.
+	// Linked moment images and link-card images keep their normal anchor navigation.
 	lightbox = createLightbox(
-		".custom-md img:not(.moment-content a img), #post-cover img",
+		".custom-md img:not(.moment-content a img):not(.card-link img), #post-cover img",
 	);
 	momentLightbox = createLightbox(".moment-gallery", ".moment-media-trigger");
 }
