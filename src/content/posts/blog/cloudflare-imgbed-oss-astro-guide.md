@@ -353,7 +353,7 @@ CloudFlare-ImgBed 当前支持多种上传渠道，阿里云 OSS 这里走的是
 
 :::note[区域和 Endpoint 怎么填]
 **最终应该以当前 Bucket 所在地域的官方 Endpoint 为准**
-::link-card{title="阿里云服务的地域和Endpoint 列表" url="https://help.aliyun.com/zh/oss/user-guide/regions-and-endpoints?utm_source=chatgpt.com" desc="每个地域都有一个对应的 Endpoint，用于访问 OSS 存储桶。" badge="Aliyun" image="https://image.xhwen.cn/blog/alibabacloud-color.webp"}
+::link-card{title="阿里云服务的地域和Endpoint 列表" url="https://help.aliyun.com/zh/oss/user-guide/regions-and-endpoints" desc="每个地域都有一个对应的 Endpoint，用于访问 OSS 存储桶。" badge="Aliyun" image="https://image.xhwen.cn/blog/alibabacloud-color.webp"}
 :::
 
 > 存储配置保存后，记得启用，否则上传不会走 OSS。
