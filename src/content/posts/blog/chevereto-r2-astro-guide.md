@@ -12,7 +12,7 @@ draft: false
 
 之前用的 **PicGo + GitHub + Cloudflare** 搭图床，写过一篇记录：
 
-::link-card{title="PicGo + GitHub + Cloudflare 搭建图床" url="/posts/blog/github-image-hosting-with-picgo/" desc="搭建 PicGo + GitHub 图床，并通过 Cloudflare 实现全站 CDN 加速。" badge="Blog" target="_self"}
+::link-card{url="/posts/blog/github-image-hosting-with-picgo/"}
 
 使用下来发现的几个问题：
 

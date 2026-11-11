@@ -11,7 +11,7 @@ draft: false
 
 我之前的博客是部署在 GitHub Pages 上，上线本身没什么问题。
 
-::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io" desc="mimimi" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" badge="Blog"}
+::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io" desc="mimimi" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" fit="cover" badge="Blog"}
 
 在重新搭建 Astro 博客时，我更想要一种省心一点的流程：代码 push 上去之后，**自动构建、自动上线**，出了问题也能直接看部署记录：
 
@@ -48,9 +48,10 @@ draft: false
 * 一个 Cloudflare 账号
 
 :::tip[相关文档]
-> ::link-card{title="Cloudflare Pages Functions 官网" url="https://www.cloudflare.com/zh-cn/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
+> 
+::link-card{title="Cloudflare Pages Functions 官网" url="https://www.cloudflare.com/zh-cn/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
 
-> ::link-card{title="Cloudflare Pages 官方文档" url="https://developers.cloudflare.com/pages/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
+::link-card{title="Cloudflare Pages 官方文档" url="https://developers.cloudflare.com/pages/" image="https://image.xhwen.cn/blog/cloudflare_logo.webp" badge="Cloudflare"}
 :::
 
 ---

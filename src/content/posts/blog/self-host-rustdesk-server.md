@@ -16,7 +16,8 @@ draft: false
 ::github{repo="rustdesk/rustdesk"}
 
 :::note[RustDesk 官方文档]
-> ::link-card{title="RustDesk 官方文档" url="https://rustdesk.com/docs/zh-cn/" desc="从 TeamViewer、向日葵切换到 RustDesk，享受安全可靠的远程桌面体验，使用您自己的自建服务器。" image="https://image.xhwen.cn/blog/rustdesk-seeklogo.webp" badge="RustDesk"}
+> 
+::link-card{title="RustDesk 官方文档" url="https://rustdesk.com/docs/zh-cn/" desc="从 TeamViewer、向日葵切换到 RustDesk，享受安全可靠的远程桌面体验，使用您自己的自建服务器。" image="https://image.xhwen.cn/blog/rustdesk-seeklogo.webp" badge="RustDesk"}
 :::
 
 :::warning[安全提醒]
@@ -179,7 +180,7 @@ cat /opt/rustdesk-server/data/id_ed25519.pub
 
 在控制端和被控设备上都安装 RustDesk 客户端。
 
-> ::link-card{title="RustDesk 客户端下载" url="https://github.com/rustdesk/rustdesk/releases" desc="GitHub 项目上发布的最新版本 RustDesk 客户端，注意防范诈骗！" image="https://image.xhwen.cn/blog/rustdesk-seeklogo.webp" badge="RustDesk"}
+::link-card{title="RustDesk 客户端下载" url="https://github.com/rustdesk/rustdesk/releases" desc="GitHub 项目上发布的最新版本 RustDesk 客户端，注意防范诈骗！" image="https://image.xhwen.cn/blog/rustdesk-seeklogo.webp" badge="RustDesk"}
 
 ## 配置自建服务器
 

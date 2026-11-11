@@ -8,7 +8,8 @@ draft: false
 ---
 
 :::important[Umami API 文章相关文档]
-> ::link-card{title="Umami API 获取访客数 / 浏览量 / 访问次数 / 在线人数" url="/posts/blog/umami-server-api-analytics-guide/" desc="使用 Umami Server API 在自部署环境下获取博客的 PV、UV、Visits 以及在线人数，并安全地展示到前端页面。" badge="Blog" target="_self"}
+> 
+::link-card{url="/posts/blog/umami-server-api-analytics-guide/"}
 :::
 
 ## 方案说明

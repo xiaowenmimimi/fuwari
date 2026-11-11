@@ -21,7 +21,8 @@ draft: false
 一份代码，两边各走最合适的入口。
 
 :::important[站内DNS 国内 / 海外分流方案文章]
-> ::link-card{title="阿里云 DNS + Cloudflare Pages 实现国内 / 海外分流" url="/posts/blog/dns-geo-split-aliyun-cloudflare/" desc="在使用 Cloudflare Pages 的前提下，为国内提供更稳定、更快的访问入口，并保持整套方案长期可维护。" badge="Blog" target="_self"}
+> 
+::link-card{url="/posts/blog/dns-geo-split-aliyun-cloudflare/"}
 :::
 
 :::tip[其他方案]

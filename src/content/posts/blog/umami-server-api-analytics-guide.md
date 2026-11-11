@@ -8,7 +8,8 @@ draft: false
 ---
 
 :::important[Umami 部署相关文档]
-> ::link-card{title="部署 Umami 服务统计博客的访客数、浏览量" url="/posts/blog/deploy-umami-with-docker/" desc="在 CentOS 7.9 服务器上，使用 Docker + docker-compose 部署 Umami 统计服务的过程，并通过 Nginx 反向代理启用 HTTPS，用于博客的访客数、浏览量与文章访问统计。" badge="Blog" target="_self"}
+> 
+::link-card{url="/posts/blog/deploy-umami-with-docker/"}
 :::
 
 ## 方案说明

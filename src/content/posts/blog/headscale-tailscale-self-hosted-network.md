@@ -293,7 +293,7 @@ curl https://hs.example.com/health
 
 :::note[下载地址]
 > 
-> ::link-card{title="Tailscale Download" url="https://tailscale.com/download" image="https://image.xhwen.cn/blog/tailscale.webp" badge="Tailscale"}
+::link-card{title="Tailscale Download" url="https://tailscale.com/download" image="https://image.xhwen.cn/blog/tailscale.webp" badge="Tailscale"}
 :::
 
 ## Windows 客户端
@@ -520,8 +520,7 @@ sudo systemctl start headscale
 
 :::warning[注意]
 Headscale 要求按小版本依次升级，例如 0.27.x → 0.28.x → 0.29.x，不能跨版本跳。每一步都选该小版本最新的补丁版本，升级前先看一眼对应的 Release Notes。
-> 
-> ::link-card{title="Upgrade an existing installation" url="https://headscale.net/stable/setup/upgrade/" badge="Headscale"}
+::link-card{title="Upgrade an existing installation" url="https://headscale.net/stable/setup/upgrade/" badge="Headscale"}
 :::
 
 升级前先备份，然后下载新版本的 `.deb` 安装：

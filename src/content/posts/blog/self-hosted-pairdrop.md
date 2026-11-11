@@ -160,7 +160,7 @@ proxy_set_header X-Forwarded-For $remote_addr;
 
 PairDrop 根据客户端 IP 判断设备之间的网络关系。如果收到的都是 Docker 或 Nginx 的地址，设备发现就可能出问题。
 > 
-> ::link-card{title="PairDrop 反向代理说明" url="https://github.com/schlagmichdoch/PairDrop/blob/master/docs/host-your-own.md#http-server" image="https://image.xhwen.cn/banner/pairdrop-logo.webp" badge="PairDrop"}
+::link-card{title="PairDrop 反向代理说明" url="https://github.com/schlagmichdoch/PairDrop/blob/master/docs/host-your-own.md#http-server" image="https://image.xhwen.cn/banner/pairdrop-logo.webp" badge="PairDrop"}
 :::
 
 启用：
@@ -230,7 +230,7 @@ flowchart TD
 
 :::note[域名证书配置]
 > 
-> ::link-card{title="Let’s Encrypt 申请 SSL 证书并自动续期" url="/posts/blog/lets-encrypt-wildcard-nginx-auto-renew/" desc="记录如何为 DNS 托管在阿里云或 Cloudflare 的域名申请 Let’s Encrypt 通配符证书，并通过 acme.sh 自动续期。" badge="Blog" target="_self"}
+::link-card{url="/posts/blog/lets-encrypt-wildcard-nginx-auto-renew/"}
 :::
 
 下面以镜像默认的 `nobody:nogroup`（UID/GID 65534）为例，源路径请换成自己的证书路径：

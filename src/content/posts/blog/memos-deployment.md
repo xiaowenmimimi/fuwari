@@ -197,8 +197,7 @@ server {
 
 :::tip[证书申请]
 还没有证书的话，可以参考这篇文章：
-> 
-> ::link-card{title="Let’s Encrypt 申请 SSL 证书并自动续期" url="/posts/blog/lets-encrypt-wildcard-nginx-auto-renew/" desc="记录如何为 DNS 托管在阿里云或 Cloudflare 的域名申请 Let’s Encrypt 通配符证书，并通过 acme.sh 自动续期。" badge="Blog" target="_self"}
+::link-card{url="/posts/blog/lets-encrypt-wildcard-nginx-auto-renew/"}
 :::
 
 启用站点配置：

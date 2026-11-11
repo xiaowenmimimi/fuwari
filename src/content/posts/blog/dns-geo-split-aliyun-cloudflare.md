@@ -50,9 +50,10 @@ Cloudflare Pages 的自动化部署和全球 CDN 做得不错，但从国内访�
 在做 DNS 分流之前，博客已经完成了双端独立部署：
 
 :::note[部署博客方案]
-> ::link-card{title="使用 Cloudflare Pages 自动部署 Astro 博客" url="/posts/blog/astro-deploy-cloudflare-pages/" desc="Astro 博客部署教程，从 GitHub 仓库到 Cloudflare Pages 自动部署成功上线的完整流程。" badge="Blog" target="_self"}
+> 
+::link-card{url="/posts/blog/astro-deploy-cloudflare-pages/"}
 
-> ::link-card{title="GitHub Actions 自动部署 Astro 博客到服务器" url="/posts/blog/astro-deploy-cn-server/" desc="使用 Nginx + GitHub Actions 实现每次 git push main 后，项目自动构建并把最新的静态产物部署到服务器，通过 Nginx 对外提供访问。" badge="Blog" target="_self" }
+::link-card{url="/posts/blog/astro-deploy-cn-server/"}
 :::
 
 ### 海外入口（Cloudflare Pages）

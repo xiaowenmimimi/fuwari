@@ -14,7 +14,7 @@ pin: 100
 
 :::note[旧站信息]
 这是我在 2021 年创建的旧站（Hexo + Butterfly）：
-::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io/" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" badge="Blog"}
+::link-card{title="Xiao wen" url="https://xiaowenmimimi.github.io/" image="https://cdn.jsdelivr.net/gh/xiaowenmimimi/myImages@main/blog/%E4%BA%91%E5%A8%9C.jpg" fit='cover' badge="Blog"}
 最后一次更新停在了 **2021-12-16**。
 :::
 
